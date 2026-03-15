@@ -1,6 +1,6 @@
 # Site Settings
 title: "Peter Luo"
-description: "Peter Luo Real Estate"
+description: "A brief description of your site"
 url: "https://peterluo.homes"
 baseurl: ""
 
@@ -22,6 +22,10 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+
+# Force Jekyll to process all HTML files (enables permalink for plain HTML files)
+include:
+  - "**/*.html"
 
 # Exclude from build output
 exclude:
