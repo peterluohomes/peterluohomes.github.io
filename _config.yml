@@ -1,0 +1,32 @@
+# Site Settings
+title: "Peter Luo"
+description: "Peter Luo Real Estate"
+url: "https://peterluo.homes"
+baseurl: ""
+
+# Author
+author:
+  name: "Peter Luo"
+  email: "peterluo@peterluo.com"
+
+# Permalink Style (extensionless URLs)
+# e.g. /about instead of /about.html
+permalink: /:basename
+
+# Build Settings
+markdown: kramdown
+theme: minima                           # Replace or remove if using a custom theme
+
+# Plugins (GitHub Pages supported)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from build output
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
