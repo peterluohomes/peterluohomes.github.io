@@ -11,7 +11,7 @@ author:
 
 # Permalink Style (extensionless URLs)
 # e.g. /about instead of /about.html
-permalink: /:basename
+permalink: /:path
 
 # Build Settings
 markdown: kramdown
