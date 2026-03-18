@@ -49,8 +49,6 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   padding: 2px 9px; border-radius: 8px;
 }
 #audio-stats { font-size: 12px; color: var(--light); margin-top: 3px; }
-
-/* Custom play button */
 #play-btn {
   width: 100%; padding: 12px;
   background: var(--navy); color: #fff;
@@ -59,8 +57,6 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   cursor: pointer; letter-spacing: 0.03em;
 }
 #play-btn:active { opacity: 0.8; }
-
-/* Native audio (hidden — used only for actual playback) */
 #lpen-audio { width: 100%; height: 36px; accent-color: var(--navy); margin-top: 8px; }
 </style>
 </head>
@@ -85,10 +81,8 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
           style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--light);padding:4px;flex-shrink:0;">↺</button>
       </div>
 
-      <!-- Big tap-to-play button that seeks BEFORE starting playback -->
       <button id="play-btn" onclick="tapPlay()">▶ Play from saved position</button>
 
-      <!-- Native controls still available for scrubbing / pausing -->
       <audio id="lpen-audio" loop controls controlsList="nodownload">
         <source src="./mp3/lpen.mp3" type="audio/mpeg">
       </audio>
@@ -106,19 +100,34 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   const posPill   = document.getElementById('pos-pill');
   const playBtn   = document.getElementById('play-btn');
 
-  // ── Stats ────────────────────────────────────────────────────────────────
+  // ── Persisted stats ──────────────────────────────────────────────────────
   let stats = JSON.parse(localStorage.getItem(STORE_KEY) || '{"plays":0,"totalSec":0}');
 
-  // currentTime-delta approach:
-  // On each timeupdate compare currentTime to previous value.
-  // Only accumulate small forward deltas — seeks/loops are ignored.
-  let prevTime     = null;   // audio.currentTime at last timeupdate
-  let wasPlaying   = false;  // guards play counter against resume double-count
-  let seekPending  = false;  // true = need to seek before first play
-  let unsavedSec   = 0;      // accumulated seconds not yet flushed to localStorage
-  const MAX_DELTA  = 1.5;    // jumps larger than this are seeks/loops — skip
-  const SAVE_EVERY = 5;      // persist every N accumulated seconds
+  // ── Tracking state ───────────────────────────────────────────────────────
+  //
+  // STRATEGY: hybrid currentTime-delta + wall-clock gap recovery.
+  //
+  // Normal playback (screen on):
+  //   timeupdate fires ~4x/s. We diff audio.currentTime tick-to-tick.
+  //   Small forward deltas (≤ MAX_CT_DELTA) = real audio → accumulate.
+  //   Large jumps (seeks, loop-wraps) = ignored.
+  //
+  // Screen-off / tab-hidden (iOS throttles or stops timeupdate):
+  //   On visibilitychange/focus restore, we compare wall-clock elapsed vs
+  //   currentTime elapsed and take the MINIMUM, capped at MAX_GAP_SEC.
+  //   This recovers screen-off time without inflating on seeks.
+  //
+  let prevAudioTime = null;
+  let prevWallTime  = null;
+  let wasPlaying    = false;  // guards play-counter against resume double-count
+  let seekPending   = false;
+  let unsavedSec    = 0;
 
+  const MAX_CT_DELTA = 1.5;    // currentTime jump larger than this = seek/loop
+  const MAX_GAP_SEC  = 7200;   // sanity cap: never credit more than 2 h in one gap
+  const SAVE_EVERY   = 5;      // flush localStorage every N seconds
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
   function fmtTime(sec) {
     sec = Math.floor(sec);
     if (sec < 60) return sec + 's';
@@ -144,6 +153,17 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     localStorage.setItem(STORE_KEY, JSON.stringify(stats));
   }
 
+  function addTime(sec) {
+    if (sec <= 0) return;
+    stats.totalSec += sec;
+    unsavedSec += sec;
+    renderStats();
+    if (unsavedSec >= SAVE_EVERY) {
+      unsavedSec = 0;
+      saveStats();
+    }
+  }
+
   // ── Position memory ──────────────────────────────────────────────────────
   function savePos() {
     const pos = audio.currentTime;
@@ -161,7 +181,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     seekPending = true;
   }
 
-  // ── tapPlay — seek must happen inside the user-gesture call stack on iOS ─
+  // ── tapPlay — seek must be inside the user-gesture on iOS ────────────────
   window.tapPlay = function () {
     if (seekPending) {
       audio.currentTime = savedPos;
@@ -171,54 +191,86 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     playBtn.textContent = '▶ Playing…';
   };
 
-  // ── Core: accumulate actual audio time via currentTime deltas ────────────
+  // ── Core: timeupdate ─────────────────────────────────────────────────────
   let lastPosSave = 0;
+
   audio.addEventListener('timeupdate', () => {
+    const wallNow = Date.now();
+
     // Position save every 3 s
-    const now = Date.now();
-    if (now - lastPosSave >= 3000) {
+    if (wallNow - lastPosSave >= 3000) {
       savePos();
-      lastPosSave = now;
+      lastPosSave = wallNow;
     }
 
-    // Time accumulation
-    if (audio.paused || prevTime === null) return;
-    const delta = audio.currentTime - prevTime;
-    prevTime = audio.currentTime;
+    if (audio.paused) return;
 
-    if (delta > 0 && delta <= MAX_DELTA) {
-      stats.totalSec += delta;
-      unsavedSec += delta;
-      renderStats();
-      if (unsavedSec >= SAVE_EVERY) {
-        unsavedSec = 0;
-        saveStats();
+    const ctNow = audio.currentTime;
+
+    if (prevAudioTime !== null && prevWallTime !== null) {
+      const ctDelta   = ctNow - prevAudioTime;
+      const wallDelta = (wallNow - prevWallTime) / 1000;
+
+      if (ctDelta > 0 && ctDelta <= MAX_CT_DELTA) {
+        // Normal tick — screen on, timeupdate firing regularly
+        addTime(ctDelta);
+      } else if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
+        // Gap detected (screen-off / throttled).
+        // Take min(wallDelta, ctGap) — don't over-count a seek.
+        const ctGap = Math.abs(ctDelta);
+        addTime(Math.min(wallDelta, ctGap > 0 ? ctGap : wallDelta));
       }
+      // Negative/zero ctDelta with small wallDelta = loop-wrap or stall; skip.
     }
+
+    prevAudioTime = ctNow;
+    prevWallTime  = wallNow;
   });
 
-  // Seeking resets prevTime so the gap isn't counted
+  // Seeking resets both anchors so the position gap isn't counted
   audio.addEventListener('seeked', () => {
-    prevTime = audio.currentTime;
+    prevAudioTime = audio.currentTime;
+    prevWallTime  = Date.now();
   });
 
-  // ── Play event — count only fresh starts, not resumes ───────────────────
+  // ── Recover gap when screen turns back on ────────────────────────────────
+  function recoverGap() {
+    if (audio.paused || prevWallTime === null) return;
+    const wallDelta = (Date.now() - prevWallTime) / 1000;
+    if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
+      addTime(wallDelta);
+      saveStats();
+    }
+    // Reset anchors; next timeupdate re-establishes them
+    prevAudioTime = null;
+    prevWallTime  = null;
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) recoverGap();
+    else flushAll();
+  });
+  window.addEventListener('focus', recoverGap);
+
+  // ── Play event ───────────────────────────────────────────────────────────
   audio.addEventListener('play', () => {
     if (!wasPlaying) {
       stats.plays++;
       saveStats();
       renderStats();
     }
-    wasPlaying = true;
-    prevTime = audio.currentTime;
+    wasPlaying    = true;
+    prevAudioTime = audio.currentTime;
+    prevWallTime  = Date.now();
   });
 
-  // ── Flush on pause ───────────────────────────────────────────────────────
+  // ── Flush on pause / end / hide ──────────────────────────────────────────
   function flushAll() {
     savePos();
-    prevTime = null;
-    wasPlaying = false;
-    unsavedSec = 0;
+    prevAudioTime = null;
+    prevWallTime  = null;
+    wasPlaying    = false;
+    unsavedSec    = 0;
     saveStats();
     renderStats();
   }
@@ -238,9 +290,8 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     flushAll();
   });
 
-  document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
   window.addEventListener('pagehide', flushAll);
-  window.addEventListener('blur',     flushAll);
+  window.addEventListener('blur', flushAll);
 
   // ── Reset ────────────────────────────────────────────────────────────────
   window.resetStats = function () {
@@ -248,10 +299,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     stats = { plays: 0, totalSec: 0 };
     localStorage.removeItem(POS_KEY);
     audio.currentTime = 0;
-    seekPending = false;
-    prevTime = null;
-    wasPlaying = false;
-    unsavedSec = 0;
+    seekPending   = false;
+    prevAudioTime = null;
+    prevWallTime  = null;
+    wasPlaying    = false;
+    unsavedSec    = 0;
     posPill.textContent = 'Saved position: 0:00';
     playBtn.textContent = '▶ Play from saved position';
     saveStats();
