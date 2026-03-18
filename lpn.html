@@ -29,20 +29,12 @@ header {
 }
 .header-title { font-size: 22px; font-weight: 700; color: var(--warm-dark); line-height: 1.2; }
 main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 100%; }
-.section-label {
-  font-size: 12px; font-weight: 700; color: var(--light); text-transform: uppercase;
-  letter-spacing: .1em; margin-bottom: 10px; margin-top: 20px; padding-left: 4px;
-  display: flex; align-items: center; gap: 8px;
-}
-.section-label:first-of-type { margin-top: 0; }
-.section-pill { background: var(--warm-dark); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .tool-pair { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
 .tool-item {
   display: flex; align-items: center; gap: 16px; padding: 16px 20px;
   border-bottom: 1px solid var(--border); text-decoration: none; color: inherit;
   min-height: 68px; -webkit-user-select: none; user-select: none;
 }
-.tool-item:active { background: var(--gold-bg); }
 .tool-icon {
   width: 44px; height: 44px; border-radius: 12px; background: var(--gold-bg);
   border: 1px solid var(--gold-border); display: flex; align-items: center;
@@ -50,53 +42,13 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 }
 .tool-info { flex: 1; min-width: 0; }
 .tool-name { font-size: 16px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; }
-.tool-desc { font-size: 13px; color: var(--light); margin-top: 3px; line-height: 1.4; }
-.tool-arrow { font-size: 20px; color: var(--light); flex-shrink: 0; font-weight: 300; }
-.obj-item {
-  display: flex; align-items: center; gap: 14px; padding: 13px 20px;
-  text-decoration: none; color: inherit; background: var(--bg2);
-  -webkit-user-select: none; user-select: none;
+#pos-pill {
+  display: inline-block; margin-top: 4px;
+  font-size: 11px; font-weight: 700; color: var(--navy);
+  background: #eef2fb; border: 1px solid #c8d6f0;
+  padding: 2px 9px; border-radius: 8px;
 }
-.obj-item:active { background: var(--gold-bg); }
-.obj-badge {
-  font-size: 10px; font-weight: 700; color: var(--gold-tag); background: var(--gold-bg);
-  border: 1px solid var(--gold-border); padding: 3px 9px; border-radius: 8px;
-  white-space: nowrap; flex-shrink: 0;
-}
-.obj-info { flex: 1; min-width: 0; }
-.obj-name { font-size: 14px; font-weight: 600; color: var(--mid); line-height: 1.3; }
-.obj-desc { font-size: 12px; color: var(--light); margin-top: 2px; }
-.obj-arrow { font-size: 18px; color: var(--light); flex-shrink: 0; }
-.lang-item {
-  display: flex; align-items: center; gap: 14px; padding: 13px 20px;
-  text-decoration: none; color: inherit; border-bottom: 1px solid var(--border);
-  background: var(--bg2); -webkit-user-select: none; user-select: none;
-}
-.lang-item:last-child { border-bottom: none; }
-.lang-item:active { background: var(--gold-bg); }
-.lang-flag {
-  font-size: 10px; font-weight: 700; color: var(--navy); background: #eef2fb;
-  border: 1px solid #c8d6f0; padding: 3px 9px; border-radius: 8px;
-  white-space: nowrap; flex-shrink: 0;
-}
-.lang-info { flex: 1; }
-.lang-name { font-size: 14px; font-weight: 600; color: var(--mid); }
-.lang-desc { font-size: 12px; color: var(--light); margin-top: 2px; }
-.lang-arrow { font-size: 18px; color: var(--light); flex-shrink: 0; }
-
-/* Resume banner */
-#resume-banner {
-  display: none;
-  position: fixed; bottom: calc(16px + var(--safe-bottom)); left: 50%;
-  transform: translateX(-50%);
-  background: var(--navy); color: #fff;
-  font-size: 14px; font-weight: 600;
-  padding: 10px 22px; border-radius: 24px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  cursor: pointer; z-index: 999;
-  white-space: nowrap;
-}
-#resume-banner.show { display: block; }
+#audio-stats { font-size: 12px; color: var(--light); margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -107,39 +59,37 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 
 <main>
   <div class="tool-pair">
-    <!-- VOICE -->
     <div class="tool-item" style="gap:16px; flex-direction:column; align-items:flex-start;">
       <div style="display:flex; align-items:center; gap:16px; width:100%;">
         <div class="tool-icon">🎙️</div>
         <div class="tool-info">
           <div class="tool-name">Voice</div>
-          <div id="audio-stats" style="font-size:12px; color:var(--light); margin-top:3px;">Loading stats…</div>
+          <div id="pos-pill">Saved position: 0:00</div>
+          <div id="audio-stats">Loading stats…</div>
         </div>
-        <button onclick="resetStats()" title="Reset stats" style="background:none; border:none; cursor:pointer; font-size:16px; color:var(--light); padding:4px; flex-shrink:0;">↺</button>
+        <button onclick="resetStats()" title="Reset stats"
+          style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--light);padding:4px;flex-shrink:0;">↺</button>
       </div>
-      <audio id="lpen-audio" loop controls controlsList="nodownload" style="width:100%; height:36px; accent-color: var(--navy);">
+      <audio id="lpen-audio" loop controls controlsList="nodownload"
+        style="width:100%; height:36px; accent-color: var(--navy);">
         <source src="./mp3/lpen.mp3" type="audio/mpeg">
       </audio>
     </div>
   </div>
 </main>
 
-<!-- Tap-to-resume banner shown when audio was interrupted -->
-<div id="resume-banner" onclick="resumeAudio()">▶ Tap to Resume</div>
-
 <script>
 (function () {
   const STORE_KEY = 'lpen_stats';
-  const audio = document.getElementById('lpen-audio');
-  const statsEl = document.getElementById('audio-stats');
-  const banner = document.getElementById('resume-banner');
+  const POS_KEY   = 'lpen_pos';
+  const audio     = document.getElementById('lpen-audio');
+  const statsEl   = document.getElementById('audio-stats');
+  const posPill   = document.getElementById('pos-pill');
 
-  // Load persisted stats
+  // ── Stats ────────────────────────────────────────────────────────────────
   let stats = JSON.parse(localStorage.getItem(STORE_KEY) || '{"plays":0,"totalSec":0}');
   let sessionStart = null;
-  let lastSaved = 0;
-  let wasPlayingBeforeHide = false;  // track if we were playing when tab lost focus
-  let userPaused = false;            // track if the USER paused (vs iOS interruption)
+  let lastSaved    = 0;
 
   function fmtTime(sec) {
     sec = Math.floor(sec);
@@ -150,109 +100,103 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     return h + 'h ' + (rm ? rm + 'm' : '');
   }
 
+  function fmtPos(sec) {
+    sec = Math.floor(sec);
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
   function renderStats() {
     statsEl.textContent =
       '▶ ' + stats.plays + (stats.plays === 1 ? ' play' : ' plays') +
       ' · ⏱ ' + fmtTime(stats.totalSec) + ' total';
   }
 
-  function save() {
+  function saveStats() {
     localStorage.setItem(STORE_KEY, JSON.stringify(stats));
   }
 
-  // Count a new play when audio starts from paused/stopped
-  audio.addEventListener('play', () => {
-    stats.plays++;
-    sessionStart = Date.now();
-    lastSaved = 0;
-    userPaused = false;
-    banner.classList.remove('show');
-    save();
-    renderStats();
-  });
+  // ── Position memory ──────────────────────────────────────────────────────
+  function savePos() {
+    const pos = audio.currentTime;
+    if (pos > 0) {
+      localStorage.setItem(POS_KEY, pos.toFixed(2));
+      posPill.textContent = 'Saved position: ' + fmtPos(pos);
+    }
+  }
 
-  // Accumulate time while playing
+  function loadPos() {
+    const saved = parseFloat(localStorage.getItem(POS_KEY) || '0');
+    if (saved > 0) {
+      audio.currentTime = saved;
+      posPill.textContent = 'Saved position: ' + fmtPos(saved);
+    }
+  }
+
+  // Restore position once metadata is ready
+  audio.addEventListener('loadedmetadata', loadPos);
+
+  // Save position every 3 seconds while playing
+  let lastPosSave = 0;
   audio.addEventListener('timeupdate', () => {
+    const now = Date.now();
+    if (now - lastPosSave >= 3000) {
+      savePos();
+      lastPosSave = now;
+    }
+    // Stats accumulation
     if (sessionStart === null) return;
-    const elapsed = (Date.now() - sessionStart) / 1000;
+    const elapsed = (now - sessionStart) / 1000;
     const delta = elapsed - lastSaved;
     if (delta >= 5) {
       stats.totalSec += delta;
       lastSaved = elapsed;
-      save();
+      saveStats();
       renderStats();
     }
   });
 
-  // Flush remaining time on pause / end
-  function flushTime() {
-    if (sessionStart === null) return;
-    const elapsed = (Date.now() - sessionStart) / 1000;
-    stats.totalSec += elapsed - lastSaved;
-    sessionStart = null;
-    lastSaved = 0;
-    save();
-    renderStats();
+  // Flush everything on pause / hide / close
+  function flushAll() {
+    savePos();
+    if (sessionStart !== null) {
+      const elapsed = (Date.now() - sessionStart) / 1000;
+      stats.totalSec += elapsed - lastSaved;
+      sessionStart = null;
+      lastSaved = 0;
+      saveStats();
+      renderStats();
+    }
   }
 
-  audio.addEventListener('pause', () => {
-    flushTime();
-    // Show banner only if iOS interrupted us (not if user tapped pause)
-    if (!userPaused && wasPlayingBeforeHide) {
-      banner.classList.add('show');
-    }
-  });
-
+  audio.addEventListener('pause', flushAll);
   audio.addEventListener('ended', () => {
-    flushTime();
-    wasPlayingBeforeHide = false;
-    userPaused = false;
+    localStorage.removeItem(POS_KEY);
+    posPill.textContent = 'Saved position: 0:00';
+    flushAll();
   });
 
-  // Detect user-initiated pause via the controls
-  // We use 'mousedown' / 'touchstart' on the audio element as a signal
-  // that the next pause is intentional
-  audio.addEventListener('mousedown', () => { userPaused = true; });
-  audio.addEventListener('touchstart', () => { userPaused = true; }, { passive: true });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flushAll(); });
+  window.addEventListener('pagehide', flushAll);
+  window.addEventListener('blur',     flushAll);
 
-  // ── Visibility / focus change handling ──────────────────────────────────
-  // Save playback state when tab goes to background
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      wasPlayingBeforeHide = !audio.paused;
-    } else {
-      // Tab came back into view
-      if (wasPlayingBeforeHide && audio.paused) {
-        // iOS killed our audio session — show the resume banner
-        banner.classList.add('show');
-      }
-      wasPlayingBeforeHide = false;
-    }
+  // ── Play event ───────────────────────────────────────────────────────────
+  audio.addEventListener('play', () => {
+    stats.plays++;
+    sessionStart = Date.now();
+    lastSaved = 0;
+    saveStats();
+    renderStats();
   });
-
-  // Also catch window focus (works on some iOS versions)
-  window.addEventListener('focus', () => {
-    if (wasPlayingBeforeHide && audio.paused) {
-      banner.classList.add('show');
-    }
-    wasPlayingBeforeHide = false;
-  });
-
-  // ── Resume function ──────────────────────────────────────────────────────
-  window.resumeAudio = function () {
-    banner.classList.remove('show');
-    userPaused = false;
-    audio.play().catch(() => {
-      // If autoplay blocked, keep banner visible
-      banner.classList.add('show');
-    });
-  };
 
   // ── Reset button ─────────────────────────────────────────────────────────
   window.resetStats = function () {
-    if (!confirm('Reset play stats?')) return;
+    if (!confirm('Reset play stats and saved position?')) return;
     stats = { plays: 0, totalSec: 0 };
-    save();
+    localStorage.removeItem(POS_KEY);
+    audio.currentTime = 0;
+    posPill.textContent = 'Saved position: 0:00';
+    saveStats();
     renderStats();
   };
 
