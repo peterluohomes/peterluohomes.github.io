@@ -49,6 +49,19 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   padding: 2px 9px; border-radius: 8px;
 }
 #audio-stats { font-size: 12px; color: var(--light); margin-top: 3px; }
+
+/* Custom play button */
+#play-btn {
+  width: 100%; padding: 12px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.03em;
+}
+#play-btn:active { opacity: 0.8; }
+
+/* Native audio (hidden — used only for actual playback) */
+#lpen-audio { width: 100%; height: 36px; accent-color: var(--navy); margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -60,6 +73,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 <main>
   <div class="tool-pair">
     <div class="tool-item" style="gap:16px; flex-direction:column; align-items:flex-start;">
+
       <div style="display:flex; align-items:center; gap:16px; width:100%;">
         <div class="tool-icon">🎙️</div>
         <div class="tool-info">
@@ -70,10 +84,15 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <button onclick="resetStats()" title="Reset stats"
           style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--light);padding:4px;flex-shrink:0;">↺</button>
       </div>
-      <audio id="lpen-audio" loop controls controlsList="nodownload"
-        style="width:100%; height:36px; accent-color: var(--navy);">
+
+      <!-- Big tap-to-play button that seeks BEFORE starting playback -->
+      <button id="play-btn" onclick="tapPlay()">▶ Play from saved position</button>
+
+      <!-- Native controls still available for scrubbing / pausing -->
+      <audio id="lpen-audio" loop controls controlsList="nodownload">
         <source src="./mp3/lpen.mp3" type="audio/mpeg">
       </audio>
+
     </div>
   </div>
 </main>
@@ -85,11 +104,13 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   const audio     = document.getElementById('lpen-audio');
   const statsEl   = document.getElementById('audio-stats');
   const posPill   = document.getElementById('pos-pill');
+  const playBtn   = document.getElementById('play-btn');
 
   // ── Stats ────────────────────────────────────────────────────────────────
   let stats = JSON.parse(localStorage.getItem(STORE_KEY) || '{"plays":0,"totalSec":0}');
   let sessionStart = null;
   let lastSaved    = 0;
+  let seekPending  = false;   // true = we need to seek before the first play
 
   function fmtTime(sec) {
     sec = Math.floor(sec);
@@ -122,21 +143,30 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     if (pos > 0) {
       localStorage.setItem(POS_KEY, pos.toFixed(2));
       posPill.textContent = 'Saved position: ' + fmtPos(pos);
+      playBtn.textContent = '▶ Play from ' + fmtPos(pos);
     }
   }
 
-  function loadPos() {
-    const saved = parseFloat(localStorage.getItem(POS_KEY) || '0');
-    if (saved > 0) {
-      audio.currentTime = saved;
-      posPill.textContent = 'Saved position: ' + fmtPos(saved);
-    }
+  const savedPos = parseFloat(localStorage.getItem(POS_KEY) || '0');
+  if (savedPos > 0) {
+    posPill.textContent = 'Saved position: ' + fmtPos(savedPos);
+    playBtn.textContent = '▶ Play from ' + fmtPos(savedPos);
+    seekPending = true;
   }
 
-  // Restore position once metadata is ready
-  audio.addEventListener('loadedmetadata', loadPos);
+  // ── tapPlay — the key fix ────────────────────────────────────────────────
+  // iOS only allows seek DURING a user-gesture call stack.
+  // By doing the seek right here inside the tap handler, iOS honors it.
+  window.tapPlay = function () {
+    if (seekPending) {
+      audio.currentTime = savedPos;   // seek happens inside the tap gesture ✓
+      seekPending = false;
+    }
+    audio.play();
+    playBtn.textContent = '▶ Playing…';
+  };
 
-  // Save position every 3 seconds while playing
+  // ── Save position every 3 s while playing ────────────────────────────────
   let lastPosSave = 0;
   audio.addEventListener('timeupdate', () => {
     const now = Date.now();
@@ -144,7 +174,6 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
       savePos();
       lastPosSave = now;
     }
-    // Stats accumulation
     if (sessionStart === null) return;
     const elapsed = (now - sessionStart) / 1000;
     const delta = elapsed - lastSaved;
@@ -156,7 +185,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     }
   });
 
-  // Flush everything on pause / hide / close
+  // ── Flush on pause / hide / close ───────────────────────────────────────
   function flushAll() {
     savePos();
     if (sessionStart !== null) {
@@ -169,10 +198,18 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     }
   }
 
-  audio.addEventListener('pause', flushAll);
+  audio.addEventListener('pause', () => {
+    flushAll();
+    playBtn.textContent = savedPos > 0
+      ? '▶ Play from ' + fmtPos(audio.currentTime)
+      : '▶ Play from saved position';
+  });
+
   audio.addEventListener('ended', () => {
     localStorage.removeItem(POS_KEY);
     posPill.textContent = 'Saved position: 0:00';
+    playBtn.textContent = '▶ Play from saved position';
+    seekPending = false;
     flushAll();
   });
 
@@ -189,13 +226,15 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     renderStats();
   });
 
-  // ── Reset button ─────────────────────────────────────────────────────────
+  // ── Reset ────────────────────────────────────────────────────────────────
   window.resetStats = function () {
     if (!confirm('Reset play stats and saved position?')) return;
     stats = { plays: 0, totalSec: 0 };
     localStorage.removeItem(POS_KEY);
     audio.currentTime = 0;
+    seekPending = false;
     posPill.textContent = 'Saved position: 0:00';
+    playBtn.textContent = '▶ Play from saved position';
     saveStats();
     renderStats();
   };
