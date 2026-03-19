@@ -1,5 +1,3 @@
----
----
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -866,9 +864,38 @@
     .timeline-dot { left: 8px; }
     .timeline-item { padding-left: 56px; }
   }
+
+  /* ── LANG SWITCHER ───────────────────────────────── */
+  .lang-switcher {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 1000;
+  }
+  .lang-btn {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(13,31,60,0.85);
+    border: 1px solid rgba(201,168,76,0.45);
+    padding: 8px 16px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease, color 0.2s ease;
+    backdrop-filter: blur(6px);
+  }
+  .lang-btn:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
 </style>
 </head>
 <body>
+<div class="lang-switcher"><a href="./chinese" class="lang-btn">中文</a></div>
 
 <!-- ═══════════════════════════════════ HERO ══ -->
 <section class="hero">
@@ -1115,7 +1142,7 @@
     <p class="cta-body reveal reveal-delay-2">Let's have a conversation about your home and your goals. There is no obligation — only a clear, honest assessment of what's possible and how I can help.</p>
     <div class="cta-buttons reveal reveal-delay-3">
       <a href="tel:+16478243718" class="btn-primary">Call Me Today</a>
-      <a href="mailto:peterluo@peterluo.com" class="btn-outline">Send an Email</a>
+      <a href="/cdn-cgi/l/email-protection#86f6e3f2e3f4eaf3e9c6f6e3f2e3f4eaf3e9a8e5e9eb" class="btn-outline">Send an Email</a>
     </div>
 
     <div class="contact-details reveal">
@@ -1125,7 +1152,7 @@
       </div>
       <div class="contact-item">
         <span class="contact-label">Email</span>
-        <span class="contact-value">peterluo@peterluo.com</span>
+        <span class="contact-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1363766776617f667c5363766776617f667c3d707c7e">[email&#160;protected]</a></span>
       </div>
       <div class="contact-item">
         <span class="contact-label">Brokerage</span>
@@ -1144,19 +1171,7 @@
   <p style="margin-top:8px;">Not intended to solicit buyers or sellers currently under contract with a brokerage.</p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Scroll-reveal observer
   const revealEls = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => observer.observe(el));
-</script>
-
-</body>
-</html>
+  const observer = new IntersectionObser
