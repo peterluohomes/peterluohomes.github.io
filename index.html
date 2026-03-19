@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peter Luo | RE/MAX Realtron — Pinnacle Listing System</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+
   :root {
     --navy: #0d1f3c;
     --navy-mid: #152b52;
@@ -892,10 +893,18 @@
     background: var(--gold);
     color: var(--navy);
   }
+
 </style>
 </head>
 <body>
-<div class="lang-switcher"><a href="./chinese" class="lang-btn">中文</a></div>
+
+<!-- ══ LANGUAGE SWITCHER ══ -->
+<div class="lang-switcher">
+  <a id="lang-btn" href="#" class="lang-btn" onclick="toggleLang(event)">中文</a>
+</div>
+
+<!-- ══ ENGLISH VERSION ══ -->
+<div id="lang-en">
 
 <!-- ═══════════════════════════════════ HERO ══ -->
 <section class="hero">
@@ -1170,8 +1179,322 @@
   <p>Peter Luo <span>·</span> RE/MAX Realtron Realty Inc., Brokerage <span>·</span> SRS &nbsp; MCNE &nbsp; FRI <span>·</span> Pinnacle Listing System™</p>
   <p style="margin-top:8px;">Not intended to solicit buyers or sellers currently under contract with a brokerage.</p>
 </footer>
+</div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Scroll-reveal observer
-  const revealEls = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObser
+<!-- ══ CHINESE VERSION ══ -->
+<div id="lang-zh" style="display:none">
+
+<!-- ═══════════════════════════════════ HERO ══ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-content">
+    <div class="badge">RE/MAX Realtron Realty Inc.</div>
+    <h1 class="hero-name">Peter <span>Luo</span></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-title">地产经纪人 &nbsp;·&nbsp; 大多伦多地区</p>
+    <p class="hero-subtitle">您值得信赖的理智、客观、沉稳，以数据为导向的市场顾问<br>中英双语服务 English &amp; Chinese</p>
+    <div class="hero-creds">
+      <span class="cred-pill">SRS 卖方专家</span>
+      <span class="cred-pill">MCNE 谈判大师</span>
+      <span class="cred-pill">FRI 资深院士</span>
+      <span class="cred-pill">Pinnacle Listing System</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>探索</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ STRIP ══ -->
+<div class="intro-strip">
+  <p>最佳价格 &nbsp;·&nbsp; 最少压力 &nbsp;·&nbsp; 最短时间</p>
+</div>
+
+<!-- ═══════════════════════════════════ ABOUT ══ -->
+<section class="about">
+  <div class="container">
+    <div class="about-grid">
+
+      <div class="about-visual reveal">
+        <div class="frame-border"></div>
+        <div class="portrait-frame">
+          <div class="portrait-initials">Peter<br>Luo</div>
+          <div class="portrait-name-tag">
+            <strong>Peter Luo</strong>
+            <span>RE/MAX Realtron</span>
+          </div>
+        </div>
+        <div class="about-stats">
+          <div class="stat-cell">
+            <div class="stat-num">SRS</div>
+            <div class="stat-label">卖方代表专家</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">MCNE</div>
+            <div class="stat-label">认证谈判大师</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">FRI</div>
+            <div class="stat-label">地产学院院士</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">GTA</div>
+            <div class="stat-label">大多伦多专家</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-text">
+        <p class="section-label reveal">关于我</p>
+        <h2 class="section-title reveal reveal-delay-1">与众不同的<em>经纪人</em></h2>
+        <div class="section-body reveal reveal-delay-2">
+          <p>我是Peter Luo——大多伦多地区 RE/MAX Realtron Realty Inc. 持牌地产经纪人。我持有 SRS（卖方代表专家）、MCNE（认证谈判大师）及 FRI（地产学院院士）专业资质，服务遍及大多伦多地区的英语及中文客户。</p>
+        </div>
+        <div class="quote-block reveal reveal-delay-3">
+          <p>「我不是一个高压推销员。我是您理智、客观、沉稳，以数据为导向的市场顾问——身后有一套经过验证的系统支持我。」</p>
+        </div>
+        <div class="section-body reveal reveal-delay-4">
+          <p>我的工作方式建立于市场数据、精心准备与专业谈判之上。我深信：当卖家拥有充分的信息与专业支持时，成果自然更优——更高的成交价、更顺畅的交易过程，以及大幅减少的压力与烦恼。</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PHILOSOPHY ══ -->
+<section class="philosophy">
+  <div class="container">
+    <p class="section-label reveal">我的理念</p>
+    <h2 class="section-title reveal reveal-delay-1"><em>Pinnacle Listing System</em>的三大支柱</h2>
+
+    <div class="philosophy-pillars">
+      <div class="pillar reveal reveal-delay-1">
+        <span class="pillar-number">1</span>
+        <span class="pillar-icon">🏛️</span>
+        <div class="pillar-title">准备</div>
+        <p class="pillar-body">在房屋上市之前，每一个细节都经过精心策划与布局。专业的布置建议、精美的摄影，以及精准的定价策略，确保买家从第一印象起就感受到房屋的最大价值。</p>
+      </div>
+      <div class="pillar reveal reveal-delay-2">
+        <span class="pillar-number">2</span>
+        <span class="pillar-icon">📡</span>
+        <div class="pillar-title">推广</div>
+        <p class="pillar-body">您的房源将获得多平台整合营销——MLS、数字广告、社交媒体，以及我的英中双语买家网络——旨在最短时间内吸引最广泛的合格买家群体。</p>
+      </div>
+      <div class="pillar reveal reveal-delay-3">
+        <span class="pillar-number">3</span>
+        <span class="pillar-icon">🤝</span>
+        <div class="pillar-title">谈判</div>
+        <p class="pillar-body">作为 MCNE 认证谈判专家，我以纪律与策略处理每一份 Offer。我的目标不仅是争取最高报价，更是为您争取最有利的整体条款——价格、条件与交割日期——全面维护您的利益。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SYSTEM ══ -->
+<section class="system">
+  <div class="container">
+    <div class="system-intro">
+      <div>
+        <p class="section-label reveal">Pinnacle Listing System</p>
+        <h2 class="section-title reveal reveal-delay-1">专为实现<br><em>三个目标</em>而设计</h2>
+        <div class="section-body reveal reveal-delay-2">
+          <p>绝大多数卖家都有相同的三个心愿：尽可能高的成交价、尽可能少的烦恼与压力，以及在合理的时间内顺利完成交易。Pinnacle Listing System正是围绕这三个核心目标而构建——不是口号，而是一套有条不紊的执行流程。</p>
+        </div>
+
+        <ul class="steps-list">
+          <li class="reveal">
+            <div class="step-num">01</div>
+            <div class="step-text">
+              <strong>全面市场分析</strong>
+              <p>我以最新的 TRREB 数据为基础，为您提供严谨、客观的市场比较分析（CMA）。您将获得关于房屋真实市场价值的诚实、透明评估——而非为了赢得委托而虚高的数字。</p>
+            </div>
+          </li>
+          <li class="reveal reveal-delay-1">
+            <div class="step-num">02</div>
+            <div class="step-text">
+              <strong>战略性房屋定位</strong>
+              <p>我们共同发掘您房屋的独特优势，并主动解决潜在问题。房屋展示、布置、摄影与定价策略，均经过精心校准，以最大化买家竞争，提升成交结果。</p>
+            </div>
+          </li>
+          <li class="reveal reveal-delay-2">
+            <div class="step-num">03</div>
+            <div class="step-text">
+              <strong>多渠道精准推广</strong>
+              <p>您的房源将在 MLS、各大地产平台、数字及社交媒体，以及我的专属中文买家网络上全面推广——触达大多伦多地区每一位有意愿的买家。</p>
+            </div>
+          </li>
+          <li class="reveal reveal-delay-3">
+            <div class="step-num">04</div>
+            <div class="step-text">
+              <strong>专业 Offer 管理与谈判</strong>
+              <p>每一份 Offer 都经过专业、严谨的评估。无论是单一报价还是多个竞价，我都将代表您坚定谈判——价格、条件、订金与交割日期——为您争取最优结果。</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="promise-box reveal">
+          <p class="section-label">我对您的承诺</p>
+          <p>我将竭力为您的房屋实现<strong>最佳可得价格</strong>，全程统筹管理，让您享受<strong>最少的压力与烦恼</strong>，并在<strong>合理、有序的时间内</strong>高效完成交易——因为您的时间同样宝贵。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-grid">
+      <div class="result-card reveal">
+        <span class="result-icon">💰</span>
+        <div class="result-title">最佳价格</div>
+        <p class="result-desc">精准定价、出色展示与专业谈判相结合，最大化您的净收益——不仅是挂牌价，更是最终到手的实际金额。</p>
+      </div>
+      <div class="result-card reveal reveal-delay-1">
+        <span class="result-icon">🌿</span>
+        <div class="result-title">最少压力</div>
+        <p class="result-desc">我统筹安排所有细节——时间表、文件、看房安排与各方沟通——让您随时了解进展，从不感到不知所措或被蒙在鼓里。</p>
+      </div>
+      <div class="result-card reveal reveal-delay-2">
+        <span class="result-icon">⏱️</span>
+        <div class="result-title">最短时间</div>
+        <p class="result-desc">准备充分、定价精准的房源能迅速吸引认真买家。我的流程旨在创造早期市场动力、推动买家决策，有效缩短您的上市天数。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PROCESS ══ -->
+<section class="process">
+  <div class="container">
+    <p class="section-label reveal">流程指引</p>
+    <h2 class="section-title reveal reveal-delay-1">您的卖房旅程，<br><em>每一步都清晰</em></h2>
+
+    <div class="process-timeline">
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase"><span class="phase-tag">第一周</span></div>
+        <div class="timeline-content">
+          <strong>咨询与估价</strong>
+          <p>我们在您的房屋进行详细实地考察。我将呈现数据驱动的市场分析，与您深入探讨目标与时间表，并详细说明Pinnacle Listing System将如何为您的房屋发挥作用。</p>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-1">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase"><span class="phase-tag">第一至二周</span></div>
+        <div class="timeline-content">
+          <strong>准备与布置</strong>
+          <p>提供专业布置建议，安排专业摄影，并制作所有推广材料。在第一位买家到访之前，您的房屋将呈现出最佳状态。</p>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-2">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase"><span class="phase-tag">第二周</span></div>
+        <div class="timeline-content">
+          <strong>正式上市</strong>
+          <p>您的房源在 MLS、Realtor.ca 及所有数字与社交媒体渠道全面上线，同时配合专属中文推广。看房安排经过精心统筹，充分照顾您的生活便利。</p>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-3">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase"><span class="phase-tag">第二至三周</span></div>
+        <div class="timeline-content">
+          <strong>收 Offer 与谈判</strong>
+          <p>我以清晰易懂的方式为您逐一解析所有 Offer。无论一份还是多份竞价，我都将代表您坚定谈判——价格、条件、订金与交割日期——全力为您争取最优结果。</p>
+        </div>
+      </div>
+
+      <div class="timeline-item reveal reveal-delay-4">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase"><span class="phase-tag">交割</span></div>
+        <div class="timeline-content">
+          <strong>成交与顺利交割</strong>
+          <p>我协调律师、贷款方及所有相关方，确保交易顺利完成。直至钥匙正式交接，我始终在您身边，随时为您解答和处理任何问题。</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ CTA ══ -->
+<section class="cta">
+  <div class="container">
+    <p class="section-label reveal">开始咨询</p>
+    <h2 class="section-title reveal reveal-delay-1">准备好以<em>正确的方式</em>卖房了吗？</h2>
+    <p class="cta-body reveal reveal-delay-2">让我们一起聊聊您的房屋与目标。没有任何压力——只有清晰、诚实的市场评估，以及我能为您提供哪些帮助。</p>
+    <div class="cta-buttons reveal reveal-delay-3">
+      <a href="tel:+16478243718" class="btn-primary">立即致电</a>
+      <a href="/cdn-cgi/l/email-protection#b8c8ddccddcad4cdd7f8c8ddccddcad4cdd796dbd7d5" class="btn-outline">发送邮件</a>
+    </div>
+
+    <div class="contact-details reveal">
+      <div class="contact-item">
+        <span class="contact-label">电话</span>
+        <span class="contact-value">647-824-3718</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">邮箱</span>
+        <span class="contact-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89f9ecfdecfbe5fce6c9f9ecfdecfbe5fce6a7eae6e4">[email&#160;protected]</a></span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">经纪公司</span>
+        <span class="contact-value">RE/MAX Realtron Realty Inc.</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">服务语言</span>
+        <span class="contact-value">普通话 &nbsp;·&nbsp; English</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Peter Luo <span>·</span> RE/MAX Realtron Realty Inc., Brokerage <span>·</span> SRS &nbsp; MCNE &nbsp; FRI <span>·</span> Pinnacle Listing System™</p>
+  <p style="margin-top:8px;">本页内容不构成对现有合约买卖双方的招揽。</p>
+</footer>
+</div>
+
+<script>
+  function toggleLang(e) {
+    e.preventDefault();
+    var enDiv = document.getElementById('lang-en');
+    var zhDiv = document.getElementById('lang-zh');
+    var btn   = document.getElementById('lang-btn');
+    var html  = document.getElementById('html-root');
+    if (enDiv.style.display === 'none') {
+      enDiv.style.display = '';
+      zhDiv.style.display = 'none';
+      btn.textContent = '中文';
+      html.setAttribute('lang', 'en');
+      document.title = 'Peter Luo | RE/MAX Realtron — Pinnacle Listing System';
+    } else {
+      enDiv.style.display = 'none';
+      zhDiv.style.display = '';
+      btn.textContent = 'English';
+      html.setAttribute('lang', 'zh-Hant');
+      document.title = 'Peter Luo | RE/MAX Realtron — Pinnacle Listing System';
+    }
+  }
+
+  // Scroll-reveal observer — watches both versions
+  function initReveal() {
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.classList.add('visible');
+          observer.unobserve(el.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+  }
+  initReveal();
+</script>
+</body>
+</html>
