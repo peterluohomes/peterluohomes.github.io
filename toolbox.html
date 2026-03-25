@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toolbox — Pinnacle Listing System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B3A6B;
+    --navy-dark: #122748;
+    --navy-light: #234B8A;
+    --gold: #B8952A;
+    --gold-light: #D4B044;
+    --gold-pale: #F5EDDA;
+    --cream: #FDFAF4;
+    --cream-dark: #F5F0E6;
+    --text: #2A2A2A;
+    --text-light: #6B6B6B;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(27,58,107,0.08);
+    --shadow-md: 0 4px 16px rgba(27,58,107,0.10);
+    --shadow-lg: 0 8px 32px rgba(27,58,107,0.14);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(184,149,42,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(184,149,42,0.4);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+  }
+
+  /* ── Search ── */
+  .search-wrap {
+    padding: 16px 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--cream);
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 28px;
+    padding: 0 16px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,149,42,0.12);
+  }
+  .search-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-light);
+    flex-shrink: 0;
+  }
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: transparent;
+    color: var(--text);
+  }
+  .search-box input::placeholder { color: #B0ADA6; }
+  .search-clear {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 4px;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .search-clear.visible { display: block; }
+
+  /* ── Content ── */
+  .content {
+    padding: 8px 16px 32px;
+  }
+
+  /* ── Section ── */
+  .section {
+    margin-top: 20px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .section-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-light);
+    background: var(--cream-dark);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+
+  /* ── Cards ── */
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 80px;
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid rgba(27,58,107,0.06);
+    border-radius: var(--radius);
+    padding: 14px 14px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    box-shadow: var(--shadow-sm);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card:active {
+    transform: scale(0.985);
+    box-shadow: var(--shadow-md);
+    border-color: var(--gold);
+  }
+  @media (hover: hover) {
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(184,149,42,0.35);
+    }
+  }
+  .card-emoji {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: var(--cream);
+  }
+  .card-body { flex: 1; min-width: 0; }
+  .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--navy-dark);
+  }
+  .card-path {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: none;
+  }
+  .card-arrow {
+    color: #C8C5BC;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .card:hover .card-arrow, .card:active .card-arrow { color: var(--gold); }
+
+  /* ── Section colors ── */
+  .sec-buying .section-icon { background: #E8F0FE; color: var(--navy); }
+  .sec-buying .card-emoji { background: #E8F0FE; }
+  .sec-listing .section-icon { background: var(--gold-pale); color: #8B6F15; }
+  .sec-listing .card-emoji { background: var(--gold-pale); }
+  .sec-leads .section-icon { background: #E6F7ED; color: #1B7340; }
+  .sec-leads .card-emoji { background: #E6F7ED; }
+  .sec-planner .section-icon { background: #F0E8FE; color: #5B3BA0; }
+  .sec-planner .card-emoji { background: #F0E8FE; }
+  .sec-offer .section-icon { background: #FEF0E8; color: #A0593B; }
+  .sec-offer .card-emoji { background: #FEF0E8; }
+  .sec-script .section-icon { background: #E8FEFE; color: #1B6B6B; }
+  .sec-script .card-emoji { background: #E8FEFE; }
+  .sec-gallery .section-icon { background: #FEE8F4; color: #8B1560; }
+  .sec-gallery .card-emoji { background: #FEE8F4; }
+  .sec-sop .section-icon { background: #F5F0E6; color: var(--navy); }
+  .sec-sop .card-emoji { background: #F5F0E6; }
+  .sec-market .section-icon { background: #E8F0FE; color: var(--navy); }
+  .sec-market .card-emoji { background: #E8F0FE; }
+  .sec-wellness .section-icon { background: #E6F7ED; color: #1B7340; }
+  .sec-wellness .card-emoji { background: #E6F7ED; }
+
+  /* ── No results ── */
+  .no-results {
+    text-align: center;
+    padding: 48px 24px;
+    display: none;
+  }
+  .no-results.visible { display: block; }
+  .no-results-emoji { font-size: 40px; margin-bottom: 12px; }
+  .no-results-text { font-size: 15px; color: var(--text-light); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 20px 16px 32px;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+  }
+  .footer span { color: var(--gold); }
+
+  /* ── Animations ── */
+  .section { animation: fadeUp 0.4s ease both; }
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+  .section:nth-child(6) { animation-delay: 0.25s; }
+  .section:nth-child(7) { animation-delay: 0.3s; }
+  .section:nth-child(8) { animation-delay: 0.35s; }
+  .section:nth-child(9) { animation-delay: 0.4s; }
+  .section:nth-child(10) { animation-delay: 0.45s; }
+  .section:nth-child(11) { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Pinnacle Listing System</div>
+  <h1>Toolbox</h1>
+  <p>Peter Luo — RE/MAX Realtron</p>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search tools…" autocomplete="off">
+    <button class="search-clear" id="searchClear" aria-label="Clear search">&times;</button>
+  </div>
+</div>
+
+<div class="content" id="content">
+
+  <!-- Buying -->
+  <div class="section sec-buying" data-section="buying">
+    <div class="section-header">
+      <div class="section-icon">🏠</div>
+      <div class="section-title">Buying</div>
+      <div class="section-count">5</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./buying/showing">
+        <div class="card-emoji">👀</div>
+        <div class="card-body"><div class="card-title">Showing</div><div class="card-path">./buying/showing</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./buying/riskcheck">
+        <div class="card-emoji">✅</div>
+        <div class="card-body"><div class="card-title">Risk & Due Diligence Checklist</div><div class="card-path">./buying/riskcheck</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./buying/factors">
+        <div class="card-emoji">⚖️</div>
+        <div class="card-body"><div class="card-title">Factors Affecting a Transaction</div><div class="card-path">./buying/factors</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./buying/keyfactors">
+        <div class="card-emoji">🔑</div>
+        <div class="card-body"><div class="card-title">Key Factors for Buying</div><div class="card-path">./buying/keyfactors</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./walkthrough">
+        <div class="card-emoji">🚶</div>
+        <div class="card-body"><div class="card-title">Buyer Final Walk-Through Checklist</div><div class="card-path">./walkthrough</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Listing -->
+  <div class="section sec-listing" data-section="listing">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div class="section-title">Listing</div>
+      <div class="section-count">9</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./tools/factors">
+        <div class="card-emoji">⚖️</div>
+        <div class="card-body"><div class="card-title">Factors Affecting a Transaction</div><div class="card-path">./tools/factors</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/freport">
+        <div class="card-emoji">📊</div>
+        <div class="card-body"><div class="card-title">Property Feature Report</div><div class="card-path">./tools/freport</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/sreport">
+        <div class="card-emoji">💪</div>
+        <div class="card-body"><div class="card-title">Complete Property Strength Report</div><div class="card-path">./tools/sreport</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/condo">
+        <div class="card-emoji">🏢</div>
+        <div class="card-body"><div class="card-title">Condo Property Feature & Value Report</div><div class="card-path">./tools/condo</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/gather">
+        <div class="card-emoji">📝</div>
+        <div class="card-body"><div class="card-title">Seller Information Gathering</div><div class="card-path">./tools/gather</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/preview">
+        <div class="card-emoji">🔍</div>
+        <div class="card-body"><div class="card-title">Property Preview Log</div><div class="card-path">./tools/preview</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/mapper">
+        <div class="card-emoji">📍</div>
+        <div class="card-body"><div class="card-title">Property Price Mapper</div><div class="card-path">./tools/mapper</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/workplan">
+        <div class="card-emoji">📅</div>
+        <div class="card-body"><div class="card-title">Workplan</div><div class="card-path">./tools/workplan</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/openhouse">
+        <div class="card-emoji">🏡</div>
+        <div class="card-body"><div class="card-title">Open House Registration</div><div class="card-path">./tools/openhouse</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Prelisting Package -->
+  <div class="section sec-listing" data-section="prelisting">
+    <div class="section-header">
+      <div class="section-icon">📦</div>
+      <div class="section-title">Prelisting Package</div>
+      <div class="section-count">1</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./plp">
+        <div class="card-emoji">📄</div>
+        <div class="card-body"><div class="card-title">Prelisting Package</div><div class="card-path">./plp</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Leads Management -->
+  <div class="section sec-leads" data-section="leads">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <div class="section-title">Leads Management</div>
+      <div class="section-count">3</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./leads/doorknock">
+        <div class="card-emoji">🚪</div>
+        <div class="card-body"><div class="card-title">Lead Generation</div><div class="card-path">./leads/doorknock</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./leads/expired">
+        <div class="card-emoji">⏰</div>
+        <div class="card-body"><div class="card-title">Expired Listing</div><div class="card-path">./leads/expired</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./leads/followup">
+        <div class="card-emoji">📞</div>
+        <div class="card-body"><div class="card-title">Lead Follow Up</div><div class="card-path">./leads/followup</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Planner -->
+  <div class="section sec-planner" data-section="planner">
+    <div class="section-header">
+      <div class="section-icon">🗓️</div>
+      <div class="section-title">Planner</div>
+      <div class="section-count">1</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./planner">
+        <div class="card-emoji">📆</div>
+        <div class="card-body"><div class="card-title">Planner</div><div class="card-path">./planner</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Offer -->
+  <div class="section sec-offer" data-section="offer">
+    <div class="section-header">
+      <div class="section-icon">📑</div>
+      <div class="section-title">Offer</div>
+      <div class="section-count">3</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./tools/factors">
+        <div class="card-emoji">⚖️</div>
+        <div class="card-body"><div class="card-title">Factors Affecting a Transaction</div><div class="card-path">./tools/factors</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./offer/soffer">
+        <div class="card-emoji">1️⃣</div>
+        <div class="card-body"><div class="card-title">Single Offer Review</div><div class="card-path">./offer/soffer</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./offer/moffer">
+        <div class="card-emoji">🔢</div>
+        <div class="card-body"><div class="card-title">Multiple Offers Review</div><div class="card-path">./offer/moffer</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Script Practice -->
+  <div class="section sec-script" data-section="script">
+    <div class="section-header">
+      <div class="section-icon">🎤</div>
+      <div class="section-title">Script Practice</div>
+      <div class="section-count">3</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./mm/">
+        <div class="card-emoji">📖</div>
+        <div class="card-body"><div class="card-title">Text</div><div class="card-path">./mm/</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./mm/lpen">
+        <div class="card-emoji">🔊</div>
+        <div class="card-body"><div class="card-title">Voice</div><div class="card-path">./mm/lpen</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./mm/flp">
+        <div class="card-emoji">⚡</div>
+        <div class="card-body"><div class="card-title">Fast Voice</div><div class="card-path">./mm/flp</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Photo Gallery -->
+  <div class="section sec-gallery" data-section="gallery">
+    <div class="section-header">
+      <div class="section-icon">🖼️</div>
+      <div class="section-title">Photo Gallery</div>
+      <div class="section-count">1</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./gallery">
+        <div class="card-emoji">📸</div>
+        <div class="card-body"><div class="card-title">Photo Gallery</div><div class="card-path">./gallery</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- SOP -->
+  <div class="section sec-sop" data-section="sop">
+    <div class="section-header">
+      <div class="section-icon">📚</div>
+      <div class="section-title">SOP</div>
+      <div class="section-count">9</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./SOP/openhouse">
+        <div class="card-emoji">🏡</div>
+        <div class="card-body"><div class="card-title">Open House</div><div class="card-path">./SOP/openhouse</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/openhouse_oh">
+        <div class="card-emoji">💬</div>
+        <div class="card-body"><div class="card-title">Open House Objection Handling</div><div class="card-path">./SOP/openhouse_oh</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/inbound">
+        <div class="card-emoji">📲</div>
+        <div class="card-body"><div class="card-title">Inbound Call</div><div class="card-path">./SOP/inbound</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/inbound_oh">
+        <div class="card-emoji">💬</div>
+        <div class="card-body"><div class="card-title">Inbound Call Objection Handling</div><div class="card-path">./SOP/inbound_oh</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/expired">
+        <div class="card-emoji">⏰</div>
+        <div class="card-body"><div class="card-title">Expired Listing</div><div class="card-path">./SOP/expired</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/expired_en">
+        <div class="card-emoji">💬</div>
+        <div class="card-body"><div class="card-title">Expired Listing Objection Handling</div><div class="card-path">./SOP/expired_en</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/doorknocking">
+        <div class="card-emoji">🚪</div>
+        <div class="card-body"><div class="card-title">Door Knocking</div><div class="card-path">./SOP/doorknocking</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./SOP/doorknocking_oh">
+        <div class="card-emoji">💬</div>
+        <div class="card-body"><div class="card-title">Door Knocking Objection Handling</div><div class="card-path">./SOP/doorknocking_oh</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./plp">
+        <div class="card-emoji">📄</div>
+        <div class="card-body"><div class="card-title">Prelisting Package</div><div class="card-path">./plp</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Market Insights -->
+  <div class="section sec-market" data-section="market">
+    <div class="section-header">
+      <div class="section-icon">📈</div>
+      <div class="section-title">Market Insights Dashboard</div>
+      <div class="section-count">5</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./market/snapshot">
+        <div class="card-emoji">📊</div>
+        <div class="card-body"><div class="card-title">Monthly Market Snapshot</div><div class="card-path">./market/snapshot</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./market/graphs">
+        <div class="card-emoji">📉</div>
+        <div class="card-body"><div class="card-title">Market Graphs</div><div class="card-path">./market/graphs</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./market/flow">
+        <div class="card-emoji">🌊</div>
+        <div class="card-body"><div class="card-title">Freehold Property Monthly Listing Flow</div><div class="card-path">./market/flow</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./market/flowmap">
+        <div class="card-emoji">📅</div>
+        <div class="card-body"><div class="card-title">Freehold Property 12-Month Listing Flow</div><div class="card-path">./market/flowmap</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./market/ttm">
+        <div class="card-emoji">💰</div>
+        <div class="card-body"><div class="card-title">Trailing 12 Months (TTM) Dollar Volume</div><div class="card-path">./market/ttm</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Wellness -->
+  <div class="section sec-wellness" data-section="wellness">
+    <div class="section-header">
+      <div class="section-icon">🧘</div>
+      <div class="section-title">Wellness</div>
+      <div class="section-count">1</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./pd">
+        <div class="card-emoji">🌿</div>
+        <div class="card-body"><div class="card-title">Wellness</div><div class="card-path">./pd</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="no-results" id="noResults">
+  <div class="no-results-emoji">🔍</div>
+  <div class="no-results-text">No tools found</div>
+</div>
+
+<div class="footer">
+  <span>◆</span> Pinnacle Listing System <span>◆</span>
+</div>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+  const content = document.getElementById('content');
+  const noResults = document.getElementById('noResults');
+  const sections = content.querySelectorAll('.section');
+
+  searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    searchClear.classList.toggle('visible', q.length > 0);
+
+    if (!q) {
+      sections.forEach(s => { s.style.display = ''; });
+      content.querySelectorAll('.card').forEach(c => { c.style.display = ''; });
+      noResults.classList.remove('visible');
+      return;
+    }
+
+    let anyVisible = false;
+    sections.forEach(section => {
+      const cards = section.querySelectorAll('.card');
+      let sectionVisible = false;
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const path = card.querySelector('.card-path').textContent.toLowerCase();
+        const match = title.includes(q) || path.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) sectionVisible = true;
+      });
+      // Also check section title
+      const secTitle = section.querySelector('.section-title').textContent.toLowerCase();
+      if (secTitle.includes(q)) {
+        sectionVisible = true;
+        cards.forEach(c => { c.style.display = ''; });
+      }
+      section.style.display = sectionVisible ? '' : 'none';
+      if (sectionVisible) anyVisible = true;
+    });
+
+    noResults.classList.toggle('visible', !anyVisible);
+  });
+
+  searchClear.addEventListener('click', function() {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    searchInput.focus();
+  });
+</script>
+
+</body>
+</html>
