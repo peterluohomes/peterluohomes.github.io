@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Open House — Peter Luo</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a2b4a;--navy2:#243560;--navy3:#0f1d33;
+  --gold:#c9a84c;--gold2:#e0c070;--gold-dim:rgba(201,168,76,0.12);
+  --cream:#faf6ee;--cream2:#f0e8d5;--border:#ddd3bc;
+  --text:#2c2c2c;--muted:#888;--faint:#bbb;
+  --surface:#fff;--radius:12px;
+  --green:#2e7d50;--red:#c0392b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;min-height:100dvh;overscroll-behavior:none}
+
+/* ── Screens ── */
+.screen{display:none;min-height:100vh;min-height:100dvh}
+.screen.active{display:flex;flex-direction:column}
+#screen-register{transition:opacity 0.3s ease}
+
+/* ── Header ── */
+.header{background:linear-gradient(135deg,var(--navy3) 0%,var(--navy) 60%,var(--navy2) 100%);padding:20px 20px 18px;text-align:center;flex-shrink:0;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;right:-15%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.1) 0%,transparent 70%);pointer-events:none}
+.header-badge{display:inline-block;font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,0.35);padding:3px 12px;border-radius:20px;margin-bottom:8px}
+.header h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gold);line-height:1.1;margin-bottom:2px}
+.header p{font-size:12px;color:rgba(250,246,238,0.45);letter-spacing:0.5px}
+.lang-toggle{position:absolute;top:14px;right:14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:var(--gold);font-size:13px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── Property Banner ── */
+.prop-banner{background:var(--navy);border-bottom:2px solid rgba(201,168,76,0.25);padding:14px 20px;text-align:center;flex-shrink:0;display:none}
+.prop-banner.visible{display:block}
+.prop-addr{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);font-weight:600;margin-bottom:4px}
+.prop-info{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;margin-bottom:6px}
+.prop-info span{font-size:12px;color:rgba(250,246,238,0.6)}
+.prop-info strong{color:rgba(250,246,238,0.9)}
+.prop-feat{font-size:12.5px;color:rgba(201,168,76,0.7);line-height:1.45;padding-top:6px;border-top:1px solid rgba(201,168,76,0.12)}
+
+/* ── Form Body ── */
+.form-body{flex:1;padding:16px 16px 32px;max-width:560px;width:100%;margin:0 auto;overflow-y:auto}
+
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;animation:slideUp 0.4s ease both}
+.section:nth-child(2){animation-delay:0.06s}
+.section:nth-child(3){animation-delay:0.12s}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.section-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:14px}
+.section-title.center{text-align:center;color:var(--navy);font-size:14px;letter-spacing:1px}
+
+/* ── Fields ── */
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field-lbl{font-size:14px;font-weight:600;color:var(--gold2);margin-bottom:4px;display:block}
+.field-inp{width:100%;border:none;border-bottom:2px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:17px;color:var(--text);padding:8px 0;outline:none;transition:border-color 0.2s}
+.field-inp:focus{border-bottom-color:var(--gold)}
+.field-inp::placeholder{color:#b0a898}
+.field-inp.error{border-bottom-color:var(--red)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.q-lbl{font-size:15px;font-weight:600;color:goldenrod;margin-bottom:5px;display:block;line-height:1.4}
+.q-inp{width:100%;border:2px solid var(--border);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);padding:10px 12px;outline:none;resize:none;min-height:56px;line-height:1.5;transition:border-color 0.2s}
+.q-inp:focus{border-color:var(--gold)}
+.q-inp::placeholder{color:#b0a898}
+
+.notes-inp{width:100%;border:2px solid var(--border);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);padding:10px 12px;outline:none;resize:none;min-height:70px;line-height:1.5;transition:border-color 0.2s}
+.notes-inp:focus{border-color:var(--gold)}
+.notes-inp::placeholder{color:#b0a898}
+
+.error-msg{font-size:13px;color:var(--red);margin-top:3px;display:none}
+.error-msg.show{display:block}
+
+/* ── Submit ── */
+.submit-btn{width:100%;padding:16px;background:var(--navy);border:2px solid var(--gold);border-radius:var(--radius);color:var(--gold);font-family:'Playfair Display',serif;font-size:22px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;margin-top:8px;position:relative;overflow:hidden}
+.submit-btn:hover{background:var(--navy2)}
+.submit-btn:active{transform:scale(0.98)}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed}
+.submit-btn .spinner{display:none;width:22px;height:22px;border:3px solid rgba(201,168,76,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto}
+.submit-btn.loading .btn-text{display:none}
+.submit-btn.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Thank You Screen ── */
+#screen-thankyou{background:var(--navy);align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+.ty-icon{font-size:64px;margin-bottom:16px;animation:pop 0.45s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes pop{from{transform:scale(0.2);opacity:0}to{transform:scale(1);opacity:1}}
+.ty-name{font-family:'Playfair Display',serif;font-size:24px;color:var(--gold2);font-style:italic;margin-bottom:4px}
+.ty-title{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold);margin-bottom:8px}
+.ty-subtitle{font-size:18px;color:rgba(250,246,238,0.6);margin-bottom:32px;line-height:1.5}
+.ty-divider{width:50px;height:2px;background:var(--gold);margin:0 auto 28px;opacity:0.35}
+
+.sms-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 32px;background:var(--green);border:none;border-radius:var(--radius);color:var(--surface);font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;text-decoration:none;margin-bottom:14px}
+.sms-btn:hover{background:#35905c;transform:translateY(-1px)}
+.sms-btn:active{transform:translateY(0)}
+.sms-btn-icon{font-size:24px}
+
+.ty-skip{background:none;border:none;color:rgba(201,168,76,0.4);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;padding:8px;transition:color 0.15s}
+.ty-skip:hover{color:var(--gold)}
+
+.ty-footer{margin-top:40px;font-size:12px;color:rgba(201,168,76,0.25);letter-spacing:1px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);border:1px solid var(--gold);color:var(--gold);font-size:14px;font-weight:500;padding:10px 20px;border-radius:24px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Responsive ── */
+@media(min-width:600px){
+  .header{padding:28px 24px 24px}
+  .header h1{font-size:28px}
+  .form-body{padding:24px 24px 40px}
+  .section{padding:22px 24px}
+  .field-inp{font-size:18px}
+  .q-inp,.notes-inp{font-size:17px}
+  .submit-btn{font-size:24px;padding:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- REGISTRATION SCREEN                               -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-register">
+
+  <header class="header">
+    <button class="lang-toggle" onclick="toggleLang()">中文</button>
+    <div class="header-badge">Pinnacle Listing System</div>
+    <h1>Open House</h1>
+    <p>Peter Luo — RE/MAX Realtron</p>
+  </header>
+
+  <!-- Property Info (set via URL params or config below) -->
+  <div class="prop-banner" id="prop-banner">
+    <div class="prop-addr" id="prop-addr"></div>
+    <div class="prop-info" id="prop-info"></div>
+    <div class="prop-feat" id="prop-feat"></div>
+  </div>
+
+  <div class="form-body">
+    <form id="reg-form" onsubmit="submitForm(event)" novalidate>
+
+      <!-- Contact Info -->
+      <div class="section">
+        <div class="section-title" data-i18n="contact-title">Contact Information</div>
+        <div class="two-col">
+          <div class="field">
+            <label class="field-lbl" data-i18n="lbl-name">Name *</label>
+            <input class="field-inp" id="f-name" type="text" data-i18n-ph="ph-name" placeholder="Your full name" autocomplete="name">
+            <div class="error-msg" id="err-name" data-i18n="err-name">Please enter your name</div>
+          </div>
+          <div class="field">
+            <label class="field-lbl" data-i18n="lbl-phone">Phone *</label>
+            <input class="field-inp" id="f-phone" type="tel" data-i18n-ph="ph-phone" placeholder="647-555-1234" autocomplete="tel" inputmode="numeric" maxlength="12" oninput="formatPhone(this)" onkeydown="phoneKeydown(event)">
+            <div class="error-msg" id="err-phone" data-i18n="err-phone">Please enter a valid phone</div>
+          </div>
+        </div>
+        <div class="two-col" style="margin-top:14px">
+          <div class="field">
+            <label class="field-lbl" data-i18n="lbl-email">Email</label>
+            <input class="field-inp" id="f-email" type="email" data-i18n-ph="ph-email" placeholder="your@email.com" autocomplete="email">
+            <div class="error-msg" id="err-email" data-i18n="err-email">Please enter a valid email</div>
+          </div>
+          <div class="field">
+            <label class="field-lbl" data-i18n="lbl-area">Area</label>
+            <input class="field-inp" id="f-area" type="text" data-i18n-ph="ph-area" placeholder="City / Neighbourhood">
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div class="section">
+        <div class="section-title center" data-i18n="questions-title">A few quick questions</div>
+
+        <div class="field">
+          <label class="q-lbl" data-i18n="q1">What is your home search strategy — and how is it working for you so far?</label>
+          <textarea class="q-inp" id="f-q1" data-i18n-ph="ph-q" placeholder="Share your thoughts…" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="q-lbl" data-i18n="q2">How are you making sure you don't miss a great home just because it wasn't listed publicly?</label>
+          <textarea class="q-inp" id="f-q2" data-i18n-ph="ph-q" placeholder="Share your thoughts…" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="q-lbl" data-i18n="q3">There are a lot of possible risks when buying a home — how do you make sure you eliminate all of them?</label>
+          <textarea class="q-inp" id="f-q3" data-i18n-ph="ph-q" placeholder="Share your thoughts…" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="q-lbl" data-i18n="q4">If the right home came up tomorrow, would you know exactly what to do to get it and get it at a good price?</label>
+          <textarea class="q-inp" id="f-q4" data-i18n-ph="ph-q" placeholder="Share your thoughts…" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Notes + Submit -->
+      <div class="section">
+        <textarea class="notes-inp" id="f-notes" rows="2" data-i18n-ph="ph-notes" placeholder="Notes or questions about the property…"></textarea>
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="btn-text" data-i18n="submit">Register →</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- THANK YOU SCREEN                                  -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-thankyou">
+  <div class="ty-icon">✦</div>
+  <div class="ty-name" id="ty-name"></div>
+  <div class="ty-title" data-i18n="ty-title">Thank You!</div>
+  <div class="ty-subtitle" data-i18n-html="ty-sub">You're registered.<br></div>
+  <div class="ty-divider"></div>
+
+  <a class="sms-btn" id="sms-btn" href="#">
+    <span class="sms-btn-icon">💬</span>
+    <span data-i18n="sms-btn">Click Here to Text Peter to be Invited in Now.</span>
+  </a>
+
+  <button class="ty-skip" onclick="location.reload()" data-i18n="ty-skip">Skip — I'm all set</button>
+
+  <div class="ty-footer">◆ Pinnacle Listing System ◆</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════════════
+// ⚙️  CONFIGURATION
+// ════════════════════════════════════════════════════════════════════
+
+// Google Apps Script Web App URL:
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwj51h65UVWakjBUW5ur0xssQWSQMvcQbqE4XkDAH8eNa2cbP-3MxTjtoQYdc5N7p2lRw/exec';
+
+// Config JSON URL (GitHub Pages on the oh repo):
+var CONFIG_URL = 'https://peterluohomes.github.io/oh/ohconfig.json';
+
+// Fallback redirect if no valid property:
+var FALLBACK_URL = 'https://peterluo.homes';
+
+// Default phone (used only if agent phone is missing):
+var PETER_PHONE = '6478243718';
+
+// Property + Agent (populated from config)
+var PROPERTY = {
+  address: '', lotSize: '', sqft: '', yearBuilt: '', tax: '', features: ''
+};
+var AGENT = {
+  name: 'Peter Luo', phone: '6478243718', email: 'peterluo@peterluo.com'
+};
+
+// ════════════════════════════════════════════════════════════════════
+// URL parameter &no=1 through &no=10 selects the property slot.
+// The config is fetched from ohconfig.json on GitHub Pages.
+// If no valid &no= param, redirect to fallback URL.
+// ════════════════════════════════════════════════════════════════════
+
+// ── Load Config ────────────────────────────────────────────────────
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var slotNum = parseInt(params.get('no'), 10);
+
+  if(!slotNum || slotNum < 1 || slotNum > 10){
+    // No valid slot — redirect
+    window.location.href = FALLBACK_URL;
+    return;
+  }
+
+  // Show a loading state while fetching config
+  document.getElementById('screen-register').style.opacity = '0';
+
+  fetch(CONFIG_URL + '?t=' + Date.now())
+  .then(function(r){
+    if(!r.ok) throw new Error('Config not found');
+    return r.json();
+  })
+  .then(function(config){
+    var slot = config.properties && config.properties[slotNum - 1];
+    if(!slot || !slot.address || !slot.address.trim()){
+      // Slot is empty — redirect
+      window.location.href = FALLBACK_URL;
+      return;
+    }
+
+    // Populate property
+    PROPERTY.address   = slot.address   || '';
+    PROPERTY.lotSize   = slot.lotSize   || '';
+    PROPERTY.sqft      = slot.sqft      || '';
+    PROPERTY.yearBuilt = slot.yearBuilt || '';
+    PROPERTY.tax       = slot.tax       || '';
+    PROPERTY.features  = slot.features  || '';
+
+    // Populate agent
+    if(slot.agentName)  AGENT.name  = slot.agentName;
+    if(slot.agentPhone) AGENT.phone = slot.agentPhone.replace(/\D/g,'');
+    if(slot.agentEmail) AGENT.email = slot.agentEmail;
+
+    // Update agent display in header
+    var agentLine = AGENT.name + ' — RE/MAX Realtron';
+    document.querySelector('.header p').textContent = agentLine;
+
+    // Render and show
+    renderPropertyBanner();
+    setLang(currentLang);
+    document.getElementById('screen-register').style.opacity = '1';
+  })
+  .catch(function(err){
+    console.error('Config load error:', err);
+    window.location.href = FALLBACK_URL;
+  });
+})();
+
+// ── Render Property Banner ─────────────────────────────────────────
+function renderPropertyBanner(){
+  var p = PROPERTY;
+  if(!p.address){document.getElementById('prop-banner').classList.remove('visible');return;}
+  document.getElementById('prop-banner').classList.add('visible');
+  document.getElementById('prop-addr').textContent = p.address;
+
+  var info = [];
+  if(p.lotSize) info.push('<span>Lot: <strong>'+esc(p.lotSize)+'</strong></span>');
+  if(p.sqft) info.push('<span>Size: <strong>'+esc(p.sqft)+'</strong></span>');
+  if(p.yearBuilt) info.push('<span>Built: <strong>'+esc(p.yearBuilt)+'</strong></span>');
+  if(p.tax) info.push('<span>Tax: <strong>'+esc(p.tax)+'</strong></span>');
+  document.getElementById('prop-info').innerHTML = info.join('');
+  document.getElementById('prop-info').style.display = info.length?'flex':'none';
+
+  var featEl = document.getElementById('prop-feat');
+  featEl.textContent = p.features||'';
+  featEl.style.display = p.features?'block':'none';
+}
+
+// ── i18n ───────────────────────────────────────────────────────────
+var currentLang = 'en';
+var I18N = {
+  en:{
+    'contact-title':'Contact Information',
+    'lbl-name':'Name *','lbl-phone':'Phone *','lbl-email':'Email','lbl-area':'Area',
+    'ph-name':'Your full name','ph-phone':'647-555-1234','ph-email':'your@email.com','ph-area':'City / Neighbourhood',
+    'err-name':'Please enter your name','err-phone':'Please enter a valid phone','err-email':'Please enter a valid email',
+    'questions-title':'A few quick questions so {agent} can make your visit worthwhile',
+    'q1':'What is your home search strategy — and how is it working for you so far?',
+    'q2':'How are you making sure you don\'t miss a great home just because it wasn\'t listed publicly?',
+    'q3':'There are a lot of possible risks when buying a home — how do you make sure you eliminate all of them?',
+    'q4':'If the right home came up tomorrow, would you know exactly what to do to get it and get it at a good price?',
+    'ph-q':'Share your thoughts…',
+    'ph-notes':'Notes or questions about the property…',
+    'submit':'Register →',
+    'ty-title':'Thank You!',
+    'ty-sub':'You\'re registered.<br>{agent} will be in touch soon.',
+    'sms-btn':'Text {agent} Now',
+    'ty-skip':'Skip — I\'m all set',
+    'lang-btn':'中文'
+  },
+  zh:{
+    'contact-title':'联系方式',
+    'lbl-name':'姓名 *','lbl-phone':'电话 *','lbl-email':'邮箱','lbl-area':'区域',
+    'ph-name':'您的全名','ph-phone':'647-555-1234','ph-email':'your@email.com','ph-area':'城市 / 社区',
+    'err-name':'请输入您的姓名','err-phone':'请输入有效的电话号码','err-email':'请输入有效的邮箱地址',
+    'questions-title':'几个简单的问题，帮助{agent}为您提供更有价值的服务',
+    'q1':'您目前的找房策略是什么？效果如何？',
+    'q2':'您如何确保不会错过那些没有公开挂牌的好房源？',
+    'q3':'买房有很多潜在风险 — 您如何确保消除所有风险？',
+    'q4':'如果明天出现了理想的房子，您是否清楚该怎么做才能拿到它，而且以好的价格拿到？',
+    'ph-q':'分享您的想法…',
+    'ph-notes':'关于房产的备注或问题…',
+    'submit':'登记 →',
+    'ty-title':'谢谢！',
+    'ty-sub':'您已登记成功。<br>{agent}会尽快与您联系。',
+    'sms-btn':'发短信给{agent}',
+    'ty-skip':'跳过',
+    'lang-btn':'English'
+  }
+};
+
+function setLang(lang){
+  currentLang = lang;
+  var dict = I18N[lang]||I18N.en;
+  var agentFirst = (AGENT.name||'Peter').split(' ')[0];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n'); if(dict[k]) el.textContent=dict[k].replace(/\{agent\}/g, agentFirst);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el){
+    var k=el.getAttribute('data-i18n-html'); if(dict[k]) el.innerHTML=dict[k].replace(/\{agent\}/g, agentFirst);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+    var k=el.getAttribute('data-i18n-ph'); if(dict[k]) el.placeholder=dict[k].replace(/\{agent\}/g, agentFirst);
+  });
+  document.querySelector('.lang-toggle').textContent = dict['lang-btn'];
+}
+
+function toggleLang(){
+  setLang(currentLang==='en'?'zh':'en');
+}
+
+// ── Phone Formatting ───────────────────────────────────────────────
+function formatPhone(inp){
+  var d=inp.value.replace(/\D/g,'').slice(0,10);
+  var f='';
+  if(d.length<=3) f=d;
+  else if(d.length<=6) f=d.slice(0,3)+'-'+d.slice(3);
+  else f=d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
+  inp.value=f;
+  inp.classList.remove('error');
+  document.getElementById('err-phone').classList.remove('show');
+}
+
+function phoneKeydown(e){
+  var ok=[8,9,27,37,38,39,40,46,35,36];
+  if(ok.indexOf(e.keyCode)!==-1) return;
+  if((e.ctrlKey||e.metaKey)&&[65,67,86,88].indexOf(e.keyCode)!==-1) return;
+  var isDigit=(e.keyCode>=48&&e.keyCode<=57)||(e.keyCode>=96&&e.keyCode<=105);
+  if(!isDigit) e.preventDefault();
+}
+
+// ── Form Submit ────────────────────────────────────────────────────
+function submitForm(e){
+  e.preventDefault();
+  var name  = document.getElementById('f-name').value.trim();
+  var phone = document.getElementById('f-phone').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  var area  = document.getElementById('f-area').value.trim();
+  var notes = document.getElementById('f-notes').value.trim();
+  var valid = true;
+
+  // Clear errors
+  ['name','phone','email'].forEach(function(f){
+    document.getElementById('f-'+f).classList.remove('error');
+    document.getElementById('err-'+f).classList.remove('show');
+  });
+
+  if(!name){
+    document.getElementById('f-name').classList.add('error');
+    document.getElementById('err-name').classList.add('show');
+    valid=false;
+  }
+  if(!phone||!/^\d{3}-\d{3}-\d{4}$/.test(phone)){
+    document.getElementById('f-phone').classList.add('error');
+    document.getElementById('err-phone').classList.add('show');
+    valid=false;
+  }
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    document.getElementById('f-email').classList.add('error');
+    document.getElementById('err-email').classList.add('show');
+    valid=false;
+  }
+  if(!valid) return;
+
+  var q1=document.getElementById('f-q1').value.trim();
+  var q2=document.getElementById('f-q2').value.trim();
+  var q3=document.getElementById('f-q3').value.trim();
+  var q4=document.getElementById('f-q4').value.trim();
+
+  var record={
+    name:name, phone:phone, email:email, area:area,
+    q1:q1, q2:q2, q3:q3, q4:q4,
+    notes:notes,
+    property:PROPERTY.address||'',
+    agent:AGENT.name||''
+  };
+
+  // Show loading state
+  var btn = document.getElementById('submit-btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  // Send to Google Sheets
+  sendToGoogleSheets(record, function(success){
+    btn.classList.remove('loading');
+    btn.disabled = false;
+
+    // Build SMS link — use hosting agent's phone
+    var agentFirst = AGENT.name.split(' ')[0] || 'Peter';
+    var smsBody = 'Hi '+agentFirst+', this is '+name+'.';
+    if(PROPERTY.address) smsBody += ' I am here to visit the open house at '+PROPERTY.address+'.';
+    smsBody += ' ';
+
+    // Detect iOS vs Android for SMS URI format
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    var agentPhone = AGENT.phone || PETER_PHONE;
+    var smsUrl = 'sms:'+agentPhone+(isIOS?'&':'?')+'body='+encodeURIComponent(smsBody);
+    document.getElementById('sms-btn').href = smsUrl;
+
+    // Show thank you
+    document.getElementById('ty-name').textContent = name;
+    showScreen('screen-thankyou');
+
+    if(!success){
+      showToast('Saved — will sync when online');
+    }
+  });
+}
+
+function sendToGoogleSheets(record, callback){
+  if(!SCRIPT_URL || SCRIPT_URL==='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){
+    console.warn('Google Apps Script URL not configured');
+    setTimeout(function(){callback(true);},300);
+    return;
+  }
+
+  // Use hidden iframe + form POST — most reliable method for Google Apps Script
+  var iframeName = 'oh-submit-'+Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeName;
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = iframeName;
+  form.style.display = 'none';
+
+  // Add each field as a hidden input
+  var fields = ['name','phone','email','area','q1','q2','q3','q4','notes','property','agent'];
+  fields.forEach(function(key){
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = record[key]||'';
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  // Clean up after submission and callback
+  setTimeout(function(){
+    try{document.body.removeChild(form);}catch(e){}
+    try{document.body.removeChild(iframe);}catch(e){}
+    callback(true);
+  },2000);
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+var toastTimer;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────
+// Property banner and lang are set after config loads (see config fetch above).
+// Set initial lang for elements that are visible during load:
+setLang('en');
+</script>
+</body>
+</html>
