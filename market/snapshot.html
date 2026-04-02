@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TREB Market Summary – RE/MAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f6f8;
+            color: #1e2532;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            padding-top: env(safe-area-inset-top, 16px);
+            padding-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #B8860B;
+}
+        .header-title-group {
+            text-align: center;
+        }
+
+        .header-title-group h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #000000;
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+
+        .header-title-group .month-display {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 2px;
+        }
+
+        .footer {
+            padding-top: 16px;
+            padding-bottom: 8px;
+            background: #f5f6f8;
+            text-align: center;
+        }
+
+        .month-select {
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid #d1d5dd;
+            border-radius: 10px;
+            background: white;
+            color: #DC1C2E;
+            cursor: pointer;
+            min-width: 140px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: #B8860B;
+            margin: 20px 0 10px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            border: 1px solid #eef0f4;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+        }
+
+        .stat-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #003DA5;
+            line-height: 1.05;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .stat-change.positive { color: #059669; }
+        .stat-change.negative { color: #DC1C2E; }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mini-stat {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #eef0f4;
+        }
+
+        .mini-stat .label {
+            font-size: 9.5px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+
+        .mini-stat .value {
+            font-size: 17px;
+            font-weight: 800;
+            color: #003DA5;
+        }
+
+        .property-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            border: 1px solid #eef0f4;
+        }
+
+        .property-card .type-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #B8860B;
+        }
+
+        .property-card .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;           /* ← reduced from 13px */
+        }
+
+        .property-card .metric-label {
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .property-card .metric-value {
+            font-weight: 700;
+            color: #003DA5;
+            font-size: 13.5px;         /* ← reduced (was effectively ~15px) */
+        }
+
+        .property-card .metric-change {
+            font-size: 11px;           /* ← reduced from 12px */
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .metric-change.positive { color: #059669; }
+        .metric-change.negative { color: #DC1C2E; }
+
+        .content::-webkit-scrollbar { display: none; }
+        .content { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+
+        @media (max-width: 380px) {
+            .stat-value { font-size: 19px; }
+            .stat-change { font-size: 12px; }
+            .month-select { font-size: 14px; min-width: 120px; }
+            .property-card .row { font-size: 11px; }
+            .property-card .metric-value { font-size: 12.5px; }
+            .property-card .metric-change { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title-group">
+                <h1>TREB Market Report</h1>
+                <div class="month-display">Jan 2026</div>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent">
+            <!-- Content populated by JavaScript -->
+        </div>
+
+        <div class="footer">
+            <select class="month-select" id="monthSelect" onchange="selectMonth(this.value)">
+            </select>
+        </div>
+    </div>
+
+    <script>
+        const marketData = [
+  {
+    "year": 2026,
+    "month": "Feb",
+    "monthFull": "February",
+    "sales": 3868,
+    "salesYoY": -0.063,
+    "avgPrice": 1008968,
+    "priceYoY": -0.071,
+    "newListings": 10705,
+    "newListingsYoY": -0.177,
+    "snlr": 0.336,
+    "active": 19314,
+    "activeYoY": -0.024,
+    "moi": 5.0,
+    "spLp": 0.97,
+    "ldom": 36,
+    "pdom": 54,
+    "detachedS": 1683,
+    "detachedSYoY": -0.039,
+    "detachedP": 1325654,
+    "detachedPYoY": -0.082,
+    "semiS": 336,
+    "semiSYoY": -0.092,
+    "semiP": 1027376,
+    "semiPYoY": -0.058,
+    "townS": 698,
+    "townSYoY": -0.024,
+    "townP": 844862,
+    "townPYoY": -0.072,
+    "condoS": 1088,
+    "condoSYoY": -0.12,
+    "condoP": 626650,
+    "condoPYoY": -0.088
+  },
+  {
+    "year": 2026,
+    "month": "Jan",
+    "monthFull": "January",
+    "sales": 3082,
+    "salesYoY": -0.193,
+    "avgPrice": 973289,
+    "priceYoY": -0.065,
+    "newListings": 10774,
+    "newListingsYoY": -0.133,
+    "snlr": 0.333,
+    "active": 17975,
+    "activeYoY": 0.081,
+    "moi": 5.0,
+    "spLp": 0.97,
+    "ldom": 45,
+    "pdom": 67,
+    "detachedS": 1352,
+    "detachedSYoY": -0.136,
+    "detachedP": 1277915,
+    "detachedPYoY": -0.074,
+    "semiS": 278,
+    "semiSYoY": -0.192,
+    "semiP": 945967,
+    "semiPYoY": -0.097,
+    "townS": 552,
+    "townSYoY": -0.237,
+    "townP": 819543,
+    "townPYoY": -0.094,
+    "condoS": 856,
+    "condoSYoY": -0.26,
+    "condoP": 604759,
+    "condoPYoY": -0.098
+  },
+  {
+    "year": 2025,
+    "month": "Dec",
+    "monthFull": "December",
+    "sales": 3697,
+    "salesYoY": -0.089,
+    "avgPrice": 1006735,
+    "priceYoY": -0.051,
+    "newListings": 5299,
+    "newListingsYoY": 0.018,
+    "snlr": 0.334,
+    "active": 17005,
+    "activeYoY": 0.175,
+    "moi": 4.9,
+    "spLp": 0.97,
+    "ldom": 41,
+    "pdom": 65,
+    "detachedS": 1690,
+    "detachedSYoY": -0.017,
+    "detachedP": 1302980,
+    "detachedPYoY": -0.059,
+    "semiS": 323,
+    "semiSYoY": -0.069,
+    "semiP": 957357,
+    "semiPYoY": -0.114,
+    "townS": 613,
+    "townSYoY": -0.225,
+    "townP": 862024,
+    "townPYoY": -0.06,
+    "condoS": 1029,
+    "condoSYoY": -0.112,
+    "condoP": 628029,
+    "condoPYoY": -0.073
+  },
+  {
+    "year": 2025,
+    "month": "Nov",
+    "monthFull": "November",
+    "sales": 5010,
+    "salesYoY": -0.158,
+    "avgPrice": 1039458,
+    "priceYoY": -0.064,
+    "newListings": 11134,
+    "newListingsYoY": -0.04,
+    "snlr": 0.337,
+    "active": 24549,
+    "activeYoY": 0.168,
+    "moi": 4.8,
+    "spLp": 0.97,
+    "ldom": 34,
+    "pdom": 56,
+    "detachedS": 2296,
+    "detachedSYoY": -0.148,
+    "detachedP": 1346017,
+    "detachedPYoY": -0.08,
+    "semiS": 485,
+    "semiSYoY": -0.055,
+    "semiP": 997499,
+    "semiPYoY": -0.072,
+    "townS": 867,
+    "townSYoY": -0.155,
+    "townP": 834179,
+    "townPYoY": -0.064,
+    "condoS": 1299,
+    "condoSYoY": -0.217,
+    "condoP": 663290,
+    "condoPYoY": -0.038
+  },
+  {
+    "year": 2025,
+    "month": "Oct",
+    "monthFull": "October",
+    "sales": 6138,
+    "salesYoY": -0.095,
+    "avgPrice": 1054372,
+    "priceYoY": -0.072,
+    "newListings": 16069,
+    "newListingsYoY": 0.027,
+    "snlr": 0.341,
+    "active": 27808,
+    "activeYoY": 0.172,
+    "moi": 4.7,
+    "spLp": 0.98,
+    "ldom": 31,
+    "pdom": 50,
+    "detachedS": 2856,
+    "detachedSYoY": -0.11,
+    "detachedP": 1355506,
+    "detachedPYoY": -0.073,
+    "semiS": 596,
+    "semiSYoY": -0.028,
+    "semiP": 1033770,
+    "semiPYoY": -0.065,
+    "townS": 1052,
+    "townSYoY": -0.085,
+    "townP": 846105,
+    "townPYoY": -0.083,
+    "condoS": 1558,
+    "condoSYoY": -0.11,
+    "condoP": 660208,
+    "condoPYoY": -0.047
+  },
+  {
+    "year": 2025,
+    "month": "Sep",
+    "monthFull": "September",
+    "sales": 5592,
+    "salesYoY": 0.085,
+    "avgPrice": 1059377,
+    "priceYoY": -0.047,
+    "newListings": 19260,
+    "newListingsYoY": 0.039,
+    "snlr": 0.346,
+    "active": 29394,
+    "activeYoY": 0.189,
+    "moi": 4.6,
+    "spLp": 0.98,
+    "ldom": 33,
+    "pdom": 51,
+    "detachedS": 2661,
+    "detachedSYoY": 0.096,
+    "detachedP": 1359030,
+    "detachedPYoY": -0.051,
+    "semiS": 506,
+    "semiSYoY": 0.11,
+    "semiP": 1015543,
+    "semiPYoY": -0.068,
+    "townS": 925,
+    "townSYoY": 0.044,
+    "townP": 859593,
+    "townPYoY": -0.047,
+    "condoS": 1437,
+    "condoSYoY": 0.072,
+    "condoP": 655231,
+    "condoPYoY": -0.043
+  },
+  {
+    "year": 2025,
+    "month": "Aug",
+    "monthFull": "August",
+    "sales": 5211,
+    "salesYoY": 0.023,
+    "avgPrice": 1022143,
+    "priceYoY": -0.052,
+    "newListings": 14038,
+    "newListingsYoY": 0.094,
+    "snlr": 0.345,
+    "active": 27495,
+    "activeYoY": 0.094,
+    "moi": 4.5,
+    "spLp": 0.97,
+    "ldom": 33,
+    "pdom": 49,
+    "detachedS": 2411,
+    "detachedSYoY": 0.059,
+    "detachedP": 1312240,
+    "detachedPYoY": -0.075,
+    "semiS": 441,
+    "semiSYoY": 0.026,
+    "semiP": 980102,
+    "semiPYoY": -0.042,
+    "townS": 927,
+    "townSYoY": 0.024,
+    "townP": 860178,
+    "townPYoY": -0.038,
+    "condoS": 1369,
+    "condoSYoY": -0.049,
+    "condoP": 594881,
+    "condoPYoY": -0.05
+  },
+  {
+    "year": 2025,
+    "month": "Jul",
+    "monthFull": "July",
+    "sales": 6100,
+    "salesYoY": 10.9,
+    "avgPrice": 1051719,
+    "priceYoY": -0.055,
+    "newListings": 17613,
+    "newListingsYoY": 0.057,
+    "snlr": 0.347,
+    "active": 30215,
+    "activeYoY": 0.262,
+    "moi": 4.5,
+    "spLp": 0.98,
+    "ldom": 30,
+    "pdom": 41,
+    "detachedS": 2795,
+    "detachedSYoY": 0.113,
+    "detachedP": 1361660,
+    "detachedPYoY": -0.051,
+    "semiS": 596,
+    "semiSYoY": 0.255,
+    "semiP": 1242388,
+    "semiPYoY": -0.023,
+    "townS": 1047,
+    "townSYoY": 0.079,
+    "townP": 829332,
+    "townPYoY": -0.074,
+    "condoS": 1028,
+    "condoSYoY": 0.058,
+    "condoP": 590004,
+    "condoPYoY": -0.093
+  },
+  {
+    "year": 2025,
+    "month": "Jun",
+    "monthFull": "June",
+    "sales": 6243,
+    "salesYoY": -0.024,
+    "avgPrice": 1101691,
+    "priceYoY": -0.054,
+    "newListings": 19839,
+    "newListingsYoY": 0.077,
+    "snlr": 0.346,
+    "active": 31603,
+    "activeYoY": 0.308,
+    "moi": 4.4,
+    "spLp": 0.98,
+    "ldom": 26,
+    "pdom": 42,
+    "detachedS": 3011,
+    "detachedSYoY": -0.029,
+    "detachedP": 1392033,
+    "detachedPYoY": -0.06,
+    "semiS": 601,
+    "semiSYoY": -0.007,
+    "semiP": 1089751,
+    "semiPYoY": -0.01,
+    "townS": 1048,
+    "townSYoY": -0.04,
+    "townP": 871652,
+    "townPYoY": -0.063,
+    "condoS": 1510,
+    "condoSYoY": -0.025,
+    "condoP": 696424,
+    "condoPYoY": -0.045
+  },
+  {
+    "year": 2025,
+    "month": "May",
+    "monthFull": "May",
+    "sales": 6244,
+    "salesYoY": -0.133,
+    "avgPrice": 1120879,
+    "priceYoY": -0.04,
+    "newListings": 21819,
+    "newListingsYoY": 0.14,
+    "snlr": 0.349,
+    "active": 30964,
+    "activeYoY": 0.415,
+    "moi": 4.3,
+    "spLp": 0.99,
+    "ldom": 25,
+    "pdom": 39,
+    "detachedS": 2998,
+    "detachedSYoY": -0.106,
+    "detachedP": 1425264,
+    "detachedPYoY": -0.054,
+    "semiS": 617,
+    "semiSYoY": -0.003,
+    "semiP": 1098447,
+    "semiPYoY": -0.064,
+    "townS": 1071,
+    "townSYoY": -0.098,
+    "townP": 904272,
+    "townPYoY": -0.045,
+    "condoS": 1482,
+    "condoSYoY": -0.251,
+    "condoP": 683413,
+    "condoPYoY": -0.064
+  },
+  {
+    "year": 2025,
+    "month": "Apr",
+    "monthFull": "April",
+    "sales": 5011,
+    "salesYoY": -0.231,
+    "avgPrice": 1093254,
+    "priceYoY": -0.025,
+    "newListings": 17263,
+    "newListingsYoY": 0.286,
+    "snlr": 0.366,
+    "active": 23462,
+    "activeYoY": 0.888,
+    "moi": 3.9,
+    "spLp": 1.0,
+    "ldom": 24,
+    "pdom": 25,
+    "detachedS": 2155,
+    "detachedSYoY": -0.249,
+    "detachedP": 1439268,
+    "detachedPYoY": -0.018,
+    "semiS": 485,
+    "semiSYoY": -0.159,
+    "semiP": 1111791,
+    "semiPYoY": -0.009,
+    "townS": 899,
+    "townSYoY": 0.232,
+    "townP": 908169,
+    "townPYoY": -0.035,
+    "condoS": 1404,
+    "condoSYoY": -0.235,
+    "condoP": 682019,
+    "condoPYoY": -0.026
+  },
+  {
+    "year": 2025,
+    "month": "Mar",
+    "monthFull": "March",
+    "sales": 4037,
+    "salesYoY": -0.274,
+    "avgPrice": 1084547,
+    "priceYoY": -0.022,
+    "newListings": 12066,
+    "newListingsYoY": 0.054,
+    "snlr": 0.384,
+    "active": 19536,
+    "activeYoY": 0.76,
+    "moi": 3.8,
+    "spLp": 0.99,
+    "ldom": 28,
+    "pdom": 43,
+    "detachedS": 1706,
+    "detachedSYoY": -0.311,
+    "detachedP": 1445879,
+    "detachedPYoY": 0.002,
+    "semiS": 356,
+    "semiSYoY": -0.223,
+    "semiP": 1079996,
+    "semiPYoY": -0.04,
+    "townS": 700,
+    "townSYoY": -0.306,
+    "townP": 911483,
+    "townPYoY": -0.023,
+    "condoS": 1225,
+    "condoSYoY": -0.22,
+    "condoP": 688055,
+    "condoPYoY": -0.013
+  },
+  {
+    "year": 2025,
+    "month": "Feb",
+    "monthFull": "February",
+    "sales": 3359,
+    "salesYoY": -0.018,
+    "avgPrice": 1067186,
+    "priceYoY": -0.016,
+    "newListings": 4681,
+    "newListingsYoY": 0.202,
+    "snlr": 0.407,
+    "active": 15393,
+    "activeYoY": 0.485,
+    "moi": 3.4,
+    "spLp": 0.98,
+    "ldom": 36,
+    "pdom": 56,
+    "detachedS": 1423,
+    "detachedSYoY": -0.058,
+    "detachedP": 1399209,
+    "detachedPYoY": -0.014,
+    "semiS": 292,
+    "semiSYoY": -0.093,
+    "semiP": 1088543,
+    "semiPYoY": 0.06,
+    "townS": 653,
+    "townSYoY": 0.058,
+    "townP": 910761,
+    "townPYoY": -0.003,
+    "condoS": 960,
+    "condoSYoY": 0.023,
+    "condoP": 681855,
+    "condoPYoY": 0.001
+  },
+  {
+    "year": 2025,
+    "month": "Jan",
+    "monthFull": "January",
+    "sales": 3847,
+    "salesYoY": -0.079,
+    "avgPrice": 1040994,
+    "priceYoY": 0.015,
+    "newListings": 12392,
+    "newListingsYoY": 0.486,
+    "snlr": 0.395,
+    "active": 17157,
+    "activeYoY": 0.702,
+    "moi": 3.5,
+    "spLp": 0.99,
+    "ldom": 37,
+    "pdom": 56,
+    "detachedS": 1580,
+    "detachedSYoY": 0.084,
+    "detachedP": 1377430,
+    "detachedPYoY": 0.021,
+    "semiS": 349,
+    "semiSYoY": 0.029,
+    "semiP": 1047728,
+    "semiPYoY": 0.011,
+    "townS": 725,
+    "townSYoY": -0.042,
+    "townP": 904986,
+    "townPYoY": 0.016,
+    "condoS": 1161,
+    "condoSYoY": 0.121,
+    "condoP": 670675,
+    "condoPYoY": -0.016
+  },
+  {
+    "year": 2024,
+    "month": "Dec",
+    "monthFull": "December",
+    "sales": 3359,
+    "salesYoY": -0.018,
+    "avgPrice": 1067186,
+    "priceYoY": -0.016,
+    "newListings": 4681,
+    "newListingsYoY": 0.202,
+    "snlr": 0.407,
+    "active": 15393,
+    "activeYoY": 0.385,
+    "moi": 3.4,
+    "spLp": 0.98,
+    "ldom": 36,
+    "pdom": 56,
+    "detachedS": 1423,
+    "detachedSYoY": -0.058,
+    "detachedP": 1399209,
+    "detachedPYoY": -0.014,
+    "semiS": 292,
+    "semiSYoY": -0.093,
+    "semiP": 1088543,
+    "semiPYoY": 0.06,
+    "townS": 653,
+    "townSYoY": 0.058,
+    "townP": 910761,
+    "townPYoY": -0.003,
+    "condoS": 960,
+    "condoSYoY": 0.023,
+    "condoP": 681855,
+    "condoPYoY": 0.001
+  },
+  {
+    "year": 2024,
+    "month": "Nov",
+    "monthFull": "November",
+    "sales": 5875,
+    "salesYoY": 0.401,
+    "avgPrice": 1106050,
+    "priceYoY": 0.026,
+    "newListings": 11592,
+    "newListingsYoY": 0.066,
+    "snlr": 0.41,
+    "active": 21818,
+    "activeYoY": 0.302,
+    "moi": 3.3,
+    "spLp": 0.99,
+    "ldom": 31,
+    "pdom": 49,
+    "detachedS": 2669,
+    "detachedSYoY": 0.439,
+    "detachedP": 1452518,
+    "detachedPYoY": 0.039,
+    "semiS": 502,
+    "semiSYoY": 0.249,
+    "semiP": 1077254,
+    "semiPYoY": 0.017,
+    "townS": 1009,
+    "townSYoY": 0.46,
+    "townP": 892304,
+    "townPYoY": 0.008,
+    "condoS": 1640,
+    "condoSYoY": 0.363,
+    "condoP": 689599,
+    "condoPYoY": -0.025
+  },
+  {
+    "year": 2024,
+    "month": "Oct",
+    "monthFull": "October",
+    "sales": 6658,
+    "salesYoY": 0.444,
+    "avgPrice": 1135215,
+    "priceYoY": 0.011,
+    "newListings": 15328,
+    "newListingsYoY": 0.043,
+    "snlr": 0.403,
+    "active": 24481,
+    "activeYoY": 0.253,
+    "moi": 3.3,
+    "spLp": 0.99,
+    "ldom": 27,
+    "pdom": 43,
+    "detachedS": 3139,
+    "detachedSYoY": 0.466,
+    "detachedP": 1462838,
+    "detachedPYoY": 0.012,
+    "semiS": 612,
+    "semiSYoY": 0.44,
+    "semiP": 1108376,
+    "semiPYoY": 0.007,
+    "townS": 1123,
+    "townSYoY": 0.568,
+    "townP": 920201,
+    "townPYoY": -0.011,
+    "condoS": 1722,
+    "condoSYoY": 0.334,
+    "condoP": 694038,
+    "condoPYoY": -0.02
+  },
+  {
+    "year": 2024,
+    "month": "Sep",
+    "monthFull": "September",
+    "sales": 4996,
+    "salesYoY": 0.085,
+    "avgPrice": 1107291,
+    "priceYoY": -0.01,
+    "newListings": 18089,
+    "newListingsYoY": 0.105,
+    "snlr": 0.393,
+    "active": 25612,
+    "activeYoY": 0.355,
+    "moi": 3.4,
+    "spLp": 0.99,
+    "ldom": 27,
+    "pdom": 43,
+    "detachedS": 2354,
+    "detachedSYoY": 0.105,
+    "detachedP": 1423056,
+    "detachedPYoY": -0.011,
+    "semiS": 446,
+    "semiSYoY": 0.126,
+    "semiP": 1090749,
+    "semiPYoY": -0.004,
+    "townS": 840,
+    "townSYoY": 0.143,
+    "townP": 904200,
+    "townPYoY": -0.04,
+    "condoS": 1312,
+    "condoSYoY": 0.008,
+    "condoP": 682543,
+    "condoPYoY": -0.036
+  },
+  {
+    "year": 2024,
+    "month": "Aug",
+    "monthFull": "August",
+    "sales": 4975,
+    "salesYoY": -0.053,
+    "avgPrice": 1074425,
+    "priceYoY": -0.008,
+    "newListings": 12547,
+    "newListingsYoY": 0.015,
+    "snlr": 0.395,
+    "active": 22653,
+    "activeYoY": 0.462,
+    "moi": 3.3,
+    "spLp": 0.99,
+    "ldom": 28,
+    "pdom": 44,
+    "detachedS": 2218,
+    "detachedSYoY": -0.01,
+    "detachedP": 1414070,
+    "detachedPYoY": -0.003,
+    "semiS": 427,
+    "semiSYoY": -0.034,
+    "semiP": 1026435,
+    "semiPYoY": -0.039,
+    "townS": 872,
+    "townSYoY": -0.061,
+    "townP": 891892,
+    "townPYoY": -0.046,
+    "condoS": 1417,
+    "condoSYoY": -0.114,
+    "condoP": 674706,
+    "condoPYoY": -0.045
+  },
+  {
+    "year": 2024,
+    "month": "Jul",
+    "monthFull": "July",
+    "sales": 5391,
+    "salesYoY": 0.033,
+    "avgPrice": 1106617,
+    "priceYoY": -0.009,
+    "newListings": 16296,
+    "newListingsYoY": 0.185,
+    "snlr": 0.397,
+    "active": 23877,
+    "activeYoY": 0.554,
+    "moi": 3.2,
+    "spLp": 0.99,
+    "ldom": 24,
+    "pdom": 36,
+    "detachedS": 2446,
+    "detachedSYoY": 0.033,
+    "detachedP": 1425927,
+    "detachedPYoY": -0.001,
+    "semiS": 471,
+    "semiSYoY": 0.073,
+    "semiP": 1067576,
+    "semiPYoY": -0.033,
+    "townS": 939,
+    "townSYoY": 0.083,
+    "townP": 914975,
+    "townPYoY": -0.034,
+    "condoS": 1482,
+    "condoSYoY": -0.01,
+    "condoP": 718698,
+    "condoPYoY": -0.022
+  },
+  {
+    "year": 2024,
+    "month": "Jun",
+    "monthFull": "June",
+    "sales": 6213,
+    "salesYoY": -0.164,
+    "avgPrice": 1162167,
+    "priceYoY": -0.016,
+    "newListings": 17964,
+    "newListingsYoY": 0.123,
+    "snlr": 0.403,
+    "active": 23613,
+    "activeYoY": 0.674,
+    "moi": 3.0,
+    "spLp": 1.0,
+    "ldom": 20,
+    "pdom": 30,
+    "detachedS": 2988,
+    "detachedSYoY": -0.106,
+    "detachedP": 1480399,
+    "detachedPYoY": -0.033,
+    "semiS": 599,
+    "semiSYoY": -0.114,
+    "semiP": 1102904,
+    "semiPYoY": -0.093,
+    "townS": 1054,
+    "townSYoY": -0.141,
+    "townP": 931490,
+    "townPYoY": -0.049,
+    "condoS": 1520,
+    "condoSYoY": -0.281,
+    "condoP": 727861,
+    "condoPYoY": -0.015
+  },
+  {
+    "year": 2024,
+    "month": "May",
+    "monthFull": "May",
+    "sales": 7013,
+    "salesYoY": -0.217,
+    "avgPrice": 1165691,
+    "priceYoY": -0.025,
+    "newListings": 18612,
+    "newListingsYoY": 0.211,
+    "snlr": 0.416,
+    "active": 18612,
+    "activeYoY": 0.733,
+    "moi": 2.8,
+    "spLp": 1.02,
+    "ldom": 19,
+    "pdom": 28,
+    "detachedS": 3238,
+    "detachedSYoY": -0.194,
+    "detachedP": 1506675,
+    "detachedPYoY": -0.032,
+    "semiS": 616,
+    "semiSYoY": -0.213,
+    "semiP": 1173819,
+    "semiPYoY": -0.02,
+    "townS": 1149,
+    "townSYoY": -0.243,
+    "townP": 947158,
+    "townPYoY": -0.056,
+    "condoS": 1942,
+    "condoSYoY": -0.241,
+    "condoP": 730815,
+    "condoPYoY": -0.024
+  },
+  {
+    "year": 2024,
+    "month": "Apr",
+    "monthFull": "April",
+    "sales": 7114,
+    "salesYoY": -0.05,
+    "avgPrice": 1156167,
+    "priceYoY": 0.003,
+    "newListings": 16961,
+    "newListingsYoY": 0.472,
+    "snlr": 0.438,
+    "active": 18088,
+    "activeYoY": 0.744,
+    "moi": 2.6,
+    "spLp": 1.02,
+    "ldom": 19,
+    "pdom": 28,
+    "detachedS": 3175,
+    "detachedSYoY": -0.072,
+    "detachedP": 1516070,
+    "detachedPYoY": 0.018,
+    "semiS": 620,
+    "semiSYoY": -0.01,
+    "semiP": 1139929,
+    "semiPYoY": 0.003,
+    "townS": 1229,
+    "townSYoY": 0.007,
+    "townP": 949839,
+    "townPYoY": -0.037,
+    "condoS": 2013,
+    "condoSYoY": -0.065,
+    "condoP": 728067,
+    "condoPYoY": 0.006
+  },
+  {
+    "year": 2024,
+    "month": "Mar",
+    "monthFull": "March",
+    "sales": 6560,
+    "salesYoY": -0.045,
+    "avgPrice": 1121615,
+    "priceYoY": 0.013,
+    "newListings": 13120,
+    "newListingsYoY": 0.151,
+    "snlr": 0.458,
+    "active": 12459,
+    "activeYoY": 0.231,
+    "moi": 2.5,
+    "spLp": 1.02,
+    "ldom": 20,
+    "pdom": 29,
+    "detachedS": 2893,
+    "detachedSYoY": -0.03,
+    "detachedP": 1466397,
+    "detachedPYoY": 0.0,
+    "semiS": 579,
+    "semiSYoY": 0.043,
+    "semiP": 1121645,
+    "semiPYoY": 0.031,
+    "townS": 1842,
+    "townSYoY": -0.128,
+    "townP": 940127,
+    "townPYoY": 0.005,
+    "condoS": 1842,
+    "condoSYoY": -0.128,
+    "condoP": 700046,
+    "condoPYoY": -0.005
+  },
+  {
+    "year": 2024,
+    "month": "Feb",
+    "monthFull": "February",
+    "sales": 5607,
+    "salesYoY": 0.179,
+    "avgPrice": 1108720,
+    "priceYoY": 0.011000000000000001,
+    "newListings": 11396,
+    "newListingsYoY": 0.335,
+    "snlr": 0.466,
+    "active": 11102,
+    "activeYoY": 0.151,
+    "moi": 2.4,
+    "spLp": 1.01,
+    "ldom": 25,
+    "pdom": 37,
+    "detachedS": 2496,
+    "detachedSYoY": 0.21,
+    "detachedP": 1443612,
+    "detachedPYoY": 0.002,
+    "semiS": 463,
+    "semiSYoY": 0.169,
+    "semiP": 1123896,
+    "semiPYoY": 0.05,
+    "townS": 1016,
+    "townSYoY": 0.248,
+    "townP": 934154,
+    "townPYoY": -0.001,
+    "condoS": 1586,
+    "condoSYoY": 0.095,
+    "condoP": 695345,
+    "condoPYoY": -0.015
+  },
+  {
+    "year": 2024,
+    "month": "Jan",
+    "monthFull": "January",
+    "sales": 4223,
+    "salesYoY": 0.37,
+    "avgPrice": 1026703,
+    "priceYoY": -0.01,
+    "newListings": 8312,
+    "newListingsYoY": 0.061,
+    "snlr": 0.469,
+    "active": 10093,
+    "activeYoY": 0.085,
+    "moi": 2.4,
+    "spLp": 0.98,
+    "ldom": 37,
+    "pdom": 54,
+    "detachedS": 1745,
+    "detachedSYoY": 0.27,
+    "detachedP": 1350828,
+    "detachedPYoY": 0.008,
+    "semiS": 343,
+    "semiSYoY": 0.429,
+    "semiP": 1038303,
+    "semiPYoY": 0.018,
+    "townS": 765,
+    "townSYoY": 0.545,
+    "townP": 891443,
+    "townPYoY": 0.005,
+    "condoS": 1335,
+    "condoSYoY": 0.41,
+    "condoP": 681979,
+    "condoPYoY": -0.006
+  }
+];
+
+        function formatCurrency(value) {
+            if (value >= 1000000) return '$' + (value / 1000000).toFixed(2) + 'M';
+            return '$' + Math.round(value / 1000) + 'K';
+        }
+
+        function formatNumber(value) {
+            return value.toLocaleString('en-US');
+        }
+
+        function formatPercent(value) {
+            const pct = Math.abs(value * 100).toFixed(1);
+            return (value >= 0 ? '↑' : '↓') + pct + '%';
+        }
+
+        function getChangeClass(value) {
+            return value >= 0 ? 'positive' : 'negative';
+        }
+
+        function populateMonthSelect() {
+            const select = document.getElementById('monthSelect');
+            marketData.forEach((data, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${data.month} ${data.year}`;
+                select.appendChild(option);
+            });
+            select.value = 0;
+        }
+
+        function selectMonth(index) {
+            const data = marketData[index];
+            document.querySelector('.month-display').textContent = `${data.month} ${data.year}`;
+
+            document.getElementById('mainContent').innerHTML = `
+                <h3 class="section-title animate-in">Market Overview – ${data.monthFull} ${data.year}</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card animate-in" style="animation-delay: 0.05s">
+                        <div class="stat-label">Sales</div>
+                        <div class="stat-row">
+                            <div class="stat-value">${formatNumber(data.sales)}</div>
+                            <div class="stat-change ${getChangeClass(data.salesYoY)}">${formatPercent(data.salesYoY)} YoY%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card animate-in" style="animation-delay: 0.1s">
+                        <div class="stat-label">Average Price</div>
+                        <div class="stat-row">
+                            <div class="stat-value">${formatCurrency(data.avgPrice)}</div>
+                            <div class="stat-change ${getChangeClass(data.priceYoY)}">${formatPercent(data.priceYoY)} YoY%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card animate-in" style="animation-delay: 0.15s">
+                        <div class="stat-label">New Listings</div>
+                        <div class="stat-row">
+                            <div class="stat-value">${formatNumber(data.newListings)}</div>
+                            <div class="stat-change ${getChangeClass(data.newListingsYoY)}">${formatPercent(data.newListingsYoY)} YoY%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card animate-in" style="animation-delay: 0.2s">
+                        <div class="stat-label">Active Listings</div>
+                        <div class="stat-row">
+                            <div class="stat-value">${formatNumber(data.active)}</div>
+                            <div class="stat-change ${getChangeClass(data.activeYoY)}">${formatPercent(data.activeYoY)} YoY%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mini-stats">
+                    <div class="mini-stat animate-in" style="animation-delay: 0.25s">
+                        <div class="label">SNLR</div>
+                        <div class="value">${(data.snlr * 100).toFixed(0)}%</div>
+                    </div>
+                    <div class="mini-stat animate-in" style="animation-delay: 0.28s">
+                        <div class="label">MOI</div>
+                        <div class="value">${data.moi}</div>
+                    </div>
+                    <div class="mini-stat animate-in" style="animation-delay: 0.31s">
+                        <div class="label">SP/LP</div>
+                        <div class="value">${(data.spLp * 100).toFixed(0)}%</div>
+                    </div>
+                    <div class="mini-stat animate-in" style="animation-delay: 0.34s">
+                        <div class="label">DOM</div>
+                        <div class="value">${data.ldom}</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title animate-in" style="animation-delay: 0.4s">By Property Type</h3>
+                <div class="property-cards">
+                    <div class="property-card animate-in" style="animation-delay: 0.45s">
+                        <div class="type-name">Detached</div>
+                        <div class="row">
+                            <span class="metric-label">Sales</span>
+                            <span><span class="metric-value">${formatNumber(data.detachedS)}</span><span class="metric-change ${getChangeClass(data.detachedSYoY)}">${formatPercent(data.detachedSYoY)}</span></span>
+                        </div>
+                        <div class="row">
+                            <span class="metric-label">Avg Price</span>
+                            <span><span class="metric-value">${formatCurrency(data.detachedP)}</span><span class="metric-change ${getChangeClass(data.detachedPYoY)}">${formatPercent(data.detachedPYoY)}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="property-card animate-in" style="animation-delay: 0.48s">
+                        <div class="type-name">Semi-Detached</div>
+                        <div class="row">
+                            <span class="metric-label">Sales</span>
+                            <span><span class="metric-value">${formatNumber(data.semiS)}</span><span class="metric-change ${getChangeClass(data.semiSYoY)}">${formatPercent(data.semiSYoY)}</span></span>
+                        </div>
+                        <div class="row">
+                            <span class="metric-label">Avg Price</span>
+                            <span><span class="metric-value">${formatCurrency(data.semiP)}</span><span class="metric-change ${getChangeClass(data.semiPYoY)}">${formatPercent(data.semiPYoY)}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="property-card animate-in" style="animation-delay: 0.51s">
+                        <div class="type-name">Townhouse</div>
+                        <div class="row">
+                            <span class="metric-label">Sales</span>
+                            <span><span class="metric-value">${formatNumber(data.townS)}</span><span class="metric-change ${getChangeClass(data.townSYoY)}">${formatPercent(data.townSYoY)}</span></span>
+                        </div>
+                        <div class="row">
+                            <span class="metric-label">Avg Price</span>
+                            <span><span class="metric-value">${formatCurrency(data.townP)}</span><span class="metric-change ${getChangeClass(data.townPYoY)}">${formatPercent(data.townPYoY)}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="property-card animate-in" style="animation-delay: 0.54s">
+                        <div class="type-name">Condo Apartment</div>
+                        <div class="row">
+                            <span class="metric-label">Sales</span>
+                            <span><span class="metric-value">${formatNumber(data.condoS)}</span><span class="metric-change ${getChangeClass(data.condoSYoY)}">${formatPercent(data.condoSYoY)}</span></span>
+                        </div>
+                        <div class="row">
+                            <span class="metric-label">Avg Price</span>
+                            <span><span class="metric-value">${formatCurrency(data.condoP)}</span><span class="metric-change ${getChangeClass(data.condoPYoY)}">${formatPercent(data.condoPYoY)}</span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateMonthSelect();
+            selectMonth(0);
+        });
+    </script>
+</body>
+</html>

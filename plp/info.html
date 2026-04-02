@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Information Guide - Peter Luo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Montserrat:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #0A192F;
+            --accent-gold: #C5A059;
+            --text-charcoal: #333333;
+            --border-light: #E0E0E0;
+            --bg-offwhite: #FDFDFD;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            color: var(--text-charcoal);
+            margin: 0;
+            padding: 20px;
+            display: block; 
+        }
+
+        .page-container {
+            background-color: white;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--accent-gold);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32pt;
+            color: var(--primary-navy);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .pillar-subtitle {
+            font-size: 11pt;
+            font-style: italic;
+            color: var(--accent-gold);
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .pillar-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex-grow: 1;
+            margin-bottom: 30px;
+        }
+
+        .pillar-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pillar-title-box {
+            background-color: #FAFAFA;
+            padding: 20px 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .pillar-label {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-navy);
+            font-weight: 700;
+        }
+
+        .pillar-main-text {
+            font-size: 13pt;
+            font-weight: 600;
+            color: var(--accent-gold);
+		line-height: 1.6;
+		margin-top: 5px;
+        }
+
+        .section-header {
+            font-weight: 700;
+            font-size: 10pt;
+            color: var(--primary-navy);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+        }
+
+        .pillar-content {
+            font-size: 10.5pt;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .pillar-cta {
+            text-align: center;
+            margin-top: auto; 
+            padding-top: 10px;
+        }
+
+        .pillar-cta a, .final-step-cta a {
+            display: inline-block;
+            color: var(--primary-navy);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 9pt;
+            text-transform: uppercase;
+            border: 2px solid var(--accent-gold);
+            transition: 0.3s;
+        }
+
+        .pillar-cta a:hover, .final-step-cta a:hover {
+            background-color: var(--accent-gold);
+            color: white;
+        }
+
+        .final-step-container {
+            margin-top: 20px;
+            border: 2px solid var(--accent-gold);
+            background-color: var(--bg-offwhite);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer-branding {
+            margin-top: 40px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary-navy);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .pillar-row { grid-template-columns: 1fr; }
+            .page-container { padding: 20px; }
+            h1 { font-size: 24pt; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <h1>More Information For You</h1>
+            <div class="pillar-subtitle">- Essential Information for Your Real Estate Journey -</div>
+        </header>
+
+        <div class="pillar-row">
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">Six Fiduciary</span>
+                    <span class="pillar-main-text">Six Fiduciary Duties Realtor Owes to Client</span>
+                </div>
+                <div class="section-header">Six Fiduciary</div>
+                <p class="pillar-content">A Realtor's six fiduciary duties ensure your interests come first: Obedience, Loyalty, Disclosure, Confidentiality, Accounting, and Reasonable Care/Diligence. This protects your equity.</p>
+                <div class="pillar-cta">
+                    <a href="./duties.html">Six Fiduciary Duties</a>
+                </div>
+            </div>
+
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">listing agreement</span>
+                    <span class="pillar-main-text">Seller Designated Representation Agreement</span>
+                </div>
+                <div class="section-header">A Legally Binding Marketing Contract</div>
+                <p class="pillar-content">This contract authorizes a broker to act as your agent in selling your property. It outlines specific terms, including the timeframe and commission rates, ensuring a professional commitment to your sale.</p>
+                <div class="pillar-cta">
+                    <a href="./form271.html" style="margin-bottom: 8px;">Full Listing Agreement</a>
+                    <a href="./plain271.html">Plain English Explanation</a>
+                </div>
+            </div>
+
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">APS</span>
+                    <span class="pillar-main-text">Form 100: Agreement of Purchase and Sale</span>
+                </div>
+                <div class="section-header">Finalizing the Terms of Your Sale</div>
+                <p class="pillar-content">The APS is the legally binding contract between buyer and seller that secures the final purchase price, deposit details, and closing date, providing the roadmap for the transaction completion.</p>
+                <div class="pillar-cta">
+                    <a href="./form100.html" style="margin-bottom: 8px;">Full Version of APS</a>
+                    <a href="./plain100.html">Plain English Explanation</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="final-step-container">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 18pt; color: var(--primary-navy); margin-bottom: 10px;">Things You Need to Know</h2>
+            <p>Access our comprehensive resource library for a successful transaction.</p>
+            <div class="final-step-cta">
+                    <a href="https://www.reco.on.ca/about/what-we-do/plans-and-publications/reco-information-guide" style="margin-bottom: 8px;">RECO Information Guide</a>
+                    <a href="https://www.reco.on.ca/consumers/things-you-need-to-know">things you need to know</a>
+
+</div>
+
+
+        </div>
+
+    </div>
+</body>
+</html>

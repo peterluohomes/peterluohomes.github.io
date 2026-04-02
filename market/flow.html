@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>TTREB Market Listings Flow — Month by Month</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-primary: #fafafa;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-blue-dark: #1d4ed8;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-purple: #8b5cf6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+.wrapper {
+    min-height: 100vh;
+    overflow: visible;
+}
+
+/* ===== Month Selector Dropdown ===== */
+.month-selector {
+    margin-top: 16px;
+}
+
+.month-selector select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 2px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: 10px 40px 10px 16px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233b82f6' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.15);
+}
+
+.month-selector select:hover {
+    border-color: var(--accent-blue-dark);
+    box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.25);
+}
+
+.month-selector select:focus {
+    outline: none;
+    border-color: var(--accent-blue-dark);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ===== Main Content ===== */
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* ===== Legend ===== */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+/* ===== Chart Container ===== */
+.chart-container {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 12px 12px 12px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    min-height: 500px;
+    position: relative;
+    overflow: visible;
+}
+
+.chart-container canvas {
+    overflow: visible;
+}
+
+/* ===== Summary Stats ===== */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.stat-value.positive { color: var(--accent-green); }
+.stat-value.negative { color: var(--accent-red); }
+.stat-value.neutral { color: var(--text-primary); }
+
+@media (max-width: 768px) {
+    .content {
+        padding: 20px 16px;
+    }
+    h1 {
+        font-size: 22px;
+    }
+    .legend {
+        gap: 12px;
+    }
+    .legend-item {
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- ===== Main Content ===== -->
+    <div class="content">
+        <div class="header">
+            <h1>TTREB Market Listings Flow</h1>
+            <p class="subtitle">Inventory changes shown as a waterfall chart (inflows → outflows)</p>
+            <div class="month-selector">
+                <select id="monthSelect" onchange="selectMonthFromDropdown(this.value)"></select>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #3b82f6;"></div>
+                <span>Active Inventory</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #10b981;"></div>
+                <span>New Listings</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #ef4444;"></div>
+                <span>Suspensions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #f59e0b;"></div>
+                <span>Transactions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #f43f5e;"></div>
+                <span>Terminations</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #8b5cf6;"></div>
+                <span>Expirations</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="flowChart"></canvas>
+        </div>
+
+        <div class="stats-row" id="statsRow"></div>
+    </div>
+
+</div>
+
+<script>
+/* ==========================================================
+   MARKET DATA (from marketdata.txt)
+   ========================================================== */
+
+const marketData = {
+"2026-Feb": { begin: 10847, new: 6724, susp: 360, exp: 908, term: 2459, trans: 2628,end:11216 },
+"2026-Jan": { begin: 10855, new: 6739, susp: 370, exp: 1329, term: 2874, trans: 2174,end:10847 },
+"2025-Dec": { begin: 16197, new: 3296, susp: 622, exp: 2544, term: 2982, trans: 2490,end:10855 },
+"2025-Nov": { begin: 18990, new: 7441, susp: 654, exp: 1457, term: 4779, trans: 3591,end:15950 },
+"2025-Oct": { begin: 20381, new: 11312, susp: 567, exp: 1498, term: 6164, trans: 4474,end:18990 },
+"2025-Sep": { begin: 19179, new: 13928, susp: 583, exp: 1586, term: 6344, trans: 4213,end:20381 },
+"2025-Aug": { begin: 21012, new: 9889, susp: 592, exp: 1525, term: 5791, trans: 3814,end:19179 },
+"2025-Jul": { begin: 21707, new: 12590, susp: 662, exp: 1294, term: 6915, trans: 4414,end:21012 },
+"2025-Jun": { begin: 20844, new: 14463, susp: 615, exp: 1103, term: 7229, trans: 4653,end:21707 },
+"2025-May": { begin: 17879, new: 15729, susp: 538, exp: 853, term: 6615, trans: 4758,end:20844 },
+"2025-Apr": { begin: 15201, new: 12936, susp: 458, exp: 726, term: 5000, trans: 4074,end:17879 },
+"2025-Mar": { begin: 12263, new: 11573, susp: 355, exp: 646, term: 4155, trans: 3479,end:15201 },
+"2025-Feb": { begin: 10375, new: 8308, susp: 253, exp: 629, term: 2650, trans: 2888,end:12263 },
+"2025-Jan": { begin: 9118, new: 7741, susp: 266, exp: 928, term: 2683, trans: 2607,end:10375 },
+"2024-Dec": { begin: 13402, new: 3221, susp: 489, exp: 1812, term: 2500, trans: 2704,end:9118 },
+"2024-Nov": { begin: 15904, new: 7488, susp: 557, exp: 1208, term: 4061, trans: 4164,end:13402 },
+"2024-Oct": { begin: 16809, new: 10510, susp: 526, exp: 1144, term: 4871, trans: 4874,end:15904 },
+"2024-Sep": { begin: 14922, new: 12643, susp: 504, exp: 1260, term: 5054, trans: 3938,end:16809 },
+"2024-Aug": { begin: 15895, new: 8674, susp: 547, exp: 1164, term: 4375, trans: 3561,end:14922 },
+"2024-Jul": { begin: 15615, new: 10945, susp: 604, exp: 809, term: 5356, trans: 3896,end:15895 },
+"2024-Jun": { begin: 14214, new: 12429, susp: 498, exp: 644, term: 5192, trans: 4694,end:15615 },
+"2024-May": { begin: 11619, new: 12879, susp: 401, exp: 458, term: 4380, trans: 5045,end:14214 },
+"2024-Apr": { begin: 9364, new: 11474, susp: 344, exp: 416, term: 3504, trans: 4955,end:11619 },
+"2024-Mar": { begin: 8049, new: 9057, susp: 305, exp: 403, term: 2329, trans: 4705,end:9364 },
+"2024-Feb": { begin: 7012, new: 7489, susp: 232, exp: 486, term: 1726, trans: 4008,end:8049 },
+"2024-Jan": { begin: 7655, new: 5192, susp: 306, exp: 816, term: 1851, trans: 2862,end:7012 },
+"2023-Dec": { begin: 11754, new: 2439, susp: 503, exp: 1444, term: 2173, trans: 2418,end:7655 },
+"2023-Nov": { begin: 13425, new: 7353, susp: 626, exp: 936, term: 4295, trans: 3167,end:11754 },
+"2023-Oct": { begin: 12976, new: 10187, susp: 571, exp: 811, term: 4968, trans: 3388,end:13425 },
+"2023-Sep": { begin: 10898, new: 11461, susp: 500, exp: 772, term: 4620, trans: 3491,end:12976 },
+"2023-Aug": { begin: 10789, new: 8638, susp: 515, exp: 622, term: 3694, trans: 3698,end:10898 },
+"2023-Jul": { begin: 10112, new: 9602, susp: 424, exp: 535, term: 3903, trans: 4063,end:10789 },
+"2023-Jun": { begin: 8248, new: 11481, susp: 349, exp: 427, term: 3489, trans: 5352,end:10112 },
+"2023-May": { begin: 6723, new: 11161, susp: 277, exp: 305, term: 2590, trans: 6464,end:8248 },
+"2023-Apr": { begin: 6379, new: 8076, susp: 230, exp: 281, term: 1653, trans: 5568,end:6723 },
+"2023-Mar": { begin: 5733, new: 7644, susp: 220, exp: 333, term: 1661, trans: 4784,end:6379 },
+"2023-Feb": { begin: 5516, new: 5464, susp: 185, exp: 368, term: 1288, trans: 3406,end:5733 },
+"2023-Jan": { begin: 5128, new: 4850, susp: 231, exp: 578, term: 1394, trans: 2259,end:5516 },
+};
+
+/* ==========================================================
+   BUILD TIMELINE
+   ========================================================== */
+
+const monthSelect = document.getElementById("monthSelect");
+const months = Object.keys(marketData);
+
+months.forEach((month, index) => {
+    const option = document.createElement("option");
+    option.value = month;
+    option.textContent = month;
+    monthSelect.appendChild(option);
+});
+
+/* ==========================================================
+   CHART LOGIC (WATERFALL)
+   ========================================================== */
+
+let chart;
+
+function selectMonthFromDropdown(month) {
+    renderChart(month);
+}
+
+function renderChart(month) {
+    const d = marketData[month];
+
+    /* Use begin directly from data */
+    const begin = d.begin;
+
+    /* Define outflows with their values and colors */
+    const outflows = [
+        { label: "Suspensions", value: d.susp, color: "#ef4444" },
+        { label: "Transactions", value: d.trans, color: "#f59e0b" },
+        { label: "Terminations", value: d.term, color: "#f43f5e" },
+        { label: "Expirations", value: d.exp, color: "#8b5cf6" }
+    ];
+
+    /* Sort outflows from smallest to largest */
+    outflows.sort((a, b) => a.value - b.value);
+
+    /* Build labels and colors arrays */
+    const labels = ["Begin Active", "New Listings"];
+    const colors = ["#3b82f6", "#10b981"]; // Begin - Blue, New - Green
+
+    outflows.forEach(o => {
+        labels.push(o.label);
+        colors.push(o.color);
+    });
+
+    labels.push("End Active");
+    colors.push("#3b82f6"); // End - Blue
+
+    /* Waterfall data: [start, end] for floating bars */
+    let running = begin;
+    
+    const data = [
+        [0, begin],                    // Begin Active
+        [running, running + d.new],    // New Listings (adds)
+    ];
+    running += d.new;
+    
+    /* Add sorted outflows */
+    outflows.forEach(o => {
+        data.push([running - o.value, running]);
+        running -= o.value;
+    });
+    
+    data.push([0, d.end]);                   // End Active
+
+    /* Destroy existing chart */
+    if (chart) chart.destroy();
+
+    /* Create new chart */
+    chart = new Chart(document.getElementById("flowChart"), {
+        type: "bar",
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: colors,
+                borderRadius: 6,
+                barPercentage: 0.7,
+                categoryPercentage: 0.8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 8
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { family: 'DM Sans', size: 13, weight: '600' },
+                    bodyFont: { family: 'DM Sans', size: 13 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        title: ctx => ctx[0].label,
+                        label: ctx => {
+                            const val = Math.abs(ctx.raw[1] - ctx.raw[0]);
+                            const label = ctx.label;
+                            if (label === "Begin Active" || label === "End Active") {
+                                return val.toLocaleString() + ' listings';
+                            } else if (label === "New Listings") {
+                                return '+' + val.toLocaleString() + ' listings';
+                            } else {
+                                return '-' + val.toLocaleString() + ' listings';
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { family: 'DM Sans', size: 12, weight: '500' },
+                        color: '#64748b'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
+                    afterFit: function(scale) {
+                        scale.width = 60;
+                    },
+                    ticks: {
+                        font: { family: 'DM Sans', size: 10 },
+                        color: '#64748b',
+                        callback: v => v.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+
+    /* Update stats row */
+    updateStats(month, d, begin);
+}
+
+function updateStats(month, d, begin) {
+    const netChange = d.end - begin;
+    const totalOutflows = d.susp + d.trans + d.term + d.exp;
+    
+    document.getElementById("statsRow").innerHTML = `
+        <div class="stat-card">
+            <div class="stat-label">Begin</div>
+            <div class="stat-value" style="color: #3b82f6;">${begin.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">New</div>
+            <div class="stat-value" style="color: #10b981;">+${d.new.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Suspensions</div>
+            <div class="stat-value" style="color: #ef4444;">-${d.susp.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Expirations</div>
+            <div class="stat-value" style="color: #8b5cf6;">-${d.exp.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Terminations</div>
+            <div class="stat-value" style="color: #f43f5e;">-${d.term.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Transactions</div>
+            <div class="stat-value" style="color: #f59e0b;">-${d.trans.toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">End</div>
+            <div class="stat-value" style="color: #3b82f6;">${d.end.toLocaleString()}</div>
+        </div>
+    `;
+}
+
+/* Load most recent month by default */
+renderChart(months[0]);
+</script>
+
+</body>
+</html>

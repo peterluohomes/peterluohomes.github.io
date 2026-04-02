@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Objection Handling — Door Knocking</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+
+/* TOP BAR */
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+.lang-row { display: flex; gap: 8px; }
+.lang-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.lang-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+
+/* MAIN */
+main { padding: 12px 14px; max-width: 500px; margin: 0 auto; }
+
+/* PRINCIPLES CARD */
+.principles-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+}
+.principles-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+  background: var(--gold-bg); border-bottom: 1px solid var(--gold-border);
+}
+.principles-head-title { font-size: 13px; font-weight: 700; color: var(--step-active); flex: 1; }
+.principles-chevron { font-size: 13px; color: var(--gold-tag); transition: transform .25s; }
+.principles-card.open .principles-chevron { transform: rotate(180deg); }
+.principles-body { display: none; padding: 12px 14px; }
+.principles-card.open .principles-body { display: block; }
+.principle-item {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; color: var(--dark);
+}
+.principle-item:last-child { border-bottom: none; }
+.principle-dot { color: var(--gold-tag); font-weight: 700; flex-shrink: 0; }
+
+/* OBJECTION CARDS */
+.obj-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+}
+.obj-card.open { border-color: var(--step-active); border-width: 2px; }
+
+.obj-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+}
+.obj-card.open .obj-head { background: var(--step-active); }
+
+.obj-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg2); color: var(--dark);
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.obj-card.open .obj-num { background: rgba(255,255,255,.2); color: #fff; }
+
+.obj-label { flex: 1; min-width: 0; }
+.obj-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.35; }
+.obj-card.open .obj-title { color: #fff; }
+.obj-tag { font-size: 11px; color: var(--light); margin-top: 3px; }
+.obj-card.open .obj-tag { color: rgba(255,255,255,.55); }
+
+.obj-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.obj-card.open .obj-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+
+.obj-body { display: none; border-top: 1px solid var(--border); }
+.obj-card.open .obj-body { display: block; }
+
+/* Context */
+.obj-context {
+  padding: 11px 14px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--mid); font-style: italic; line-height: 1.5;
+}
+
+/* Script */
+.obj-script {
+  padding: 14px;
+  background: var(--gold-bg);
+  border-left: 4px solid var(--gold-tag);
+  font-size: 14px; color: var(--gold-text);
+  font-style: italic; line-height: 1.7;
+}
+.obj-script strong { color: var(--gold-strong); font-style: normal; font-weight: 700; }
+
+/* NOTES SECTION */
+.obj-notes-wrap { padding: 12px 14px; background: var(--white); border-top: 1px solid var(--border); }
+.obj-notes-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.obj-notes-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--black); resize: vertical; min-height: 68px;
+}
+.obj-notes-input:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+
+/* LANG */
+[data-lang="ch"] { display: none; }
+body.lang-ch [data-lang="en"] { display: none; }
+body.lang-ch [data-lang="ch"] { display: block; }
+span[data-lang="ch"] { display: none; }
+body.lang-ch span[data-lang="en"] { display: none; }
+body.lang-ch span[data-lang="ch"] { display: inline; }
+
+/* TOAST */
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; }
+.toast.show { opacity: 1; }
+
+/* BACK BTN */
+.back-btn {
+  background: var(--bg2); border: none; border-radius: 8px;
+  padding: 9px 14px; font-size: 13px; font-weight: 600;
+  color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.back-btn:active { opacity: .6; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title"><span data-lang="en">Objection Handling</span><span data-lang="ch">异议处理话术</span></div>
+      <div class="app-sub">Door Knocking · Pinnacle Listing System</div>
+    </div>
+    <a href="./door_knocking.html" class="back-btn">← <span data-lang="en">Script</span><span data-lang="ch">敲门</span></a>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnCH" onclick="setLang('ch')">中文</button>
+  </div>
+</div>
+
+<main>
+
+<!-- CORE PRINCIPLES -->
+<div class="principles-card open" id="principlesCard">
+  <div class="principles-head" onclick="document.getElementById('principlesCard').classList.toggle('open')">
+    <span style="font-size:16px;">📌</span>
+    <div class="principles-head-title">
+      <span data-lang="en">Core Principles — Apply to Every Objection</span>
+      <span data-lang="ch">核心原则——适用于每个异议</span>
+    </div>
+    <span class="principles-chevron">▼</span>
+  </div>
+  <div class="principles-body">
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Stay calm and unhurried — anxious energy is what people react to at the door</span>
+      <span data-lang="ch">保持冷静从容——在门口，焦虑的气场才是对方真正在反应的东西</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Never argue, defend, or justify — redirect or exit gracefully</span>
+      <span data-lang="ch">永远不要争辩、防御或解释——转移话题，或优雅退出</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Each response is either a redirect opportunity or a graceful exit — nothing else</span>
+      <span data-lang="ch">每个回应要么是转机，要么是优雅收尾——没有第三条路</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">The goal is a name remembered, not a listing today</span>
+      <span data-lang="ch">目标是让对方记住您的名字，不是今天就拿到委托</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">One card left, warmly — never a pitch</span>
+      <span data-lang="ch">只留一张名片，用真诚——不要推销</span>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 1 -->
+<div class="obj-card" id="obj1">
+  <div class="obj-head" onclick="toggleObj('obj1')">
+    <div class="obj-num">1</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"I'm not interested in selling."</span>
+        <span data-lang="ch">"我没有卖房的打算。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Most common — redirect to referral ask</span>
+        <span data-lang="ch">最常见——转向推荐请求</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They assume you're here to pitch them. Gently correct the misunderstanding.</span>
+      <span data-lang="ch">对方以为您是来推销的。温和地纠正这个误解。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Oh, I completely understand — and I'm actually <strong>not here to ask you to sell</strong>. I have a specific buyer looking for a home on this street, and I was hoping you might know a neighbour who's been thinking about it. That's all. Would you happen to know anyone?"</span>
+      <span data-lang="ch">"我完全理解——而且我今天来<strong>其实不是请您卖房的</strong>。我有一个买家专门想在这条街上买房，我只是想问问，您是否知道有哪位邻居有搬家的打算。就这样而已。您有没有听说过谁在考虑呢？"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note1" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 2 -->
+<div class="obj-card" id="obj2">
+  <div class="obj-head" onclick="toggleObj('obj2')">
+    <div class="obj-num">2</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We already have an agent."</span>
+        <span data-lang="ch">"我们已经有经纪了。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Respect loyalty — redirect to referral</span>
+        <span data-lang="ch">尊重忠诚——转向推荐</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They're showing loyalty — respect it immediately, then redirect to the referral ask.</span>
+      <span data-lang="ch">对方在表明忠诚——立刻表示尊重，然后将话题引到推荐请求上。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's great — and I'm <strong>not here to replace anyone</strong>. I actually just need a little help. I have a buyer specifically looking on this street, and I was hoping you might point me in the right direction. Do you happen to know any neighbours who've mentioned thinking about moving?"</span>
+      <span data-lang="ch">"那很好——我<strong>完全不是来取代任何人的</strong>。我只是需要一点帮助。我有一个买家专门想在这条街上找房，希望您能给我指指方向。您有没有听说哪位邻居曾经提过想搬家？"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note2" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 3 -->
+<div class="obj-card" id="obj3">
+  <div class="obj-head" onclick="toggleObj('obj3')">
+    <div class="obj-num">3</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"I'm too busy right now."</span>
+        <span data-lang="ch">"我现在很忙。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Compress to 15 sec — exit gracefully</span>
+        <span data-lang="ch">压缩到15秒——优雅退出</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Don't fight it. Compress your entire ask into 15 seconds and leave gracefully.</span>
+      <span data-lang="ch">不要勉强。把整个请求压缩到15秒内，然后优雅地离开。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — <strong>I'll be very quick</strong>. I have a buyer looking on this street specifically. Here's my card. If you ever hear of a neighbour thinking about selling, I'd really appreciate a call. <strong>Thank you so much — have a wonderful day!</strong>"</span>
+      <span data-lang="ch">"当然——我<strong>很快就好</strong>。我有一个买家专门想在这条街上找房。这是我的名片，如果您听到邻居有卖房的想法，非常希望您能联系我。<strong>非常感谢——祝您愉快！</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note3" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 4 -->
+<div class="obj-card" id="obj4">
+  <div class="obj-head" onclick="toggleObj('obj4')">
+    <div class="obj-num">4</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"How did you get my address?"</span>
+        <span data-lang="ch">"你怎么知道我住这里？"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Curiosity / mild suspicion — stay calm</span>
+        <span data-lang="ch">好奇 / 轻微警惕——保持冷静</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Stay calm and matter-of-fact. This is curiosity or mild suspicion — not hostility.</span>
+      <span data-lang="ch">保持冷静和坦然。这是好奇或轻微的警惕，不是敌意。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"I'm just walking the street today — <strong>I don't have any personal information about you at all</strong>. I'm simply knocking on doors to introduce myself to the neighbourhood. I hope that's okay."</span>
+      <span data-lang="ch">"我今天只是在街上挨家挨户拜访——<strong>我没有您任何个人信息</strong>。我只是想向这个社区的居民介绍自己。希望这样没有打扰到您。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note4" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 5 -->
+<div class="obj-card" id="obj5">
+  <div class="obj-head" onclick="toggleObj('obj5')">
+    <div class="obj-num">5</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"I don't want any more junk mail / flyers."</span>
+        <span data-lang="ch">"我不想再收到广告单了。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Over-contacted before — differentiate immediately</span>
+        <span data-lang="ch">曾被过度打扰——立刻区分自己</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They've been over-contacted before. Differentiate yourself immediately.</span>
+      <span data-lang="ch">对方之前被过度打扰过。立刻让自己与众不同。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"I completely understand — and I promise <strong>this isn't a flyer</strong>. I'm here in person because I have a buyer specifically looking for a home on this street. I'm not sending anything unless you'd like me to. I just wanted to introduce myself."</span>
+      <span data-lang="ch">"我完全理解——我保证<strong>这不是什么传单</strong>。我是专程登门拜访，因为我有一个买家专门想在这条街找房。如果您不需要，我不会寄任何东西给您。我只是想来介绍自己。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note5" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 6 -->
+<div class="obj-card" id="obj6">
+  <div class="obj-head" onclick="toggleObj('obj6')">
+    <div class="obj-num">6</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"The market is bad / I'd never sell now."</span>
+        <span data-lang="ch">"现在市场不好 / 我不会在这时候卖。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Hidden invitation — pivot to market update</span>
+        <span data-lang="ch">隐藏的邀请——转向市场报告</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">A hidden invitation — they're already thinking about the market. Engage gently and pivot to value.</span>
+      <span data-lang="ch">这其实是一个隐藏的邀请——对方已经在想市场的事了。温和地切入，引向价值交换。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a really fair perspective — <strong>timing matters a lot</strong>. I actually send a monthly update to a few families on this street so they can keep track of what's happening with values nearby. Would that be useful to have? <strong>No obligation at all.</strong>"</span>
+      <span data-lang="ch">"这是非常合理的看法——<strong>时机确实很重要</strong>。我每个月会给这条街上的几户家庭发一份市场动态报告，让他们了解附近的房产价值走势。这对您会有参考价值吗？<strong>完全没有任何义务。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note6" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 7 -->
+<div class="obj-card" id="obj7">
+  <div class="obj-head" onclick="toggleObj('obj7')">
+    <div class="obj-num">7</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"I'm renting / I just moved in."</span>
+        <span data-lang="ch">"我是租客 / 我刚搬来。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Pivot to neighbour referral</span>
+        <span data-lang="ch">转向邻居推荐</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Pivot quickly to the referral ask — they still know the neighbours.</span>
+      <span data-lang="ch">迅速转向推荐请求——对方仍然了解邻居。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Oh, that's great — <strong>welcome to the street!</strong> I'm actually looking to connect with some of the longer-term homeowners here. Have you had a chance to meet any of your neighbours yet? Anyone who seems like they've been here a long time?"</span>
+      <span data-lang="ch">"哦，那很好——<strong>欢迎来到这条街！</strong>我其实在找一些在这里住了比较久的屋主。您搬来之后，有没有认识什么邻居？有没有感觉哪家住了很长时间的？"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note7" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 8 -->
+<div class="obj-card" id="obj8">
+  <div class="obj-head" onclick="toggleObj('obj8')">
+    <div class="obj-num">8</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"What company are you with?" / "Are you legit?"</span>
+        <span data-lang="ch">"你是哪家公司的？" / "你是真的经纪吗？"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Vetting you — answer directly and confidently</span>
+        <span data-lang="ch">在核实身份——直接自信地回答</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They're vetting you. Answer directly and confidently — no defensiveness.</span>
+      <span data-lang="ch">对方在核实您的身份。直接自信地回答——不要有防御性。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Absolutely — my name is <strong>Peter Luo</strong>, I'm with <strong>RE/MAX Realtron</strong>. Here's my card with all my contact information. I've been working in this area for a number of years. I completely understand wanting to know who's at your door."</span>
+      <span data-lang="ch">"当然——我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的地产经纪。这是我的名片，上面有我所有的联系方式。我在这个区域已经工作了很多年。我非常理解您想知道敲门的人是谁。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note8" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 9 -->
+<div class="obj-card" id="obj9">
+  <div class="obj-head" onclick="toggleObj('obj9')">
+    <div class="obj-num">9</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We tried selling before and it didn't work out."</span>
+        <span data-lang="ch">"我们之前试过卖房，但没卖成。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Warm lead — show empathy, no pitch</span>
+        <span data-lang="ch">热门线索——同理心，不推销</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">A warm lead disguised as an objection. Show empathy — don't pitch.</span>
+      <span data-lang="ch">这是一个伪装成异议的热门线索。表示同理心——不要立刻推销。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"I'm sorry to hear that — that's genuinely frustrating. <strong>A lot can change</strong>, both in the market and in strategy. I'm not here to pressure you at all, but if it's ever something you want to revisit, I'd be happy to have a no-obligation conversation. Here's my card."</span>
+      <span data-lang="ch">"听到这个真的很遗憾——那确实令人沮丧。<strong>市场会变，策略也很重要</strong>。我今天完全不是来给您压力的，但如果将来您有兴趣重新考虑，我很乐意无任何义务地和您聊聊。这是我的名片。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note9" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTION 10 -->
+<div class="obj-card" id="obj10">
+  <div class="obj-head" onclick="toggleObj('obj10')">
+    <div class="obj-num">10</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"I don't talk to strangers at the door."</span>
+        <span data-lang="ch">"我不和陌生人开门说话。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Respect it fully — graceful exit</span>
+        <span data-lang="ch">完全尊重——优雅退出</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Respect it fully. A graceful exit leaves a far better impression than pushing.</span>
+      <span data-lang="ch">完全尊重对方的决定。优雅地离开，比勉强推进留下更好的印象。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — <strong>I completely respect that</strong>. Here's my card if you ever need anything. Have a wonderful day!"</span>
+      <span data-lang="ch">"当然——<strong>我完全尊重您的决定</strong>。这是我的名片，如果将来有需要，随时可以联系我。祝您今天愉快！"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note10" placeholder="Their reaction, what worked…"></textarea>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Language ──
+function setLang(lang) {
+  document.body.classList.toggle('lang-ch', lang === 'ch');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnCH').classList.toggle('active', lang === 'ch');
+  // swap placeholders
+  const phs = {
+    en: 'Their reaction, what worked…',
+    ch: '对方反应、哪句话奏效了……'
+  };
+  document.querySelectorAll('.obj-notes-input').forEach(el => {
+    el.placeholder = phs[lang];
+  });
+}
+
+// ── Objection toggle ──
+function toggleObj(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  // close all
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  // open if was closed
+  if (!isOpen) card.classList.add('open');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Feature Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B3A6B;--navy2:#2A4F8C;--navy3:#0F2548;--gold:#B8952A;--gold2:#D4AF50;--gold3:#F5EDD5;--gold4:#FBF6E9;--green:#2D6A4F;--green2:#EBF5EF;--cream:#FDFAF4;--g100:#F7F5F0;--g200:#EAE6DD;--g300:#D4CFC4;--g400:#B0A89A;--g500:#8C8678;--g700:#4A4540;--g900:#1E1C18;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--g900);font-size:13px;line-height:1.55;}
+.cover{background:var(--navy3);color:#fff;padding:2.8rem 3.5rem 2.2rem;position:relative;overflow:hidden;}
+.cover::before{content:'';position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;border:1px solid rgba(184,149,42,.12);}
+.cover::after{content:'';position:absolute;bottom:-50px;left:200px;width:250px;height:250px;border-radius:50%;border:1px solid rgba(184,149,42,.07);}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.6rem;}
+.badge{font-size:9.5px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(184,149,42,.35);padding:4px 12px;border-radius:2px;}
+.cover-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;line-height:1.1;margin-bottom:.35rem;}
+.cover-title em{color:var(--gold2);font-style:normal;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.55);margin-bottom:2rem;}
+.gold-rule{height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.8rem;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem 2rem;}
+.info-field label{display:block;font-size:8.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);margin-bottom:3px;opacity:.8;}
+.info-field input,.info-field select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.18);color:#fff;font-family:'DM Sans',sans-serif;font-size:12.5px;padding:3px 0;outline:none;transition:border-color .2s;}
+.info-field input::placeholder{color:rgba(255,255,255,.28);}
+.info-field input:focus,.info-field select:focus{border-bottom-color:var(--gold2);}
+.info-field select option{background:var(--navy3);}
+.span2{grid-column:span 2;}
+.topbar{background:#fff;border-bottom:2px solid var(--gold3);padding:.6rem 3.5rem;display:flex;align-items:center;gap:.9rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 14px rgba(27,58,107,.07);}
+.topbar-label{font-family:'Cormorant Garamond',serif;font-size:.82rem;font-style:italic;color:var(--g500);flex:1;}
+.score-pill{background:var(--navy);color:#fff;font-size:10.5px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;}
+.score-pill b{color:var(--gold2);}
+.btn{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:3px;cursor:pointer;transition:all .18s;border:none;white-space:nowrap;}
+.btn-gold{background:var(--gold);color:#fff;}.btn-gold:hover{background:var(--gold2);}
+.btn-navy{background:var(--navy);color:#fff;}.btn-navy:hover{background:var(--navy2);}
+.btn-ghost{background:transparent;color:var(--g500);border:1px solid var(--g300);}.btn-ghost:hover{border-color:var(--g500);color:var(--g700);}
+.main{padding:2rem 3.5rem 5rem;max-width:1300px;margin:0 auto;}
+.section{margin-bottom:1.8rem;border:1px solid var(--g200);border-radius:5px;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(27,58,107,.04);}
+.sec-hdr{background:var(--navy);color:#fff;padding:.65rem 1.2rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .15s;}
+.sec-hdr:hover{background:var(--navy2);}
+.sec-title{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;}
+.sec-right{display:flex;align-items:center;gap:.7rem;}
+.sec-tally{font-size:9.5px;color:rgba(255,255,255,.45);letter-spacing:.04em;}
+.chevron{color:rgba(255,255,255,.4);font-size:11px;transition:transform .2s;}
+.collapsed .chevron{transform:rotate(-90deg);}
+.collapsed .sec-body{display:none;}
+.item-row{border-bottom:1px solid var(--g100);background:#fff;transition:background .12s;}
+.item-row:hover{background:var(--g100);}
+.item-row.has-value{background:var(--green2);}
+/* TYPE CHECK */
+.type-check{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;}
+.cb{width:15px;height:15px;min-width:15px;border:1.5px solid var(--g300);border-radius:3px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:#fff;flex-shrink:0;}
+.item-row.has-value .cb{background:var(--green);border-color:var(--green);}
+.cb-tick{display:none;color:#fff;font-size:9px;font-weight:700;}
+.item-row.has-value .cb-tick{display:block;}
+.item-label{font-size:12px;color:var(--g700);line-height:1.4;flex:1;}
+.item-row.has-value .item-label{color:var(--green);font-weight:500;}
+/* TYPE FIELDS */
+.type-fields{padding:8px 14px 9px;}
+.field-label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--g700);font-weight:500;margin-bottom:6px;}
+.item-row.has-value .field-label{color:var(--green);}
+.fields-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;}
+.field-unit{display:flex;align-items:center;gap:4px;}
+.field-unit span{font-size:10.5px;color:var(--g500);white-space:nowrap;}
+.f-in{border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g900);padding:3px 7px;outline:none;background:#fff;transition:border-color .2s;}
+.f-in:focus{border-color:var(--gold);}
+.fw{width:90px;}.fm{width:70px;}.fs{width:54px;}.fxs{width:42px;}.flong{width:160px;}
+/* TYPE MULTI */
+.type-multi{padding:8px 14px 10px;}
+.multi-label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--g700);font-weight:500;margin-bottom:6px;}
+.item-row.has-value .multi-label{color:var(--green);}
+.opts{display:flex;flex-wrap:wrap;gap:5px;}
+.opt{display:flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border:1px solid var(--g300);border-radius:20px;cursor:pointer;user-select:none;transition:all .15s;font-size:11.5px;color:var(--g700);background:#fff;}
+.opt:hover{border-color:var(--gold);color:var(--g900);}
+.opt.selected{background:var(--green);border-color:var(--green);color:#fff;}
+.opt-cb{width:11px;height:11px;border:1.5px solid currentColor;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;}
+.opt.selected .opt-cb::after{content:'✓';color:#fff;font-weight:700;}
+/* STARS + NOTE */
+
+.note-btn{font-size:9.5px;color:var(--g400);cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;margin-left:2px;}
+.note-btn:hover{color:var(--navy);}
+.item-note-wrap{display:none;padding:5px 14px 9px 38px;background:var(--gold4);border-top:1px dashed var(--g200);}
+.item-note-wrap.open{display:block;}
+.item-note{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g900);padding:5px 8px;resize:vertical;min-height:36px;background:#fff;outline:none;}
+.item-note:focus{border-color:var(--gold);}
+.sec-notes-wrap{padding:.9rem 1.2rem;border-top:1px solid var(--g200);background:var(--g100);}
+.sec-notes-lbl{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--g500);margin-bottom:.35rem;}
+.sec-notes{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--g900);padding:6px 9px;resize:vertical;min-height:44px;background:#fff;outline:none;}
+.sec-notes:focus{border-color:var(--gold);}
+.extra-section{background:#fff;border:1px solid var(--g200);border-radius:5px;overflow:hidden;margin-top:2rem;}
+.extra-hdr{background:var(--navy);color:#fff;padding:.65rem 1.2rem;display:flex;align-items:center;justify-content:space-between;}
+.extra-hdr-title{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;}
+.extra-add{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);cursor:pointer;border:1px solid rgba(184,149,42,.3);padding:3px 10px;border-radius:2px;transition:all .15s;}
+.extra-add:hover{background:rgba(184,149,42,.15);}
+.extra-body{padding:1.1rem;}
+.extra-row{display:grid;grid-template-columns:1fr 1.4fr 100px 30px;gap:.6rem;align-items:start;margin-bottom:.65rem;padding-bottom:.65rem;border-bottom:1px solid var(--g100);}
+.extra-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.ex-in,.ex-ta,.ex-sel{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g900);padding:5px 8px;background:#fff;outline:none;}
+.ex-in:focus,.ex-ta:focus,.ex-sel:focus{border-color:var(--gold);}
+.ex-ta{resize:vertical;min-height:46px;}
+.ex-del{background:transparent;border:none;color:var(--g400);cursor:pointer;font-size:17px;padding:3px;transition:color .15s;}
+.ex-del:hover{color:#c0392b;}
+.extra-footer{border-top:1px solid var(--g200);padding:.9rem 1.2rem;background:var(--g100);}
+.extra-footer-lbl{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--g500);margin-bottom:.35rem;}
+.overall-notes{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--g900);padding:7px 10px;resize:vertical;min-height:90px;background:#fff;outline:none;}
+.overall-notes:focus{border-color:var(--gold);}
+.extra-ph{color:var(--g500);font-size:12px;font-style:italic;padding:.4rem 0;}
+/* BLANK CUSTOM ITEMS */
+.type-blank{display:flex;align-items:center;gap:9px;padding:7px 14px;}
+.blank-label-input{flex:1;border:none;border-bottom:1px dashed var(--g300);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g700);padding:2px 4px;outline:none;transition:border-color .2s;}
+.blank-label-input:focus{border-bottom-color:var(--gold);}
+.blank-label-input::placeholder{color:var(--g400);font-style:italic;}
+.item-row.has-value .blank-label-input{color:var(--green);font-weight:500;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;font-size:12px;padding:10px 18px;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;z-index:999;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="cover-top">
+    <div class="badge">Confidential — Agent Use</div>
+  </div>
+  <div class="cover-title">Property <em>Feature</em> Report</div>
+  <div class="gold-rule"></div>
+  <div class="info-grid">
+    <div class="info-field span2"><label>Property Address</label><input type="text" id="f_address" placeholder="123 Main Street, Toronto, ON"></div>
+    <div class="info-field"><label>List Price (Est.)</label><input type="text" id="f_price" placeholder="$0,000,000"></div>
+    <div class="info-field"><label>Date</label><input type="date" id="f_date"></div>
+    <div class="info-field"><label>Property Type</label><select id="f_type"><option value="">— Select —</option><option>Detached</option><option>Semi-Detached</option><option>Freehold Townhouse</option><option>End-Unit Townhouse</option></select></div>
+    <div class="info-field"><label>Bedrooms</label><input type="text" id="f_beds" placeholder="e.g. 4+1"></div>
+    <div class="info-field"><label>Bathrooms</label><input type="text" id="f_baths" placeholder="e.g. 3"></div>
+    <div class="info-field"><label>Sq Ft (Above Grade)</label><input type="text" id="f_sqft" placeholder="e.g. 2,200"></div>
+    <div class="info-field"><label>Year Built</label><input type="text" id="f_year" placeholder="e.g. 2005"></div>
+    <div class="info-field"><label>Lot Size</label><input type="text" id="f_lot" placeholder="e.g. 40 × 120 ft"></div>
+    <div class="info-field"><label>Prepared By</label><input type="text" id="f_agent" value="Peter Luo"></div>
+    <div class="info-field"><label>MLS® / PIN</label><input type="text" id="f_mls"></div>
+  </div>
+</div>
+<div class="topbar">
+  <div class="topbar-label">Property Feature Report</div>
+  <div class="score-pill">Items: <b id="tb_checked">0</b> / <b id="tb_total">0</b></div>
+  <button class="btn btn-ghost" onclick="expandAll()">Expand All</button>
+  <button class="btn btn-ghost" onclick="collapseAll()">Collapse All</button>
+  <button class="btn btn-ghost" onclick="clearAll()" style="color:#c0736a;border-color:#e0d0d0;">🗑 Clear</button>
+  <button class="btn btn-navy" onclick="loadFile()">📂 Load JSON</button>
+  <button class="btn btn-gold" onclick="saveJSON()">💾 Save JSON</button>
+  <button class="btn btn-gold" style="background:var(--navy3);" onclick="savePDF()">📄 Save PDF</button>
+</div>
+<div class="main">
+
+<div id="sections-container"></div>
+<div class="extra-section">
+  <div class="extra-hdr">
+    <div class="extra-hdr-title">Additional Notes &amp; Custom Items</div>
+    <div class="extra-add" onclick="addExtraRow()">+ Add Item</div>
+  </div>
+  <div class="extra-body" id="extra-body"><div class="extra-ph" id="extra-ph">Click "+ Add Item" to record additional features, custom notes, or items not listed above.</div></div>
+  <div class="extra-footer">
+    <div class="extra-footer-lbl">Overall Property Notes / Summary Remarks</div>
+    <textarea class="overall-notes" id="overall_notes" placeholder="Overall impression, key selling points, agent notes, pricing context, buyer profile recommendations..."></textarea>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleLoad(event)">
+<script>
+
+const SECTIONS=[
+{id:'s01',title:'1.  Lot & Site',items:[
+  {t:'F',label:'Lot Size',fields:[{label:'Frontage',ph:'##',w:'fxs',unit:'ft'},{label:'\xd7 Depth',ph:'###',w:'fxs',unit:'ft'},{label:'Total',ph:'xxxx',w:'fm',unit:'sq\u00a0ft'},{label:'Acres',ph:'##.##',w:'fs',unit:'ac'}]},
+  {t:'M',label:'Lot Shape',opts:['Regular','Irregular','Pie-shaped','Corner','Greenbelt','Flag']},
+  {t:'C',label:'Lot Topography — Flat'},
+  {t:'C',label:'Lot Topography — Sloped'},
+  {t:'C',label:'Lot Topography — Ravine lot'},
+  {t:'C',label:'Lot Topography — Waterfront'},
+  {t:'C',label:'Lot Topography — Elevated'},
+  {t:'C',label:'Lot Topography — Lowland'},
+  {t:'F',label:'Side Yard(s)',fields:[{label:'Left',ph:'5',w:'fxs',unit:'ft'},{label:'Right',ph:'5',w:'fxs',unit:'ft'}]},
+  {t:'F',label:'Rear Yard Depth',fields:[{ph:'100',w:'fs',unit:'ft'}]},
+  {t:'M',label:'Lot Orientation (backyard faces)',opts:['South','North','East','West']},
+  {t:'M',label:'Neighbouring Land Use',opts:['Park / Green space','School','Residential','Commercial','Ravine / Nature']},
+  {t:'C',label:'Rear laneway (paved / city-maintained \u2014 income / parking potential)'},
+  {t:'M',label:'Driveway',opts:['Private','Mutual','Concrete','Interlock','Asphalt','Double-wide']},
+  {t:'F',label:'Parking Spaces',fields:[{label:'Driveway',ph:'2',w:'fxs'},{label:'Garage',ph:'1',w:'fxs'},{label:'Total',ph:'3',w:'fxs'}]},
+  {t:'C',label:'Street parking available'},
+  {t:'M',label:'Street Type',opts:['Cul-de-sac','Dead-end','Traffic calming','Quiet residential','Through street']},
+  {t:'M',label:'Fencing',opts:['Full','Partial','Wood','Vinyl','Metal','Wrought iron','Privacy fence']},
+  {t:'C',label:'Lot grading certificate available'},
+  {t:'C',label:'Snow storage area (townhouse / corner lot)'},
+  {t:'C',label:'Mature trees / landscaping'},
+  {t:'C',label:'Garden beds / vegetable garden'},
+  {t:'C',label:'Irrigation / sprinkler system'},
+  {t:'M',label:'Outdoor Lighting',opts:['Landscape','Path lights','Feature lighting','Motion sensor','Timer-controlled']},
+  {t:'M',label:'Swimming Pool',opts:['In-ground','Above-ground','Heated','With equipment','None']},
+  {t:'C',label:'Hot tub / spa'},
+  {t:'C',label:'Garden shed / workshop / outbuilding'},
+  {t:'C',label:'Outdoor fireplace / fire pit'},
+  {t:'M',label:'Deck',opts:['Wood','Composite','Interlock','With permit','Multi-level','None']},
+  {t:'M',label:'Patio',opts:['Interlock','Concrete','Flagstone','None']},
+  {t:'M',label:'Porch / Veranda',opts:['Front porch','Covered porch','Wrap-around','None']},
+  {t:'C',label:'Balcony / terrace'},
+  {t:'M',label:'Privacy Screening',opts:['Hedges','Mature trees','Fence','Grade change']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s02',title:'2.  Exterior & Structure',items:[
+  {t:'M',label:'Property Type',opts:['Detached','Semi-Detached','Freehold Townhouse','End-Unit Townhouse']},
+  {t:'M',label:'Storeys',opts:['Bungalow (1)','1.5','2-Storey','2.5','3-Storey','Back-split','Side-split','Split-level']},
+  {t:'F',label:'Year Built',fields:[{ph:'2005',w:'fs'}]},
+  {t:'M',label:'Architectural Style',opts:['Contemporary','Traditional','Craftsman','Century Home','Georgian','Modern','Tudor']},
+  {t:'M',label:'Exterior Cladding',opts:['Brick','Stone','Stucco','Hardie Board','Vinyl Siding','Wood','Combination']},
+  {t:'M',label:'Exterior Condition',opts:['Excellent','Good','Fair \u2014 minor touch-up','Freshly painted']},
+  {t:'M',label:'Foundation Type',opts:['Poured concrete','Block','Stone','ICF']},
+  {t:'C',label:'Window wells (basement) \u2014 covered, drained, good size'},
+  {t:'M',label:'Roof Type',opts:['Gable','Hip','Flat','Mansard','Mixed']},
+  {t:'M',label:'Roof Material',opts:['Asphalt shingle','Metal','Flat membrane','Clay tile','Cedar shake']},
+  {t:'F',label:'Roof Last Replaced',fields:[{label:'Year',ph:'2021',w:'fs'}]},
+  {t:'C',label:'Eavestroughs & downspouts \u2014 good condition / leaf guards'},
+  {t:'C',label:'Soffits & fascia \u2014 good condition'},
+  {t:'C',label:'Soffit ventilation (continuous / baffles \u2014 attic moisture management)'},
+  {t:'M',label:'Windows',opts:['Triple pane','Double pane','Vinyl frame','Wood frame','Recently replaced','Energy Star']},
+  {t:'M',label:'Exterior Doors',opts:['Steel insulated','Fibreglass','Solid wood','Recently replaced','Smart lock ready']},
+  {t:'M',label:'Garage Door',opts:['Insulated','Steel','Wood','Smart opener','Recently replaced']},
+  {t:'M',label:'Walkway / Front Steps',opts:['Concrete','Interlock','Flagstone','Recently redone','Good condition']},
+  {t:'M',label:'Exterior Lighting',opts:['Front entrance','Rear yard','Motion sensor','Timer','Smart']},
+  {t:'C',label:'Frost-free hose bibs (front & rear)'},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s03',title:'3.  Garage & Parking',items:[
+  {t:'M',label:'Garage Type',opts:['Attached','Detached','Built-in under','None']},
+  {t:'M',label:'Garage Size',opts:['Single','Double','Tandem','Oversized single','Oversized double']},
+  {t:'M',label:'Garage Interior Finish',opts:['Insulated','Drywalled','Heated','Painted','Unfinished']},
+  {t:'M',label:'Garage Floor',opts:['Epoxy coated','Painted concrete','Plain concrete']},
+  {t:'C',label:'Garage storage / built-in shelving'},
+  {t:'C',label:'Smart garage door opener with app access'},
+  {t:'M',label:'EV Charger',opts:['Level 2 installed','Level 1 installed','Rough-in only','200A panel ready','Not present']},
+  {t:'C',label:'Additional outdoor parking pads'},
+  {t:'C',label:'Carport'},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s04',title:'4.  Entry & Main Floor Layout',items:[
+  {t:'M',label:'Foyer / Entry',opts:['Grand / impressive','Good size','Tiled floor','Hardwood','Double-height ceiling']},
+  {t:'C',label:'Mudroom (bench / hooks / cubbies / separate room)'},
+  {t:'C',label:'Built-in bench / storage at entry'},
+  {t:'C',label:'Coat closet at entry'},
+  {t:'C',label:'Main floor storage closet(s)'},
+  {t:'C',label:'Accessibility features (wider doorways / no-step entry / grab bars)'},
+  {t:'M',label:'Main Floor Ceiling Height',opts:['8 ft','9 ft','10 ft','11\u201312 ft','Vaulted','Cathedral','Coffered']},
+  {t:'C',label:'Coffered / tray / barrel ceilings (specific rooms)'},
+  {t:'C',label:'Transom windows / sidelights (interior natural light)'},
+  {t:'M',label:'Main Floor Natural Light',opts:['Excellent \u2014 all directions','Good \u2014 south & west','Good \u2014 east facing','Bay / bow windows']},
+  {t:'M',label:'Layout Style',opts:['Open concept','Traditional','Transitional','Great room','Loft-style']},
+  {t:'C',label:'Excellent kitchen / dining / living flow (entertaining)'},
+  {t:'C',label:'Home office suitability (dedicated room / natural light / closeable door)'},
+  {t:'C',label:'Formal living room'},
+  {t:'C',label:'Formal dining room'},
+  {t:'C',label:'Family room / great room'},
+  {t:'C',label:'Breakfast area / eat-in kitchen'},
+  {t:'C',label:'Main floor office / den / library'},
+  {t:'C',label:'Main floor bedroom (in-law / accessibility)'},
+  {t:'C',label:'Main floor full bathroom / 3-pc bath'},
+  {t:'C',label:'Powder room / 2-pc bath'},
+  {t:'C',label:'Main floor laundry room'},
+  {t:'C',label:'Sunroom / solarium / three-season room'},
+  {t:'M',label:'Staircase Style',opts:['Open riser','Closed riser','Floating','Hardwood treads','Carpet','Wrought iron railing','Glass railing']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s05',title:'5.  Kitchen',items:[
+  {t:'M',label:'Kitchen Size',opts:['Galley','Standard','Large','Chef\'s kitchen','Extra large']},
+  {t:'M',label:'Kitchen Layout',opts:['L-shape','U-shape','Island','Peninsula','Open concept','Galley']},
+  {t:'M',label:'Kitchen Island',opts:['Large island','Seating','Storage','Prep sink','Waterfall edge','None']},
+  {t:'C',label:'Breakfast bar / counter seating'},
+  {t:'M',label:'Cabinet Quality',opts:['Custom','Semi-custom','Shaker style','Flat-front','Painted','Stained wood']},
+  {t:'C',label:'Cabinet storage features (pull-outs / lazy Susan / deep drawers)'},
+  {t:'C',label:'Open to ceiling (no soffit above cabinets)'},
+  {t:'M',label:'Countertop',opts:['Quartz','Granite','Marble','Quartzite','Butcher block','Laminate','Porcelain slab']},
+  {t:'M',label:'Backsplash',opts:['Tile','Stone','Glass','Marble','Full-height','None']},
+  {t:'M',label:'Sink',opts:['Undermount double','Undermount single','Farmhouse','Prep sink also present']},
+  {t:'M',label:'Faucet',opts:['Pull-down','Touchless','Bridge style','High-arc']},
+  {t:'C',label:'Garbage disposal / garburator'},
+  {t:'M',label:'Dishwasher',opts:['Included','Left of sink','Right of sink','Integrated panel','Recent model']},
+  {t:'M',label:'Appliance Package',opts:['Professional grade','Mid-range','Builder grade','Stainless steel','Integrated / panel-ready','All included']},
+  {t:'C',label:'Water line to fridge (ice maker / dispenser)'},
+  {t:'M',label:'Range / Cooktop',opts:['Gas range','Electric range','Induction','Gas roughed-in','6-burner','Double oven']},
+  {t:'M',label:'Range Hood',opts:['Ducted to exterior','High CFM (600+)','Insert','Custom cabinet hood','Recirculating']},
+  {t:'M',label:'Microwave',opts:['OTR / built-in','Drawer style','Integrated','Counter only']},
+  {t:'C',label:'Second prep sink'},
+  {t:'C',label:'Bar / beverage fridge'},
+  {t:'C',label:'Walk-in pantry'},
+  {t:'C',label:'Butler\'s pantry'},
+  {t:'C',label:'Pot filler'},
+  {t:'M',label:'Kitchen Lighting',opts:['Pot lights','Under-cabinet','Toe kick lighting','Pendant over island','All of the above']},
+  {t:'C',label:'Kitchen window with natural light / view'},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s06',title:'6.  Upper Floor',items:[
+  {t:'F',label:'Bedrooms Above Grade',fields:[{label:'Main bdrms',ph:'3',w:'fxs'},{label:'+ Loft/den',ph:'1',w:'fxs'}]},
+  {t:'M',label:'Primary Bedroom Size',opts:['Extra large (16\xd716+)','Large (14\xd714+)','Good (12\xd713+)','Standard']},
+  {t:'M',label:'Primary Bedroom Orientation',opts:['Rear / quiet side','Front street view','Corner room','West / sunset view','South / bright']},
+  {t:'C',label:'Vaulted / cathedral ceiling in primary bedroom'},
+  {t:'M',label:'Primary Walk-in Closet',opts:['Large walk-in','Small walk-in','Double closet','Built-in organizers','His & hers WIC']},
+  {t:'C',label:'Second closet in primary bedroom'},
+  {t:'M',label:'Primary Ensuite',opts:['6-pc','5-pc','4-pc','3-pc','Double sink','Heated floor','Soaker tub','Freestanding tub','Steam shower','Walk-in shower','Curbless shower']},
+  {t:'F',label:'Secondary Bedrooms',fields:[{label:'Count',ph:'2',w:'fxs'},{label:'Smallest',ph:'10\xd710',w:'fm',unit:'ft'}]},
+  {t:'M',label:'Secondary Bedroom Closets',opts:['Walk-in','Double','Single','Built-in organizers']},
+  {t:'C',label:'Bedroom windows \u2014 good size / egress compliant'},
+  {t:'C',label:'Nursery / bedroom adjacent to primary'},
+  {t:'M',label:'Upper Floor Natural Light',opts:['Excellent','Good \u2014 multiple exposures','Skylights','Dormers','Bay windows']},
+  {t:'C',label:'Jack-and-Jill bathroom'},
+  {t:'M',label:'Second Full Bathroom',opts:['4-pc','3-pc','Double sink','Recently renovated']},
+  {t:'C',label:'Third bathroom'},
+  {t:'M',label:'Upper Floor Laundry',opts:['Full laundry room','Laundry closet','Side-by-side','None \u2014 basement only']},
+  {t:'C',label:'Upper floor storage / linen closet'},
+  {t:'C',label:'Loft / bonus room / flex space'},
+  {t:'C',label:'Upper floor den / office nook'},
+  {t:'C',label:'Skylight(s) \u2014 upper floor / hallway'},
+  {t:'M',label:'Upper Floor Ceiling Height',opts:['8 ft','9 ft','10 ft','Vaulted in primary']},
+  {t:'M',label:'Attic Access',opts:['Pull-down stairs','Hatch only','Full walk-in attic','Spray-foamed / sealed']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s07',title:'7.  Basement',items:[
+  {t:'M',label:'Basement Type',opts:['Full','Partial','Walk-out','Walk-up','Separate entrance']},
+  {t:'M',label:'Basement Ceiling Height',opts:['Above 8 ft','7\u20138 ft','6.5\u20137 ft','Below 6.5 ft']},
+  {t:'M',label:'Basement Finish Level',opts:['Fully finished','Partially finished','Unfinished','Recently finished']},
+  {t:'M',label:'Basement Subfloor',opts:['Dricore','Sleepers','Laminate / LVP over concrete','Concrete direct']},
+  {t:'M',label:'Basement Ceiling Treatment',opts:['Drywalled','Drop ceiling','Exposed','Spray foam']},
+  {t:'C',label:'Rec room / games room / media room'},
+  {t:'C',label:'Basement bedroom(s) with egress window'},
+  {t:'M',label:'Basement Bathroom',opts:['4-pc','3-pc','2-pc','Rough-in only','None']},
+  {t:'C',label:'Basement kitchen / kitchenette'},
+  {t:'C',label:'In-law suite (self-contained)'},
+  {t:'C',label:'Legal second suite / rental apartment (permitted)'},
+  {t:'C',label:'CO & smoke detectors in legal placement'},
+  {t:'C',label:'Separate laundry for suite'},
+  {t:'C',label:'Laundry rough-in (unfinished basement)'},
+  {t:'C',label:'Cold room / cantina / cellar'},
+  {t:'C',label:'Basement floor drain (functional / backwater protected)'},
+  {t:'C',label:'Storage room(s)'},
+  {t:'C',label:'Basement windows \u2014 good size / covers / drainage'},
+  {t:'M',label:'Attic Insulation',opts:['Blown-in (R-50+)','Blown-in (R-30\u201350)','Batt insulation','Spray foam','Upgraded recently']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s08',title:'8.  Bathrooms',items:[
+  {t:'F',label:'Bathroom Count',fields:[{label:'Full (3-pc+)',ph:'2',w:'fxs'},{label:'Half (2-pc)',ph:'1',w:'fxs'},{label:'Total',ph:'3',w:'fxs'}]},
+  {t:'C',label:'Main floor powder room (2-pc)'},
+  {t:'M',label:'Main Floor Full Bath',opts:['3-pc','4-pc','Not present']},
+  {t:'M',label:'Upper Floor Main Bath',opts:['4-pc','3-pc','Double sink','Recently renovated']},
+  {t:'C',label:'Basement bath'},
+  {t:'M',label:'Fixture Quality',opts:['Designer / high-end','Mid-range upgraded','Builder grade','Recently renovated']},
+  {t:'M',label:'Tile Work',opts:['Porcelain','Marble','Ceramic','Large format','Custom pattern','Floor to ceiling']},
+  {t:'M',label:'Vanity',opts:['Custom cabinetry','Floating','Double sink','Quartz top','Undermount sink']},
+  {t:'C',label:'Mirror / medicine cabinet'},
+  {t:'C',label:'Linen closet in or near bathroom'},
+  {t:'M',label:'Toilet',opts:['Comfort height','Wall-hung','Bidet / bidet seat','Standard']},
+  {t:'C',label:'Soaker tub / freestanding tub'},
+  {t:'M',label:'Walk-in Shower',opts:['Large (36\xd760+)','Glass enclosure','Frameless glass','Bench','Niche','Curbless / barrier-free']},
+  {t:'M',label:'Shower Fixtures',opts:['Rain head','Handheld','Body jets','Thermostatic','Wall-mount']},
+  {t:'M',label:'Heated Floor',opts:['Primary ensuite','All bathrooms','Main bath only','Not present']},
+  {t:'C',label:'Heated towel bar'},
+  {t:'M',label:'Bathroom Ventilation',opts:['Window + fan','Humidity-sensing fan','Timer fan','Window only']},
+  {t:'M',label:'Natural Light',opts:['Window \u2014 large','Window \u2014 frosted','Skylight','None / privacy glass']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+{id:'s09',title:'9.  Laundry',items:[
+  {t:'M',label:'Laundry Location',opts:['Upper floor \u2014 room','Upper floor \u2014 closet','Main floor \u2014 room','Basement']},
+  {t:'M',label:'Setup',opts:['Dedicated room','Laundry closet','Shared utility room','Side-by-side','Stacked']},
+  {t:'M',label:'Washer & Dryer',opts:['Front-load set','Top-load washer','Gas dryer','Electric dryer','Included & recent','Not included']},
+  {t:'C',label:'Laundry sink'},
+  {t:'C',label:'Storage / cabinetry / folding counter'},
+  {t:'C',label:'Gas dryer hookup available'},
+]},
+{id:'s10',title:'10.  Interior Finishes & Details',items:[
+  {t:'M',label:'Main Floor Flooring',opts:['Hardwood','Engineered hardwood','Tile','LVP','Marble','Carpet \u2014 none']},
+  {t:'M',label:'Upper Floor Flooring',opts:['Hardwood','Engineered hardwood','LVP','Carpet','Tile in bathrooms']},
+  {t:'M',label:'Basement Flooring',opts:['Laminate','LVP','Engineered','Tile','Dricore + flooring','Carpet']},
+  {t:'M',label:'Stair Treads',opts:['Hardwood','LVP','Carpet runner','Carpet full','Metal nose']},
+  {t:'M',label:'Interior Doors',opts:['Solid core','8 ft height','Shaker style','Painted white','Stained wood','Pocket doors']},
+  {t:'M',label:'Door Hardware',opts:['Matte black','Brushed gold','Brushed nickel','Chrome','Upgraded throughout']},
+  {t:'M',label:'Trim & Baseboard',opts:['Tall (5"+)','Crown moulding','Painted white','Stained wood','Custom millwork']},
+  {t:'C',label:'Wainscoting / wall panelling'},
+  {t:'C',label:'Accent / feature walls (shiplap, stone, wallpaper)'},
+  {t:'C',label:'Built-in shelving / cabinetry (living room / office)'},
+  {t:'C',label:'Pot lights throughout (dimmable)'},
+  {t:'M',label:'Lighting Quality',opts:['Designer fixtures','Upgraded throughout','Good mix','Builder fixtures']},
+  {t:'C',label:'Ceiling fans'},
+  {t:'M',label:'Main Fireplace',opts:['Gas \u2014 linear','Gas \u2014 traditional','Wood-burning','Electric','Stone surround','Brick surround','Custom mantel','None']},
+  {t:'C',label:'Second fireplace (primary bedroom / basement)'},
+  {t:'C',label:'Window coverings included (quality / blackout)'},
+  {t:'M',label:'Paint Quality',opts:['Fresh neutral palette','Washable eggshell / satin','Premium paint','Accent walls']},
+  {t:'C',label:'Soundproofing between floors (acoustic underlay / insulation in joists)'},
+  {t:'M',label:'Natural Light Overall',opts:['Excellent \u2014 all exposures','South & west facing','Corner lot advantage','Good skylights','Above average']},
+  {t:'M',label:'Storage Overall',opts:['Excellent throughout','Good \u2014 well planned','Adequate','Closet organizers installed']},
+  {t:'C',label:'Flex / multipurpose spaces (office / gym / guest room potential)'},
+  {t:'M',label:'Overall Finish Level',opts:['Custom / luxury','Fully renovated','Updated \u2014 mid range','Builder grade \u2014 original']},
+]},
+{id:'s11',title:'11.  Mechanical Systems',items:[
+  {t:'M',label:'Furnace Type',opts:['High-efficiency gas (96%+)','Mid-efficiency gas','Heat pump','Boiler / radiant','Electric']},
+  {t:'F',label:'Furnace Year Installed',fields:[{ph:'2019',w:'fs'}]},
+  {t:'M',label:'Furnace Flue',opts:['PVC (high-efficiency)','Metal (conventional)','Direct vent']},
+  {t:'C',label:'Multi-zone heating'},
+  {t:'C',label:'Hydronic / radiator system (older home \u2014 well maintained)'},
+  {t:'C',label:'HVAC filter upgraded / maintenance history available'},
+  {t:'C',label:'Ductwork clean / recently serviced'},
+  {t:'C',label:'Makeup air unit (code-compliant with high-CFM hood)'},
+  {t:'C',label:'Gas meter \u2014 large capacity (upgrade potential)'},
+  {t:'M',label:'Central A/C',opts:['High SEER (16+)','Standard efficiency','Recently replaced','Heat pump A/C','None']},
+  {t:'F',label:'A/C Year Installed',fields:[{ph:'2020',w:'fs'}]},
+  {t:'C',label:'Ductless mini-split / supplemental A/C'},
+  {t:'C',label:'HRV / ERV (heat recovery ventilator \u2014 fresh air)'},
+  {t:'C',label:'Whole-home humidifier'},
+  {t:'C',label:'Air purifier / UV system'},
+  {t:'M',label:'Hot Water System',opts:['Tankless \u2014 owned','Tank \u2014 owned','Heat pump water heater','Rented (note cost)']},
+  {t:'C',label:'Water softener'},
+  {t:'C',label:'Water filtration / reverse osmosis'},
+  {t:'C',label:'Radiant / in-floor heating'},
+  {t:'C',label:'Smart thermostat (Nest / Ecobee)'},
+  {t:'C',label:'Gas fireplace \u2014 annual service record available'},
+]},
+{id:'s12',title:'12.  Electrical',items:[
+  {t:'M',label:'Panel Size',opts:['200A \u2014 upgraded','200A \u2014 original','100A','60A']},
+  {t:'C',label:'Sub-panel (garage / basement suite)'},
+  {t:'M',label:'Wiring',opts:['All copper','Copper throughout','Updated to copper']},
+  {t:'C',label:'Adequate number of circuits for modern use'},
+  {t:'C',label:'Dedicated circuits (fridge / dishwasher / microwave / laundry / A/C)'},
+  {t:'C',label:'Grounded outlets throughout'},
+  {t:'C',label:'GFCI outlets in all wet areas'},
+  {t:'C',label:'AFCI breakers installed'},
+  {t:'C',label:'Exterior outlets (front / back / garage)'},
+  {t:'C',label:'USB & smart outlets throughout'},
+  {t:'M',label:'EV Charger',opts:['Level 2 installed','Level 1 installed','Rough-in only','Panel capacity available','Not present']},
+  {t:'C',label:'Generator hookup / transfer switch'},
+  {t:'C',label:'Whole-home surge protector'},
+  {t:'M',label:'Solar / Battery',opts:['Solar panels \u2014 owned','Solar panels \u2014 leased','Battery storage','Pre-wired for solar','None']},
+]},
+{id:'s13',title:'13.  Plumbing',items:[
+  {t:'M',label:'Water Supply',opts:['Municipal','Well \u2014 tested & good','Well pump \u2014 recent']},
+  {t:'C',label:'Pressure reducing valve (PRV) installed'},
+  {t:'C',label:'Water meter (location known / remote read)'},
+  {t:'M',label:'Pipe Material',opts:['Copper throughout','PEX','PVC','Mix \u2014 copper & PVC','Recently replaced']},
+  {t:'C',label:'Main shutoff valve \u2014 accessible & functional'},
+  {t:'C',label:'Basement floor drain (functional / backwater protected)'},
+  {t:'M',label:'Sewer',opts:['Municipal','Septic \u2014 recently serviced','Septic \u2014 new system']},
+  {t:'C',label:'Sewage ejector pump (basement bath)'},
+  {t:'C',label:'Irrigation system (winterized / backflow preventer)'},
+  {t:'C',label:'Frost-free hose bibs (front & rear)'},
+  {t:'C',label:'Laundry standpipe / drain in good condition'},
+]},
+{id:'s14',title:'14.  Smart Home & Technology',items:[
+  {t:'M',label:'Smart Thermostat',opts:['Nest','Ecobee','Honeywell smart','Other']},
+  {t:'C',label:'Smart lighting / switches throughout'},
+  {t:'C',label:'Smart locks (front / side / garage)'},
+  {t:'C',label:'Video doorbell'},
+  {t:'M',label:'Security System',opts:['Monitored','Self-monitored','Cameras \u2014 exterior','Cameras \u2014 interior','None']},
+  {t:'C',label:'Whole-home audio / built-in speakers'},
+  {t:'C',label:'Home theatre / media room wiring'},
+  {t:'C',label:'Structured wiring panel / CAT6 throughout'},
+  {t:'M',label:'Internet',opts:['Fibre available','Rogers / Ignite','Bell / Fibe','1 Gbps+','Multiple ISPs available']},
+  {t:'C',label:'Backup internet / satellite option'},
+  {t:'C',label:'Whole-home UPS (battery backup \u2014 internet & security)'},
+  {t:'C',label:'Smart appliances (fridge / oven / washer-dryer)'},
+  {t:'C',label:'Central vacuum (built-in / kick panels / hose set)'},
+  {t:'C',label:'Intercom system'},
+  {t:'C',label:'Package delivery box / smart parcel locker'},
+]},
+{id:'s15',title:'15.  Energy Efficiency & Sustainability',items:[
+  {t:'F',label:'Attic Insulation R-Value',fields:[{label:'R-value',ph:'60',w:'fxs'}]},
+  {t:'C',label:'Spray foam insulation (areas applied)'},
+  {t:'C',label:'Thermal bridging addressed'},
+  {t:'C',label:'Air sealing completed (blower door test result available)'},
+  {t:'C',label:'Energy Star windows & doors'},
+  {t:'M',label:'Furnace Efficiency',opts:['96%+ AFUE','92% AFUE','80% AFUE','Heat pump \u2014 COP 3+']},
+  {t:'M',label:'A/C Efficiency',opts:['SEER 18+','SEER 16\u201318','SEER 13\u201316']},
+  {t:'C',label:'Tankless or heat pump water heater'},
+  {t:'C',label:'Cool roof / reflective roofing material'},
+  {t:'C',label:'Passive solar design (south-facing windows / thermal mass)'},
+  {t:'M',label:'Solar',opts:['Panels \u2014 owned','Panels \u2014 leased','Battery storage','Pre-wired','None']},
+  {t:'C',label:'Net-zero / passive house features'},
+  {t:'C',label:'EnerGuide rating / energy audit available'},
+  {t:'M',label:'EV Ready',opts:['EV-ready certified','Ontario rebate eligible','Level 2 charger installed','Rough-in done']},
+  {t:'M',label:'Green Certification',opts:['LEED certified','Built Green','ENERGY STAR home','R-2000','None']},
+]},
+{id:'s16',title:'16.  Location & Neighbourhood',items:[
+  {t:'F',label:'Municipality / Neighbourhood',fields:[{ph:'e.g. Leaside, Toronto',w:'flong'}]},
+  {t:'C',label:'Strong school district (elementary & secondary \u2014 public & Catholic)'},
+  {t:'C',label:'High school ratings / Fraser Institute rankings'},
+  {t:'C',label:'French immersion access'},
+  {t:'C',label:'Daycare / pre-school proximity'},
+  {t:'C',label:'Place of worship proximity'},
+  {t:'M',label:'Transit Access',opts:['Subway \u2014 walking distance','LRT','GO Train','Bus route','Multiple options']},
+  {t:'F',label:'Walk / Bike / Transit Scores',fields:[{label:'Walk',ph:'85',w:'fxs'},{label:'Bike',ph:'72',w:'fxs'},{label:'Transit',ph:'80',w:'fxs'}]},
+  {t:'M',label:'Proximity to Nature',opts:['Park \u2014 walking distance','Ravine access','Trail system','Waterfront','Conservation area']},
+  {t:'M',label:'Proximity to Amenities',opts:['Grocery \u2014 walking','Shopping centre','Restaurants / caf\xe9s','Medical','Library']},
+  {t:'C',label:'Hospital / major medical centre nearby'},
+  {t:'C',label:'Community centre / rec centre nearby'},
+  {t:'M',label:'Highway Access',opts:['407','401','400','DVP','Gardiner','QEW','Good access \u2014 under 5 min']},
+  {t:'C',label:'Airport proximity (reasonable \u2014 not under flight path)'},
+  {t:'C',label:'Municipal services (garbage / recycling / green bin \u2014 city)'},
+  {t:'M',label:'Utility Provider',opts:['Enbridge Gas','Toronto Hydro','Alectra','Hydro One','Municipal water']},
+  {t:'M',label:'Neighbourhood Character',opts:['Mature established','Family-oriented','High pride of ownership','Gentrifying / improving','Quiet / low traffic','Walkable village']},
+]},
+{id:'s17',title:'17.  Legal & Title',items:[
+  {t:'C',label:'Survey available (lot dimensions confirmed)'},
+  {t:'C',label:'Boundary fencing agreement with neighbours in place'},
+  {t:'M',label:'Zoning',opts:['Residential \u2014 stable','Mixed use potential','ARU / additional unit permitted','Lot severance potential']},
+  {t:'C',label:'Lot severance / severability potential'},
+  {t:'C',label:'POTL (freehold townhouse) \u2014 fees known / reasonable'},
+  {t:'C',label:'Rental permit / legal secondary suite registered'},
+  {t:'C',label:'Title insurance in place'},
+  {t:'F',label:'Annual Property Tax',fields:[{ph:'8,500',w:'fm',unit:'$/yr'}]},
+  {t:'C',label:'MPAC assessment reviewed / aligns with market'},
+]},
+{id:'s18',title:'18.  Condition & Maintenance History',items:[
+  {t:'F',label:'Roof Replaced',fields:[{label:'Year',ph:'2021',w:'fs'}]},
+  {t:'F',label:'Furnace Replaced',fields:[{label:'Year',ph:'2019',w:'fs'}]},
+  {t:'F',label:'A/C Replaced',fields:[{label:'Year',ph:'2020',w:'fs'}]},
+  {t:'F',label:'Windows Replaced',fields:[{label:'Year',ph:'2018',w:'fs'}]},
+  {t:'F',label:'Kitchen Renovation',fields:[{label:'Year',ph:'2022',w:'fs'}]},
+  {t:'F',label:'Bathroom Renovation(s)',fields:[{label:'Year',ph:'2021',w:'fs'}]},
+  {t:'F',label:'Basement Waterproofing',fields:[{label:'Year',ph:'2017',w:'fs'},{label:'Warranty',ph:'25 yr',w:'fm'}]},
+  {t:'C',label:'Recent major renovations (permitted / documented)'},
+  {t:'C',label:'WETT inspection completed (wood fireplace / stove)'},
+  {t:'C',label:'Sewer scope / camera inspection \u2014 clear'},
+  {t:'C',label:'Thermal imaging report available'},
+  {t:'C',label:'Home inspection report available'},
+  {t:'C',label:'Utility bills available (12-month avg \u2014 gas / hydro / water)'},
+  {t:'M',label:'Major Appliance Ages',opts:['All under 5 yrs','Mix \u2014 most recent','Older but functional','Some need replacement']},
+]},
+{id:'s19',title:'19.  Inclusives & Transaction Details',items:[
+  {t:'M',label:'Chattels Included',opts:['All appliances','Window coverings','Light fixtures','Garage openers','TV mounts','All of the above']},
+  {t:'C',label:'Items under warranty (transferable to buyer)'},
+  {t:'C',label:'SPIS completed (Seller Property Information Statement)'},
+  {t:'F',label:'Deposit',fields:[{label:'Amount',ph:'50,000',w:'fm',unit:'$'}]},
+  {t:'M',label:'Closing Date',opts:['Flexible','30 days','60 days','90 days','Specific date preferred','Immediate']},
+  {t:'C',label:'Post-closing occupancy by seller available (leaseback)'},
+]},
+{id:'s20',title:'20.  Seller & Listing Intelligence',items:[
+  {t:'M',label:'Reason for Selling',opts:['Downsizing','Upsizing','Relocating','Estate sale','Divorce / separation','Investment \u2014 cashing out','New purchase']},
+  {t:'M',label:'Seller Timeline',opts:['Motivated \u2014 ASAP','Flexible','3\u20136 months','No rush','Conditional on purchase']},
+  {t:'F',label:'Length of Ownership',fields:[{ph:'12',w:'fxs',unit:'yrs'}]},
+  {t:'C',label:'Competing listings reviewed \u2014 this home is competitively positioned'},
+  {t:'C',label:'Key advantages over competing properties identified'},
+  {t:'C',label:'Pre-listing inspection done'},
+  {t:'C',label:'Pre-listing staging done'},
+  {t:'C',label:'Neighbourhood CMA / comparable sales reviewed'},
+]},
+{id:'s21',title:'21.  Accessibility & Aging-in-Place',items:[
+  {t:'C',label:'No-step / barrier-free entry'},
+  {t:'C',label:'Wider doorways (32"+ clear \u2014 wheelchair accessible)'},
+  {t:'C',label:'Main floor bedroom + full bath combination'},
+  {t:'M',label:'Grab Bars',opts:['Installed \u2014 all bathrooms','Installed \u2014 ensuite only','Rough-in blocking installed','Not present']},
+  {t:'C',label:'Walk-in shower with no curb (curbless / barrier-free)'},
+  {t:'M',label:'Stair Lift',opts:['Installed','Rough-in / space available','Not applicable \u2014 bungalow']},
+  {t:'C',label:'Elevator / lift (multi-storey luxury home)'},
+  {t:'C',label:'Single-storey (bungalow) \u2014 ideal aging-in-place layout'},
+]},
+{id:'s22',title:'22.  Income & Investment Potential',items:[
+  {t:'F',label:'Legal Basement Suite',fields:[{label:'Current rent',ph:'2,200',w:'fm',unit:'$/mo'},{label:'Market rent',ph:'2,400',w:'fm',unit:'$/mo'}]},
+  {t:'C',label:'Garden suite / laneway house potential (zoning confirmed / lot eligible)'},
+  {t:'C',label:'ARU permitted under Bill 23 / provincial policy'},
+  {t:'C',label:'Short-term rental (STR) licensing eligible'},
+  {t:'C',label:'Lot severance potential'},
+  {t:'C',label:'Home occupation / commercial use permitted by zoning'},
+  {t:'F',label:'Cap Rate (if tenanted)',fields:[{ph:'4.2',w:'fxs',unit:'%'}]},
+  {t:'C',label:'Rental income history available'},
+]},
+{id:'s23',title:'23.  Showing & Presentation Notes',items:[
+  {t:'M',label:'Best Showing Time',opts:['Morning \u2014 natural light','Afternoon \u2014 south light','Anytime','Avoid school pickup (3\u20134pm)','Weekends preferred']},
+  {t:'C',label:'Strong curb appeal \u2014 highlight on arrival'},
+  {t:'M',label:'Staging Status',opts:['Professionally staged','Owner occupied \u2014 well presented','Vacant \u2014 staged','Vacant \u2014 unstaged','De-cluttered']},
+  {t:'M',label:'Marketing Materials Ready',opts:['Professional photos','Virtual tour','3D Matterport','Floor plan','Drone photos','Feature sheet']},
+  {t:'M',label:'Pre-offer Inspection',opts:['Permitted \u2014 anytime','Permitted \u2014 by appointment','Not permitted','Pre-inspection report provided']},
+
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+  {t:'B',label:''},
+]},
+];
+
+const S={fields:{},opts:{},checks:{},stars:{},notes:{},secNotes:{},extra:[],overall:''};
+
+function buildAll(){
+  const cont=document.getElementById('sections-container');
+  let total=0;
+  SECTIONS.forEach(sec=>{
+    total+=sec.items.length;
+    const w=document.createElement('div');
+    w.className='section';w.id='sec_'+sec.id;
+    w.innerHTML=`<div class="sec-hdr" onclick="toggleSec('${sec.id}')"><div class="sec-title">${sec.title}</div><div class="sec-right"><div class="sec-tally" id="tally_${sec.id}">0 / ${sec.items.length}</div><div class="chevron">\u25bc</div></div></div><div class="sec-body" id="body_${sec.id}"></div>`;
+    cont.appendChild(w);
+    const body=document.getElementById('body_'+sec.id);
+    sec.items.forEach((item,idx)=>{
+      const key=sec.id+'_'+idx;
+      body.appendChild(buildItem(item,key));
+      const nw=document.createElement('div');
+      nw.className='item-note-wrap';nw.id='nwrap_'+key;
+      nw.innerHTML=`<textarea class="item-note" id="note_${key}" placeholder="Note..." oninput="S.notes['${key}']=this.value"></textarea>`;
+      body.appendChild(nw);
+    });
+    const sn=document.createElement('div');
+    sn.className='sec-notes-wrap';
+    sn.innerHTML=`<div class="sec-notes-lbl">Section Notes</div><textarea class="sec-notes" id="secnote_${sec.id}" placeholder="Notes for this section..." oninput="S.secNotes['${sec.id}']=this.value"></textarea>`;
+    body.appendChild(sn);
+  });
+  document.getElementById('tb_total').textContent=total;
+  updateTotals();
+}
+
+function starsHtml(key){return"";}
+function noteBtn(key){return`<span class="note-btn" onclick="toggleNote(event,'${key}')">note</span>`;}
+
+function buildItem(item,key){
+  const row=document.createElement('div');
+  row.className='item-row';row.id='row_'+key;
+  if(item.t==='C'){
+    row.innerHTML=`<div class="type-check" onclick="toggleCheck('${key}')"><div class="cb" id="cb_${key}"><span class="cb-tick">\u2713</span></div><div class="item-label">${item.label}</div>${starsHtml(key)}${noteBtn(key)}</div>`;
+  }else if(item.t==='F'){
+    const inputs=item.fields.map((f,fi)=>{
+      const fk=`${key}_f${fi}`;
+      return`<div class="field-unit">${f.label?`<span>${f.label}</span>`:''}<input class="f-in ${f.w||'fw'}" id="${fk}" type="text" placeholder="${f.ph||''}" oninput="setField('${key}','${fk}',this.value)">${f.unit?`<span>${f.unit}</span>`:''}</div>`;
+    }).join('');
+    row.innerHTML=`<div class="type-fields"><div class="field-label">${item.label}${starsHtml(key)}${noteBtn(key)}</div><div class="fields-row">${inputs}</div></div>`;
+  }else if(item.t==='B'){
+    row.innerHTML=`<div class="type-blank"><div class="cb" id="cb_${key}" onclick="toggleCheck('${key}')"><span class="cb-tick">\u2713</span></div><input class="blank-label-input" id="bl_${key}" type="text" placeholder="Custom item — type label here" value="${item.label||''}" oninput="setBLabel('${key}',this.value)">${noteBtn(key)}</div>`;
+  }else if(item.t==='M'){
+    const optsHtml=item.opts.map((opt,oi)=>{
+      const ok=`${key}_o${oi}`;
+      return`<div class="opt" id="${ok}" onclick="toggleOpt('${key}','${ok}')"><div class="opt-cb"></div>${opt}</div>`;
+    }).join('');
+    row.innerHTML=`<div class="type-multi"><div class="multi-label">${item.label}${starsHtml(key)}${noteBtn(key)}</div><div class="opts">${optsHtml}</div></div>`;
+  }
+  return row;
+}
+
+const S_BLABELS={};
+function setBLabel(key,val){
+  S_BLABELS[key]=val;
+}
+function toggleCheck(key){
+  S.checks[key]=!S.checks[key];
+  document.getElementById('row_'+key).classList.toggle('has-value',S.checks[key]);
+  updateTotals();autoSave();
+}
+function setField(key,fk,val){
+  if(!S.fields[key])S.fields[key]={};
+  S.fields[key][fk]=val;
+  const any=Object.values(S.fields[key]).some(v=>v.trim());
+  document.getElementById('row_'+key).classList.toggle('has-value',any);
+  updateTotals();autoSave();
+}
+function toggleOpt(key,ok){
+  if(!S.opts[key])S.opts[key]={};
+  S.opts[key][ok]=!S.opts[key][ok];
+  document.getElementById(ok).classList.toggle('selected',S.opts[key][ok]);
+  const any=Object.values(S.opts[key]).some(v=>v);
+  document.getElementById('row_'+key).classList.toggle('has-value',any);
+  updateTotals();autoSave();
+}
+function setStar(){}
+function renderStars(){}
+function toggleNote(e,key){
+  e.stopPropagation();
+  const w=document.getElementById('nwrap_'+key);
+  w.classList.toggle('open');
+  if(w.classList.contains('open'))document.getElementById('note_'+key).focus();
+}
+function toggleSec(id){document.getElementById('sec_'+id).classList.toggle('collapsed');}
+
+function updateTotals(){
+  let conf=0,total=0;
+  SECTIONS.forEach(sec=>{
+    let sc=0;
+    sec.items.forEach((_,idx)=>{
+      const key=sec.id+'_'+idx;total++;
+      if(document.getElementById('row_'+key)?.classList.contains('has-value')){sc++;conf++;}
+    });
+    const t=document.getElementById('tally_'+sec.id);
+    if(t)t.textContent=sc+' / '+sec.items.length;
+  });
+  document.getElementById('tb_checked').textContent=conf;
+}
+
+function expandAll(){document.querySelectorAll('.section').forEach(s=>s.classList.remove('collapsed'));}
+function collapseAll(){document.querySelectorAll('.section').forEach(s=>s.classList.add('collapsed'));}
+function clearAll(){
+  if(!confirm('Clear all data, form fields, and saved data?\nThis cannot be undone.'))return;
+  Object.keys(S.checks).forEach(k=>{S.checks[k]=false;document.getElementById('row_'+k)?.classList.remove('has-value');});
+  Object.keys(S.opts).forEach(k=>{Object.keys(S.opts[k]).forEach(ok=>{S.opts[k][ok]=false;document.getElementById(ok)?.classList.remove('selected');});document.getElementById('row_'+k)?.classList.remove('has-value');});
+  Object.keys(S.fields).forEach(k=>{Object.keys(S.fields[k]).forEach(fk=>{S.fields[k][fk]='';const el=document.getElementById(fk);if(el)el.value='';});document.getElementById('row_'+k)?.classList.remove('has-value');});
+  Object.keys(S.notes).forEach(k=>{S.notes[k]='';const el=document.getElementById('note_'+k);if(el)el.value='';document.getElementById('nwrap_'+k)?.classList.remove('open');});
+  Object.keys(S.secNotes).forEach(k=>{S.secNotes[k]='';const el=document.getElementById('secnote_'+k);if(el)el.value='';});
+  Object.keys(S_BLABELS).forEach(k=>{S_BLABELS[k]='';const el=document.getElementById('bl_'+k);if(el)el.value='';});
+  document.getElementById('overall_notes').value='';S.overall='';S.extra=[];
+  document.getElementById('extra-body').innerHTML='<div class="extra-ph" id="extra-ph">Click \u201c+ Add Item\u201d to record additional features, custom notes, or items not listed above.</div>';
+  extraCount=0;
+  // Clear cover form fields
+  ['address','price','date','type','beds','baths','sqft','year','lot','agent','mls'].forEach(k=>{
+    const el=document.getElementById('f_'+k);
+    if(el){if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';}
+  });
+  updateTotals();
+  if(_db){dbClearStore().catch(e=>console.error('Clear error:',e));}
+  toast('Cleared.');
+}
+
+let extraCount=0;
+function addExtraRow(data){
+  const ph=document.getElementById('extra-ph');if(ph)ph.style.display='none';
+  extraCount++;const id='er_'+extraCount;
+  const body=document.getElementById('extra-body');
+  const row=document.createElement('div');row.className='extra-row';row.id=id;
+  row.innerHTML=`<input class="ex-in" placeholder="Feature / item name" value="${data?.feature||''}" oninput="updateExtra('${id}','feature',this.value)"><textarea class="ex-ta" placeholder="Details / notes" oninput="updateExtra('${id}','notes',this.value)">${data?.notes||''}</textarea><select class="ex-sel" onchange="updateExtra('${id}','rating',this.value)">${['','★★★★★ Excellent','★★★★ Very Good','★★★ Good','★★ Fair','★ Basic','N/A'].map(r=>`<option${data?.rating===r&&r?' selected':''}>${r||'— Rating —'}</option>`).join('')}</select><button class="ex-del" onclick="removeExtra('${id}')">×</button>`;
+  body.appendChild(row);
+  if(!data)S.extra.push({id,feature:'',notes:'',rating:''});
+}
+function updateExtra(id,field,val){const r=S.extra.find(r=>r.id===id);if(r)r[field]=val;}
+function removeExtra(id){document.getElementById(id)?.remove();S.extra=S.extra.filter(r=>r.id!==id);if(!S.extra.length){const ph=document.getElementById('extra-ph');if(ph)ph.style.display='block';}}
+
+function collectPayload(){
+  S.overall=document.getElementById('overall_notes').value;
+  SECTIONS.forEach(sec=>{
+    sec.items.forEach((item,idx)=>{
+      const key=sec.id+'_'+idx;
+      const el=document.getElementById('note_'+key);if(el)S.notes[key]=el.value;
+      if(item.t==='F')item.fields.forEach((f,fi)=>{const fk=`${key}_f${fi}`;const el=document.getElementById(fk);if(el){if(!S.fields[key])S.fields[key]={};S.fields[key][fk]=el.value;}});
+    });
+    const sn=document.getElementById('secnote_'+sec.id);if(sn)S.secNotes[sec.id]=sn.value;
+  });
+  S.extra.forEach(row=>{const el=document.getElementById(row.id);if(el){row.feature=el.querySelector('.ex-in')?.value||'';row.notes=el.querySelector('.ex-ta')?.value||'';row.rating=el.querySelector('.ex-sel')?.value||'';}});
+  const form={};['address','price','date','type','beds','baths','sqft','year','lot','agent','mls'].forEach(k=>{form[k]=document.getElementById('f_'+k)?.value||'';});
+  // Only save items that have been checked / filled in
+  const checks={},opts={},fields={},notes={},secNotes={};
+  SECTIONS.forEach(sec=>{
+    sec.items.forEach((item,idx)=>{
+      const key=sec.id+'_'+idx;
+      const hasVal=document.getElementById('row_'+key)?.classList.contains('has-value');
+      const note=S.notes[key]||'';
+      if(hasVal){
+        if(item.t==='C') checks[key]=true;
+        else if(item.t==='B'){checks[key]=true;}
+        else if(item.t==='F'&&S.fields[key]) fields[key]=S.fields[key];
+        else if(item.t==='M'&&S.opts[key]) opts[key]=S.opts[key];
+      }
+      if(note) notes[key]=note;
+    });
+    const sn=S.secNotes[sec.id]||'';
+    if(sn) secNotes[sec.id]=sn;
+  });
+  return {form,checks,opts,fields,notes,secNotes,extra:S.extra.filter(r=>r.feature||r.notes),overall:S.overall,blabels:Object.assign({},S_BLABELS)};
+}
+
+function getFileStem(){
+  const addr=(document.getElementById('f_address').value||'Property').replace(/[^a-zA-Z0-9 ]/g,' ').replace(/\s+/g,'_').replace(/_+$/,'');
+  const d=new Date();
+  const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return 'Feature_'+addr+'_'+ds;
+}
+
+function saveJSON(){
+  const data=collectPayload();
+  const a=document.createElement('a');
+  a.download=getFileStem()+'.json';
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.click();URL.revokeObjectURL(a.href);toast('Saved as JSON!');
+}
+
+function loadFile(){document.getElementById('fileInput').click();}
+function handleLoad(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{restoreState(JSON.parse(ev.target.result));autoSave();toast('Loaded.');}
+    catch(err){alert('Could not parse JSON file: '+err.message);}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+
+function savePDF(){
+  const data=collectPayload();
+  const form=data.form;
+
+  // Load jsPDF from CDN
+  if(!window.jspdf){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=()=>renderPDF(data,form);
+    document.head.appendChild(s);
+  } else { renderPDF(data,form); }
+}
+
+function renderPDF(data,form){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'letter'});
+  const PW=215.9, PH=279.4;
+  const ML=14, MR=14, MT=14;
+  let y=MT;
+  const usableW=PW-ML-MR;
+
+  // colour helpers
+  const NAVY=[27,58,107], GOLD=[184,149,42], GRAY=[74,69,64], LGRAY=[212,207,196], WHITE=[255,255,255], CREAM=[253,250,244];
+  const GREEN=[45,106,79], GREEN2=[235,245,239];
+
+  function newPage(){
+    doc.addPage();
+    y=MT;
+    // subtle header bar
+    doc.setFillColor(...NAVY);
+    doc.rect(0,0,PW,8,'F');
+    doc.setFontSize(7);doc.setTextColor(...GOLD);
+    doc.setFont('helvetica','normal');
+    doc.text('PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.',ML,5.5);
+    doc.text('Page '+doc.getNumberOfPages(),PW-MR,5.5,'right');
+    y=12;
+  }
+
+  function checkY(needed){if(y+needed>PH-12)newPage();}
+
+  // ── COVER BLOCK ──
+  doc.setFillColor(...NAVY);
+  doc.rect(0,0,PW,55,'F');
+  // gold accent line
+  doc.setFillColor(...GOLD);
+  doc.rect(ML,52,usableW,0.6,'F');
+  // title
+  doc.setFontSize(22);doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');
+  doc.text('Property Feature Report',ML,22);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(212,175,80);
+  doc.text('Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc.',ML,30);
+  doc.setFontSize(8.5);doc.setTextColor(200,195,185);
+  y=36;
+
+  // ── PROPERTY DETAILS BOX ──
+  doc.setFillColor(...CREAM);
+  doc.setDrawColor(...LGRAY);
+  doc.roundedRect(ML,y,usableW,42,2,2,'FD');
+  const fields2=[
+    ['Address',form.address||'—'],['List Price',form.price||'—'],
+    ['Type',form.type||'—'],['Bedrooms',form.beds||'—'],
+    ['Bathrooms',form.baths||'—'],['Sq Ft',form.sqft||'—'],
+    ['Year Built',form.year||'—'],['Lot Size',form.lot||'—'],
+    ['MLS® / PIN',form.mls||'—'],['Date',form.date||'—'],
+  ];
+  let fx=ML+3, fy=y+6;
+  const colW=usableW/2;
+  fields2.forEach((pair,i)=>{
+    const col=i%2, row=Math.floor(i/2);
+    const cx=ML+3+col*colW, cy=fy+row*7;
+    doc.setFontSize(6.5);doc.setTextColor(...GOLD);doc.setFont('helvetica','bold');
+    doc.text(pair[0].toUpperCase(),cx,cy);
+    doc.setFontSize(8);doc.setTextColor(...GRAY);doc.setFont('helvetica','normal');
+    doc.text(String(pair[1]).substring(0,50),cx,cy+3.5);
+  });
+  y+=46;
+
+
+
+  // ── SECTIONS ──
+  SECTIONS.forEach(sec=>{
+    // gather items with data
+    const activeItems=[];
+    sec.items.forEach((item,idx)=>{
+      const key=sec.id+'_'+idx;
+      const row=document.getElementById('row_'+key);
+      const hasVal=row?.classList.contains('has-value');
+      if(!hasVal) return;
+      const note=data.notes[key]||'';
+
+      let valueStr='';
+      if(item.t==='C'&&data.checks[key]) valueStr='';
+      else if(item.t==='B'&&data.checks[key]) valueStr='';
+      else if(item.t==='F'&&data.fields[key]){
+        const parts=[];
+        item.fields.forEach((f,fi)=>{
+          const v=(data.fields[key]||{})[key+'_f'+fi]||'';
+          if(v) parts.push((f.label?f.label+': ':'')+v+(f.unit?' '+f.unit:''));
+        });
+        valueStr=parts.join('  ');
+      } else if(item.t==='M'&&data.opts[key]){
+        const selected=[];
+        item.opts.forEach((opt,oi)=>{if((data.opts[key]||{})[key+'_o'+oi])selected.push(opt);});
+        valueStr=selected.join(', ');
+      }
+      const displayLabel = (item.t==='B') ? (S_BLABELS[key]||item.label||'Custom Item') : item.label;
+      activeItems.push({item,key,valueStr,note,displayLabel});
+    });
+
+    const secNote=data.secNotes[sec.id]||'';
+    if(activeItems.length===0 && !secNote) return;
+
+    // section header
+    checkY(10);
+    doc.setFillColor(...NAVY);
+    doc.rect(ML,y,usableW,7,'F');
+    doc.setFillColor(...GOLD);
+    doc.rect(ML,y+7,usableW,0.5,'F');
+    doc.setFontSize(9);doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');
+    doc.text(sec.title,ML+3,y+5);
+    y+=10;
+
+    activeItems.forEach(({item,key,valueStr,note,displayLabel})=>{
+      const labelLines=doc.splitTextToSize(displayLabel||item.label,120);
+      const noteLines=note?doc.splitTextToSize('Note: '+note,usableW-8):[];
+      const rowH=Math.max(7, labelLines.length*4+2+(noteLines.length?noteLines.length*3.5+2:0));
+      checkY(rowH);
+
+      // row divider
+      doc.setDrawColor(...LGRAY);
+      doc.line(ML, y+rowH, ML+usableW, y+rowH);
+
+
+      // label
+      doc.setFontSize(8);doc.setTextColor(...GRAY);doc.setFont('helvetica','normal');
+      doc.text(labelLines,ML+5,y+4.5);
+
+      // value
+      if(valueStr){
+        doc.setFontSize(8);doc.setTextColor(...GREEN);doc.setFont('helvetica','bold');
+        const vLines=doc.splitTextToSize(valueStr,70);
+        doc.text(vLines,PW-MR-72,y+4.5);
+      }
+
+      // note
+      if(note){
+        const noteY=y+(labelLines.length*4)+3;
+        doc.setFontSize(7);doc.setTextColor(100,90,75);doc.setFont('helvetica','italic');
+        doc.text(noteLines,ML+5,noteY);
+      }
+      y+=rowH+1;
+    });
+
+    if(secNote){
+      checkY(10);
+      doc.setFillColor(247,245,240);
+      const snLines=doc.splitTextToSize(secNote,usableW-8);
+      const snH=snLines.length*3.8+5;
+      doc.rect(ML,y,usableW,snH,'F');
+      doc.setFontSize(6.5);doc.setTextColor(...GOLD);doc.setFont('helvetica','bold');
+      doc.text('SECTION NOTES',ML+3,y+3.5);
+      doc.setFontSize(7.5);doc.setTextColor(...GRAY);doc.setFont('helvetica','normal');
+      doc.text(snLines,ML+3,y+7);
+      y+=snH+2;
+    }
+    y+=3;
+  });
+
+  // ── EXTRA ROWS ──
+  const hasExtra=data.extra&&data.extra.some(r=>r.feature||r.notes);
+  if(hasExtra){
+    checkY(12);
+    doc.setFillColor(...NAVY);
+    doc.rect(ML,y,usableW,7,'F');
+    doc.setFillColor(...GOLD);doc.rect(ML,y+7,usableW,0.5,'F');
+    doc.setFontSize(9);doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');
+    doc.text('Additional Notes & Custom Items',ML+3,y+5);
+    y+=10;
+    data.extra.forEach(row=>{
+      if(!row.feature&&!row.notes)return;
+      const lines=doc.splitTextToSize((row.notes||''),usableW-80);
+      const rh=Math.max(7,lines.length*3.8+4);
+      checkY(rh);
+      doc.setFillColor(...GREEN2);doc.rect(ML,y,usableW,rh,'F');
+      doc.setDrawColor(...LGRAY);doc.rect(ML,y,usableW,rh,'S');
+      doc.setFontSize(8);doc.setTextColor(...GRAY);doc.setFont('helvetica','bold');
+      doc.text(String(row.feature||'').substring(0,50),ML+5,y+4.5);
+      doc.setFont('helvetica','normal');
+      if(lines.length)doc.text(lines,ML+5,y+(rh>7?8:4.5));
+      if(row.rating){doc.setTextColor(...GOLD);doc.text(row.rating,PW-MR-3,y+4.5,'right');}
+      y+=rh+1;
+    });
+  }
+
+  // ── OVERALL NOTES ──
+  if(data.overall){
+    checkY(14);
+    doc.setFillColor(247,245,240);
+    const onLines=doc.splitTextToSize(data.overall,usableW-8);
+    const onH=onLines.length*3.8+9;
+    doc.roundedRect(ML,y,usableW,onH,1.5,1.5,'F');
+    doc.setFontSize(7);doc.setTextColor(...GOLD);doc.setFont('helvetica','bold');
+    doc.text('OVERALL PROPERTY NOTES / SUMMARY REMARKS',ML+3,y+5);
+    doc.setFontSize(8);doc.setTextColor(...GRAY);doc.setFont('helvetica','normal');
+    doc.text(onLines,ML+3,y+9);
+    y+=onH+4;
+  }
+
+  // ── FOOTER ──
+  const totalPages=doc.getNumberOfPages();
+  for(let i=1;i<=totalPages;i++){
+    doc.setPage(i);
+    doc.setFillColor(...NAVY);doc.rect(0,PH-8,PW,8,'F');
+    doc.setFontSize(6.5);doc.setTextColor(180,175,165);doc.setFont('helvetica','normal');
+    doc.text('Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage',ML,PH-3.5);
+    doc.setTextColor(...GOLD);
+    doc.text('Page '+i+' of '+totalPages,PW-MR,PH-3.5,'right');
+  }
+
+  doc.save(getFileStem()+'.pdf');
+  toast('PDF saved!');
+}
+
+function restoreState(data){
+  if(data.form)Object.entries(data.form).forEach(([k,v])=>{const el=document.getElementById('f_'+k);if(el)el.value=v;});
+  Object.assign(S.checks,data.checks||{});
+  Object.entries(S.checks).forEach(([k,v])=>{if(v)document.getElementById('row_'+k)?.classList.add('has-value');});
+  if(data.blabels){Object.entries(data.blabels).forEach(([k,v])=>{S_BLABELS[k]=v;const el=document.getElementById('bl_'+k);if(el)el.value=v;});}
+  Object.assign(S.opts,data.opts||{});
+  Object.entries(S.opts).forEach(([k,optMap])=>{let any=false;Object.entries(optMap).forEach(([ok,v])=>{if(v){document.getElementById(ok)?.classList.add('selected');any=true;}});if(any)document.getElementById('row_'+k)?.classList.add('has-value');});
+  Object.assign(S.fields,data.fields||{});
+  Object.entries(S.fields).forEach(([k,map])=>{let any=false;Object.entries(map).forEach(([fk,v])=>{const el=document.getElementById(fk);if(el&&v){el.value=v;any=true;}});if(any)document.getElementById('row_'+k)?.classList.add('has-value');});
+
+  Object.assign(S.notes,data.notes||{});Object.entries(S.notes).forEach(([k,v])=>{const el=document.getElementById('note_'+k);if(el&&v){el.value=v;document.getElementById('nwrap_'+k)?.classList.add('open');}});
+  Object.assign(S.secNotes,data.secNotes||{});Object.entries(S.secNotes).forEach(([k,v])=>{const el=document.getElementById('secnote_'+k);if(el)el.value=v;});
+  (data.extra||[]).forEach(r=>addExtraRow(r));
+  if(data.overall){document.getElementById('overall_notes').value=data.overall;S.overall=data.overall;}
+  updateTotals();
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ── IndexedDB STORAGE LAYER ──────────────────────────────────────────────────
+const DB_NAME='plFreportDB';
+const DB_VERSION=1;
+const STORE_NAME='freport';
+const DB_KEY='freportState';
+let _db=null;
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE_NAME))db.createObjectStore(STORE_NAME);};
+    req.onsuccess=e=>{_db=e.target.result;resolve(_db);};
+    req.onerror=e=>reject(e.target.error);
+  });
+}
+function dbGet(key){
+  return new Promise((resolve,reject)=>{
+    const tx=_db.transaction(STORE_NAME,'readonly');
+    const req=tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+function dbPut(key,val){
+  return new Promise((resolve,reject)=>{
+    const tx=_db.transaction(STORE_NAME,'readwrite');
+    const req=tx.objectStore(STORE_NAME).put(val,key);
+    req.onsuccess=()=>resolve();
+    req.onerror=()=>reject(req.error);
+  });
+}
+function dbClearStore(){
+  return new Promise((resolve,reject)=>{
+    const tx=_db.transaction(STORE_NAME,'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+
+// ── Auto-save (debounced) ────────────────────────────────────────────────────
+let _saveTimer=null;
+function autoSave(){
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(()=>{
+    if(_db) dbPut(DB_KEY,collectPayload()).catch(e=>console.error('IndexedDB save error:',e));
+  },500);
+}
+
+// ── Attach auto-save to cover form fields, notes, section notes, overall ─────
+['f_address','f_price','f_date','f_type','f_beds','f_baths','f_sqft','f_year','f_lot','f_agent','f_mls'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){el.addEventListener('input',autoSave);el.addEventListener('change',autoSave);}
+});
+// Notes and section notes use oninput in their HTML that sets S.notes/S.secNotes;
+// we hook the containers via delegation for auto-save
+document.getElementById('sections-container').addEventListener('input',autoSave);
+document.getElementById('extra-body').addEventListener('input',autoSave);
+document.getElementById('overall_notes').addEventListener('input',function(){S.overall=this.value;autoSave();});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('f_date').value=new Date().toISOString().split('T')[0];
+buildAll();
+
+openDB().then(()=>dbGet(DB_KEY)).then(saved=>{
+  if(saved&&typeof saved==='object'&&(saved.form||saved.checks||saved.opts||saved.fields)){
+    restoreState(saved);
+  }
+}).catch(err=>{
+  console.error('IndexedDB init failed:',err);
+});
+if(window.__SV__)restoreState(window.__SV__);
+
+
+</script>
+</body>
+</html>

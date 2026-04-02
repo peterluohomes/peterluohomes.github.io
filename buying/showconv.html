@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Showing Conversion Playbook | Pinnacle Listing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#1B2A4A;--gold:#C9A54E;--gold-dim:rgba(201,165,78,0.15);
+  --cream:#FAF7F2;--cream-dark:#F0EBE3;--text-dark:#2D2D2D;--text-medium:#555;--text-light:#888;--white:#FFF;
+  --red-dim:rgba(180,40,40,0.08);--red-border:#B42828;--green-dim:rgba(46,125,91,0.08);--green-border:#2E7D5B;
+  --radius:12px;--shadow:0 2px 12px rgba(27,42,74,0.08);--shadow-lg:0 4px 24px rgba(27,42,74,0.12);
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--cream);color:var(--text-dark);line-height:1.6;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);-webkit-font-smoothing:antialiased}
+.header{background:var(--navy);padding:20px 20px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,0.2)}
+.header-brand{font-family:'Playfair Display',serif;font-size:11px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.header-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--white);line-height:1.2}
+.header-sub{font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px}
+.content{max-width:720px;margin:0 auto;padding:16px 16px 100px}
+.card{background:var(--white);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-gold{border-left:4px solid var(--gold)}
+.card h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.card p,.desc{font-size:14px;color:var(--text-medium);line-height:1.65}
+.desc{margin-bottom:12px}
+.flow-diagram{margin:14px 0}
+.flow-step{display:flex;align-items:stretch;gap:0}
+.flow-line{width:24px;display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.flow-dot{width:12px;height:12px;border-radius:50%;background:var(--navy);flex-shrink:0;margin-top:14px}
+.flow-connector{flex:1;width:2px;background:var(--navy);opacity:0.25}
+.flow-step:last-child .flow-connector{display:none}
+.flow-card{flex:1;background:var(--white);border:1px solid var(--cream-dark);border-radius:8px;padding:12px 14px;margin:4px 0}
+.flow-card h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.flow-card p{font-size:12px;color:var(--text-medium);line-height:1.45}
+.flow-card.highlight{border-color:var(--gold);background:var(--gold-dim)}
+.flow-card.red-hl{border-color:var(--red-border);background:var(--red-dim)}
+.flow-card.green-hl{border-color:var(--green-border);background:var(--green-dim)}
+.phase{background:var(--white);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.phase-header{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;user-select:none;transition:background 0.2s}
+.phase-header:active{background:var(--cream)}
+.phase-num{flex-shrink:0;width:36px;height:36px;background:var(--navy);color:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700}
+.phase-info{flex:1;min-width:0}
+.phase-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+.phase-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--navy);line-height:1.25}
+.phase-chevron{flex-shrink:0;width:20px;height:20px;color:var(--text-light);transition:transform 0.3s ease}
+.phase.open .phase-chevron{transform:rotate(180deg)}
+.phase-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.phase.open .phase-body{max-height:12000px}
+.phase-content{padding:0 16px 20px}
+.dialogue{margin:12px 0}
+.d-line{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:14px;line-height:1.55}
+.d-line.agent{background:var(--navy);color:var(--white);margin-right:24px;border-bottom-left-radius:4px}
+.d-line.other{background:var(--cream-dark);color:var(--text-dark);margin-left:24px;border-bottom-right-radius:4px}
+.d-speaker{font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;display:block}
+.d-line.agent .d-speaker{color:var(--gold)}
+.d-line.other .d-speaker{color:var(--text-light)}
+.coach-note{background:var(--gold-dim);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0 12px;font-size:13px;color:var(--text-medium);line-height:1.55}
+.coach-note::before{content:'💡 '}
+.coach-note strong{color:var(--navy);font-weight:600}
+.warn-note{background:var(--red-dim);border-left:3px solid var(--red-border);border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0 12px;font-size:13px;color:var(--text-medium);line-height:1.55}
+.warn-note::before{content:'⚠️ '}
+.warn-note strong{color:var(--red-border);font-weight:600}
+.strat-note{background:var(--green-dim);border-left:3px solid var(--green-border);border-radius:0 8px 8px 0;padding:10px 14px;margin:8px 0 12px;font-size:13px;color:var(--text-medium);line-height:1.55}
+.strat-note::before{content:'🎯 '}
+.strat-note strong{color:var(--green-border);font-weight:600}
+.phase-section-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--navy);margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--cream-dark)}
+.branch-tabs{display:flex;gap:0;margin:14px 0 0;border-radius:8px;overflow:hidden;border:1.5px solid var(--navy)}
+.branch-tab{flex:1;padding:10px 12px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;user-select:none;transition:all 0.2s;color:var(--navy);background:var(--white)}
+.branch-tab.active{background:var(--navy);color:var(--white)}
+.branch-tab:not(:last-child){border-right:1.5px solid var(--navy)}
+.branch-panel{display:none;padding-top:14px}
+.branch-panel.active{display:block}
+.deliverable{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--cream-dark)}
+.deliverable:last-child{border-bottom:none}
+.del-num{flex-shrink:0;width:24px;height:24px;background:var(--gold);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.del-text{font-size:14px;color:var(--text-dark);line-height:1.5}
+.del-text strong{color:var(--navy)}
+.phrases-section{background:var(--white);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.phrases-header{background:var(--navy);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.phrases-header h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white)}
+.phrase-item{padding:12px 16px;border-bottom:1px solid var(--cream-dark);display:flex;flex-direction:column;gap:4px}
+.phrase-item:last-child{border-bottom:none}
+.phrase-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold)}
+.phrase-text{font-size:14px;font-style:italic;color:var(--text-dark);line-height:1.5}
+.expand-all{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--navy);background:var(--white);border:1px solid var(--cream-dark);border-radius:var(--radius);cursor:pointer;user-select:none;box-shadow:var(--shadow)}
+.expand-all:active{background:var(--cream)}
+.back-top{position:fixed;bottom:calc(20px + var(--safe-bottom));right:20px;width:44px;height:44px;background:var(--navy);color:var(--gold);border:none;border-radius:50%;box-shadow:var(--shadow-lg);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:50}
+.back-top.show{opacity:1;pointer-events:auto}
+.footer-quote{text-align:center;padding:24px 20px;margin-top:8px}
+.footer-quote p{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--navy);line-height:1.4;margin-bottom:8px}
+.footer-quote span{font-size:13px;font-weight:600;color:var(--gold);letter-spacing:1px}
+@media(min-width:600px){.content{padding:24px 24px 100px}.header{padding:24px 24px 20px}.header-title{font-size:26px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">Pinnacle Listing System</div>
+  <div class="header-title">Showing Conversion Playbook</div>
+  <div class="header-sub">When buyers call you directly about your listing</div>
+</div>
+
+<div class="content">
+
+  <div class="card card-gold">
+    <h2>The Listing Agent's Hidden Goldmine</h2>
+    <p>When a buyer calls you directly about your listing, it's one of the most valuable lead opportunities in real estate. Your job: determine their representation status, and if they're unrepresented, demonstrate enough value that they want <em>you</em> as their agent — then sign a Buyer Representation Agreement before showing.</p>
+    <p style="margin-top:8px"><strong>Remember:</strong> You do not handle appointments. Buyer's agents book through the appointment desk. This playbook is for when the <em>buyer themselves</em> calls you.</p>
+  </div>
+
+  <div class="card">
+    <h2>Decision Flow: Buyer Calls You</h2>
+    <p class="desc">Every incoming buyer call falls into one of three paths:</p>
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-card highlight">
+          <h4>📞 Buyer Calls You About Your Listing</h4>
+          <p>First question: "Are you currently working with a real estate agent?"</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-card red-hl">
+          <h4>Path A: Has Signed Buyer Agreement with Another Agent</h4>
+          <p>You do NOT show them the property. Direct them back to their agent, who books through the appointment desk.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-card">
+          <h4>Path B: Has Agent Casually, No Signed Agreement</h4>
+          <p>Grey zone. Gather info, ask the "other similar properties" question, position your value, guide toward BRA with you.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-line"><div class="flow-dot"></div></div>
+        <div class="flow-card green-hl">
+          <h4>Path C: No Agent — Unrepresented ✦</h4>
+          <p>Your biggest opportunity. Demonstrate value, sign BRA, then show the property and other similar units.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="expand-all" id="expandAll" onclick="toggleAll()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 10l5 5 5-5"/></svg>
+    <span>Expand All Phases</span>
+  </div>
+
+  <!-- ═══════ PHASE 1: QUALIFY ═══════ -->
+  <div class="phase" id="phase1">
+    <div class="phase-header" onclick="togglePhase('phase1')">
+      <div class="phase-num">1</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 1</div>
+        <div class="phase-name">The Incoming Call — Qualify & Sort</div>
+      </div>
+      <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="phase-body"><div class="phase-content">
+      <p class="desc">A buyer named <strong>David</strong> calls you directly about your condo listing at <strong>100 Main Street, Unit 2205</strong>. Your first job: build rapport, then qualify his representation status.</p>
+
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Hi, this is Peter Luo. Thanks for calling about Unit 2205 at 100 Main Street — great choice! May I ask your name?</div>
+        <div class="d-line other"><span class="d-speaker">David</span>Hi Peter, I'm David Chen.</div>
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Nice to meet you, David. I'd love to help you. So I can best assist you — are you currently working with a real estate agent on your search?</div>
+      </div>
+
+      <div class="coach-note"><strong>This is the gate question.</strong> Ask it early — it's natural, professional, and determines your entire next move. Never skip or delay it.</div>
+
+      <div class="branch-tabs">
+        <div class="branch-tab active" onclick="switchBranch(this,'brA1')">Has Signed BRA</div>
+        <div class="branch-tab" onclick="switchBranch(this,'brB1')">Agent, No BRA</div>
+        <div class="branch-tab" onclick="switchBranch(this,'brC1')">No Agent ✦</div>
+      </div>
+
+      <!-- BRANCH A -->
+      <div class="branch-panel active" id="brA1">
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>Yes, I have an agent. We signed a buyer representation agreement.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Oh great — is your agent too busy to show you this one?</div>
+        </div>
+
+        <div class="coach-note"><strong>This question is gold.</strong> It's soft and non-judgmental, but it reveals a lot. If the agent is "too busy," David is feeling underserved — and that's important intel even if you can't act on it today. It also gives David permission to express frustration without feeling disloyal.</div>
+
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>No, she's not too busy. I just happened to see the listing and called the number.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I totally understand — since you have a signed agreement, the best way to see the property would be for your agent to book through the appointment desk. They'll get it set up quickly. Would you like me to give you the appointment desk number to pass along?</div>
+          <div class="d-line other"><span class="d-speaker">David</span>Yeah, I'll ask her to set it up.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Perfect. And David — just so your agent has the key details: the unit features southwest exposure with incredible afternoon light, open-concept layout, and the building just completed a major lobby renovation. If your agent has any questions at all, they can reach me directly. I look forward to the showing!</div>
+        </div>
+
+        <div class="warn-note"><strong>Do NOT show the property yourself.</strong> Once a buyer confirms a signed BRA with another agent, respect the representation. Showing them directly creates liability. Redirect graciously but firmly.</div>
+
+        <div class="phase-section-title">But what if he says "Yes, she's too busy"?</div>
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>Yeah, honestly she's been hard to reach lately. I've been doing a lot of the searching on my own.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I hear you, David. That can be frustrating — especially when you're actively looking and the market moves fast. I do have to respect the agreement you have in place, so I can't show you the property directly. But here's what I'd suggest: have a conversation with your agent about whether the arrangement is still working for both of you. And if anything changes down the road, I'd be happy to help. I specialize in the downtown condo market and I'm always just a phone call away.</div>
+        </div>
+
+        <div class="strat-note"><strong>You planted a seed without overstepping.</strong> You acknowledged his frustration, respected the BRA, and positioned yourself as the backup. If that relationship falls apart — and it might — David knows exactly who to call.</div>
+      </div>
+
+      <!-- BRANCH B -->
+      <div class="branch-panel" id="brB1">
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>Sort of… I've been working with an agent casually. She's shown me a few places, but we haven't signed anything formal.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I see — is your agent too busy to show you this one?</div>
+          <div class="d-line other"><span class="d-speaker">David</span>Honestly, she sends me stuff now and then, but I've been finding most of the listings myself. That's how I found yours.</div>
+        </div>
+
+        <div class="coach-note"><strong>"Is your agent too busy?"</strong> is gentler than asking "Are you happy with your service?" — it gives David a face-saving way to express dissatisfaction. His answer just told you everything: he's doing the work himself, and the agent isn't proactive. Now pivot to the intelligence question.</div>
+
+        <div class="dialogue">
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I hear that a lot. It sounds like you're doing a lot of the heavy lifting yourself. Let me ask you something, David — beyond this unit, are you also interested in seeing other similar properties in the area, or have you already seen them?</div>
+        </div>
+
+        <div class="coach-note"><strong>"Are you interested in seeing other similar properties, or have you already seen them?"</strong> — This is your most powerful intelligence question. The second half — "or have you already seen them?" — flatters David by acknowledging he may be experienced, and extracts how far along he is. His answer reveals:<br><br>
+        • <strong>If YES →</strong> He's actively searching and needs real help. His current agent isn't meeting his needs. Strong path to BRA.<br>
+        • <strong>If NO, just this one →</strong> He may be casually browsing or very early stage. Show value, plant seeds for follow-up.</div>
+
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>Yeah, actually. I've been looking at two-bedrooms downtown but it's hard to know what's actually good value versus overpriced.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>That's exactly where having the right representation makes all the difference, David. Here's what I offer my buyer clients: I don't just find you listings — I analyze every unit against recent sales, building health, reserve funds, upcoming assessments, even rental demand if you ever want to lease it out. My clients walk into negotiations knowing exactly what a property is worth, not just what it's listed at.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>On top of that, I have deep connections in the downtown condo market. I often hear about listings 48 to 72 hours before they hit MLS — which in this market can be the difference between getting a unit and losing it.</div>
+          <div class="d-line other"><span class="d-speaker">David</span>That's really useful. I've definitely lost out on a couple places because I found out too late.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Exactly — and that's the problem I solve. What I'd suggest is this: let me show you Unit 2205, and I'll also pull up two or three comparable units so you can see what's out there. Before we start, I'll ask you to sign a Buyer Representation Agreement with me — that formalizes our relationship and means I'm legally bound to act in your best interest, not the seller's. If you feel like I can add value to your search, it'll be obvious from the experience. No pressure — let the results speak for themselves.</div>
+          <div class="d-line other"><span class="d-speaker">David</span>That sounds really reasonable. When can I come see it?</div>
+        </div>
+      </div>
+
+      <!-- BRANCH C -->
+      <div class="branch-panel" id="brC1">
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>No, I don't have an agent. I've just been browsing online and saw your listing.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>No problem at all, David — I'm glad you called directly. You've actually got great timing. Tell me — what caught your eye about Unit 2205?</div>
+          <div class="d-line other"><span class="d-speaker">David</span>The layout looks really open, and I like that it faces southwest. The price also seems reasonable for two bedrooms downtown.</div>
+        </div>
+
+        <div class="coach-note"><strong>He just told you three priorities:</strong> open layout, natural light, and value for money. Remember these — you'll weave them into your value pitch later.</div>
+
+        <div class="dialogue">
+          <div class="d-line agent"><span class="d-speaker">Peter</span>You've got a great eye — the southwest exposure is honestly the best feature of this unit. Now David, let me ask you this: beyond Unit 2205, would you also be interested in seeing other similar two-bedroom units in the downtown core, or have you already seen them?</div>
+        </div>
+
+        <div class="coach-note"><strong>"Would you like to see other similar properties, or have you already seen them?"</strong> — This is your most important question. The "or have you already seen them?" addition acknowledges his effort and draws out how deep he is in the search. His answer tells you everything:<br><br>
+        • <strong>YES →</strong> He's actively searching and needs an agent. He's open to a broader relationship. Strongest path to BRA.<br>
+        • <strong>NO, just this one →</strong> He may be early-stage or casually looking. Show value, impress him, plant the seed for follow-up.</div>
+
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>Yeah, actually. I've been looking for a while but it's hard to know what's a good deal. I'd love to see what else is out there.</div>
+        </div>
+
+        <div class="strat-note"><strong>Green light.</strong> He needs guidance, has been searching alone, and wants to see more. Time to demonstrate value and introduce the BRA naturally.</div>
+
+        <div class="dialogue">
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I'm glad you mentioned that, David, because that's exactly where I can really help. Let me share what working with me looks like — because it's quite different from browsing on your own.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>When I represent a buyer, I don't just open doors. I do a full market analysis on every property you're seriously considering — recent comparable sales, price-per-square-foot trends, building reserve fund health, any upcoming special assessments, even rental income potential. My clients walk into negotiations knowing exactly what a unit is worth, which means they never overpay and they write winning offers.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>I also have deep connections in the downtown condo market. I often hear about listings 48 to 72 hours before they hit MLS — which in this market can be the difference between getting a unit and losing it to someone who got there first.</div>
+          <div class="d-line other"><span class="d-speaker">David</span>That sounds really useful. I've definitely lost out on a couple of places because I found out too late.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Exactly — and that's precisely the problem I solve. So here's what I'd suggest. I'll prepare a shortlist of units that match your criteria — we'll start with 2205 and visit two or three others. Before we begin the tour, I'll ask you to sign a Buyer Representation Agreement with me. This formalizes our working relationship, which means I'm legally bound to act in your best interest — full fiduciary duty. I negotiate for you, not for the seller. And it gives you access to my complete suite of services.</div>
+        </div>
+
+        <div class="coach-note"><strong>The BRA is framed as something that protects him and unlocks benefits</strong> — not as paperwork or a commitment you need from him. You've already demonstrated enough value that signing feels like the logical next step.</div>
+
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>What does the agreement actually commit me to?</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Great question — I appreciate you asking. The agreement establishes that I'm your dedicated agent for a specific time period. It outlines how my compensation works, and most importantly, it means I have a legal obligation to protect your interests above everything else. Without it, I'm technically the listing agent on this property — representing the seller's side. And I don't want that for you. I want to be in your corner.</div>
+        </div>
+
+        <div class="strat-note"><strong>"Without it, I'm representing the seller"</strong> — This is a powerful truth most buyers don't realize. It reframes the BRA from "What do I lose by signing?" to "What do I lose by NOT signing?" Going without representation puts him at a disadvantage — and now he understands that.</div>
+
+        <div class="dialogue">
+          <div class="d-line other"><span class="d-speaker">David</span>That makes sense. I didn't think about it that way.</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Most people don't — and that's exactly why I take the time to explain it. I believe in full transparency. So — how about we set up a time this week? I'll prepare a shortlist of units, we'll start with 2205, and I'll walk you through the full picture. Sound good?</div>
+          <div class="d-line other"><span class="d-speaker">David</span>Yeah, let's do it. How about Thursday afternoon?</div>
+          <div class="d-line agent"><span class="d-speaker">Peter</span>Thursday works perfectly. I'll send you a confirmation text with the details and a few insider tips for touring condos — things to look out for that most buyers miss. Looking forward to it, David.</div>
+        </div>
+      </div>
+
+    </div></div>
+  </div>
+
+  <!-- ═══════ PHASE 2: PRE-SHOWING PREP ═══════ -->
+  <div class="phase" id="phase2">
+    <div class="phase-header" onclick="togglePhase('phase2')">
+      <div class="phase-num">2</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 2</div>
+        <div class="phase-name">Pre-Showing Preparation</div>
+      </div>
+      <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="phase-body"><div class="phase-content">
+      <p class="desc">Between the call and the showing, prepare materials that demonstrate your value before you even open the door. This is what separates a professional from a door-opener.</p>
+
+      <div class="phase-section-title">Deliverables to Prepare</div>
+      <div class="deliverable">
+        <div class="del-num">1</div>
+        <div class="del-text"><strong>Buyer Representation Agreement</strong> — Have it ready to review and sign before you begin touring. Prepare a clear, jargon-free explanation of each section.</div>
+      </div>
+      <div class="deliverable">
+        <div class="del-num">2</div>
+        <div class="del-text"><strong>Property Comparison Package</strong> — 3–4 comparable units with your analysis: price/sqft, maintenance fee breakdown, building health indicators, and your professional assessment.</div>
+      </div>
+      <div class="deliverable">
+        <div class="del-num">3</div>
+        <div class="del-text"><strong>Building Report for Unit 2205</strong> — Status certificate highlights, reserve fund health, recent/upcoming special assessments, rental rules, management quality.</div>
+      </div>
+      <div class="deliverable">
+        <div class="del-num">4</div>
+        <div class="del-text"><strong>Condo Touring Checklist</strong> — A branded one-pager with insider tips: what to check (water pressure, closet depth, noise levels), questions to ask, red flags. Send ahead as a "pre-showing gift."</div>
+      </div>
+
+      <div class="coach-note"><strong>The pre-showing text</strong> with the touring checklist provides value before you've even met — David will arrive already impressed. It also gives him a reason to save your contact.</div>
+
+      <div class="phase-section-title">Sample Pre-Showing Text</div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Text to David</span>Hi David, it's Peter Luo — confirming our Thursday 2 PM tour starting at 100 Main St, Unit 2205. I've prepared a comparison of 3 similar units we can also visit. In the meantime, here's my Condo Touring Checklist — insider things to look for when you walk through any unit. See you Thursday! 🏠</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ═══════ PHASE 3: THE SHOWING ═══════ -->
+  <div class="phase" id="phase3">
+    <div class="phase-header" onclick="togglePhase('phase3')">
+      <div class="phase-num">3</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 3</div>
+        <div class="phase-name">The Showing — Demonstrate Value Live</div>
+      </div>
+      <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="phase-body"><div class="phase-content">
+      <p class="desc">This is your audition. Show David not just the property, but what it's like to have a professional agent working for him. Every observation should teach him something he couldn't learn from a listing photo.</p>
+
+      <div class="phase-section-title">Before Entering — Sign the BRA</div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>David, great to meet you in person. Before we head up, I want to take two minutes to walk through the Buyer Representation Agreement I mentioned. I have it right here — it's straightforward, and I want you to feel completely comfortable before we start.</div>
+      </div>
+      <div class="warn-note"><strong>Sign the BRA before showing, not after.</strong> Once you've shown the property without a signed agreement, you've given away your leverage. The BRA conversation is natural here because you've already built trust on the phone and through your pre-showing materials.</div>
+
+      <div class="phase-section-title">During the Showing — Expert Narration</div>
+      <p class="desc">Don't just open the door and stand back. Narrate like a consultant, not a salesperson:</p>
+
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>David, notice the sightlines when you walk in — that open flow from the entrance to the living room to the balcony is exactly what drives resale value in condos. Buyers consistently pay a premium for units where you can see the view the moment you step in.</div>
+      </div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>The southwest exposure is even better in person, isn't it? One thing I checked: this unit sits above the adjacent building's roofline, which means this view is protected. The building to the south is heritage-designated — it can't be demolished or built higher. That's the kind of detail that matters ten years from now.</div>
+      </div>
+
+      <div class="coach-note"><strong>Every comment demonstrates specialized knowledge</strong> he can't get from Realtor.ca — heritage protection, sightline value, reserve fund health. You're proving the BRA was worth signing.</div>
+
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Let me show you something most buyers miss — <em>[opens a kitchen cupboard]</em> — see how deep these cabinets are? That's well-designed, not a builder shortcut. And this countertop edge — quartz, not laminate. These finishes tell you the original owner invested in quality upgrades.</div>
+      </div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Now I want to be transparent with you, David. The maintenance fee here is $685 a month. I know that sounds like a lot. But let me break it down: heat, AC, water, full concierge, gym, pool, and a reserve fund sitting at 38% — well above the recommended threshold. Compare that to the unit on Bay Street listed at $50 less in maintenance — their reserve fund is at 19% and they have a special assessment coming. The "cheaper" building actually costs you more.</div>
+      </div>
+
+      <div class="strat-note"><strong>You just saved him from a bad decision</strong> he didn't even know he was about to make. This is the moment where the BRA pays for itself in his mind.</div>
+    </div></div>
+  </div>
+
+  <!-- ═══════ PHASE 4: POST-SHOWING ═══════ -->
+  <div class="phase" id="phase4">
+    <div class="phase-header" onclick="togglePhase('phase4')">
+      <div class="phase-num">4</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 4</div>
+        <div class="phase-name">Post-Showing — Deepen & Convert</div>
+      </div>
+      <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="phase-body"><div class="phase-content">
+      <p class="desc">After the tour, consolidate the relationship and uncover additional business opportunities.</p>
+
+      <div class="phase-section-title">Wrap-Up Conversation</div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>So David, now that you've seen all three units — what's your gut feeling? Which one resonated the most?</div>
+        <div class="d-line other"><span class="d-speaker">David</span>Honestly, I really like Unit 2205. The view and the layout are hard to beat. I'm just not sure about the price — is there room to negotiate?</div>
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Great instinct. Here's where my analysis comes in. Based on the last six months of comparable sales in this building and the area, I believe this unit is priced about 3% above market value. That gives us a legitimate basis to negotiate. I'd recommend an offer strategy that comes in strong but fair — and I have techniques to make our offer stand out beyond just the number. Let me put together a full strategy tonight and we can review it tomorrow.</div>
+      </div>
+
+      <div class="coach-note"><strong>You've demonstrated the full cycle:</strong> market knowledge → property insight → negotiation strategy. David is no longer wondering if he needs an agent — he's wondering how he ever searched without one.</div>
+
+      <div class="phase-section-title">Uncovering the Sell-to-Buy Opportunity</div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>One more thing, David — you mentioned you've been looking for a while. Are you currently renting, or do you own a place that you'll need to sell as part of this move?</div>
+        <div class="d-line other"><span class="d-speaker">David</span>I actually own a one-bedroom at 50 King Street. I'd need to sell it before I can close on something new.</div>
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Oh, that's a great building — I've done several transactions there. Would it be helpful if I ran the numbers on your unit? I can give you a realistic market value and timeline for selling — that way you'll know exactly where you stand financially before we write any offers. No extra charge — it's part of the service.</div>
+      </div>
+
+      <div class="strat-note"><strong>You just uncovered a listing opportunity</strong> from what started as a showing inquiry. And because you have the BRA, you're already his agent — the listing conversation is a natural extension, not a separate pitch.</div>
+    </div></div>
+  </div>
+
+  <!-- ═══════ PHASE 5: NEIGHBOURHOOD LEVERAGE ═══════ -->
+  <div class="phase" id="phase5">
+    <div class="phase-header" onclick="togglePhase('phase5')">
+      <div class="phase-num">5</div>
+      <div class="phase-info">
+        <div class="phase-label">Phase 5</div>
+        <div class="phase-name">Neighbourhood Leverage & Farming</div>
+      </div>
+      <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="phase-body"><div class="phase-content">
+      <p class="desc">Use the showing activity on your listing to prospect the building or neighbourhood — a play most listing agents completely miss.</p>
+
+      <div class="phase-section-title">Door-Knock / Lobby Script</div>
+      <div class="dialogue">
+        <div class="d-line agent"><span class="d-speaker">Peter</span>Hi, I'm Peter Luo with RE/MAX Realtron. I'm the listing agent for Unit 2205 down the hall. We've had tremendous interest — 12 showings in the first week alone. That level of activity tells me buyers are actively seeking units in this building. If you've ever thought about what your unit might be worth in today's market, I'd be happy to provide a complimentary evaluation. No obligation at all.</div>
+      </div>
+      <div class="coach-note"><strong>Social proof</strong> (12 showings) + <strong>relevance</strong> (same building) + <strong>low commitment</strong> (complimentary, no obligation) = high conversion. Leave a business card or a one-page "Building Market Report."</div>
+    </div></div>
+  </div>
+
+  <!-- KEY PHRASES -->
+  <div class="phrases-section">
+    <div class="phrases-header">
+      <span style="font-size:18px;">🎯</span>
+      <h3>Key Conversion Phrases</h3>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">Gate Question</div>
+      <div class="phrase-text">"Are you currently working with a real estate agent on your search?"</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">The Key Intelligence Probe</div>
+      <div class="phrase-text">"Beyond this unit, would you also be interested in seeing other similar properties, or have you already seen them?"</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">Value Contrast</div>
+      <div class="phrase-text">"I don't just find you listings — I analyze every unit against recent sales, building health, and reserve funds."</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">BRA as Protection</div>
+      <div class="phrase-text">"Without a representation agreement, I'm technically the listing agent — representing the seller. I don't want that for you. I want to be in your corner."</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">Pre-Showing Gift</div>
+      <div class="phrase-text">"Here's my Condo Touring Checklist — insider things to look out for when you walk through any unit."</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">Uncover the Listing</div>
+      <div class="phrase-text">"Are you currently renting, or do you own a place you'll need to sell as part of this move?"</div>
+    </div>
+    <div class="phrase-item">
+      <div class="phrase-label">No-Pressure Close</div>
+      <div class="phrase-text">"If you feel like I can add value, it'll be obvious from the experience. No pressure — let the results speak for themselves."</div>
+    </div>
+  </div>
+
+  <div class="footer-quote">
+    <p>"Every unrepresented buyer who calls is a business waiting to happen."</p>
+    <span>QUALIFY · DEMONSTRATE VALUE · EARN THE RELATIONSHIP</span>
+  </div>
+</div>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function togglePhase(id){document.getElementById(id).classList.toggle('open')}
+let allOpen=false;
+function toggleAll(){allOpen=!allOpen;document.querySelectorAll('.phase').forEach(p=>p.classList.toggle('open',allOpen));document.querySelector('#expandAll span').textContent=allOpen?'Collapse All Phases':'Expand All Phases'}
+function switchBranch(tab,panelId){const parent=tab.closest('.phase-content');parent.querySelectorAll('.branch-tab').forEach(t=>t.classList.remove('active'));parent.querySelectorAll('.branch-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');document.getElementById(panelId).classList.add('active')}
+window.addEventListener('scroll',()=>{document.getElementById('backTop').classList.toggle('show',window.scrollY>400)},{passive:true});
+</script>
+</body>
+</html>

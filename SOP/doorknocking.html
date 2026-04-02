@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Door Knocking — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+/* TOP BAR */
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+.top-actions { display: flex; gap: 8px; }
+.icon-btn { background: var(--bg2); border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.icon-btn:active { opacity: .6; }
+.lang-row { display: flex; gap: 8px; }
+.lang-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.lang-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+/* RECORD STRIP */
+.rec-strip { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rec-label { font-size: 11px; color: var(--light); text-transform: uppercase; letter-spacing: .08em; }
+.rbtn { padding: 9px 16px; border-radius: 20px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; -webkit-appearance: none; }
+.rbtn:active { opacity: .7; }
+#btnRecord { background: var(--red); color: #fff; }
+#btnRecord.recording { animation: rpulse 1.2s infinite; }
+#btnPause { background: var(--bg2); color: var(--dark); border: 1px solid var(--border); display: none; }
+#recTimer { font-size: 13px; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; display: none; min-width: 38px; }
+#recStatus { font-size: 11px; color: var(--light); flex: 1; }
+@keyframes rpulse { 0%,100%{box-shadow:0 0 0 0 rgba(211,47,47,.5)} 50%{box-shadow:0 0 0 7px rgba(211,47,47,0)} }
+/* PROGRESS */
+.progress-bar-wrap { background: var(--white); padding: 9px 16px 11px; border-bottom: 1px solid var(--border); }
+.progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--light); margin-bottom: 6px; }
+.progress-track { height: 3px; background: var(--bg2); border-radius: 2px; }
+.progress-fill { height: 100%; background: var(--step-active); border-radius: 2px; transition: width .3s ease; width: 0%; }
+/* MAIN */
+main { padding: 12px 14px; max-width: 500px; margin: 0 auto; }
+/* CARDS */
+.meta-card, .step-card, .sum-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.step-card.done { opacity: .75; }
+.step-card.active { border-color: var(--step-active); border-width: 2px; }
+.card-inner { padding: 14px; }
+.card-title { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
+/* FIELDS */
+.frow { display: grid; gap: 10px; margin-bottom: 10px; }
+.frow.c1 { grid-template-columns: 1fr; }
+.frow.c2 { grid-template-columns: 1fr 1fr; }
+.frow.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.frow:last-child { margin-bottom: 0; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--mid); font-weight: 600; }
+.field input, .field select, .field textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 12px; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: var(--black); -webkit-appearance: none; width: 100%; min-height: 44px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+.field textarea { resize: vertical; min-height: 80px; }
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
+/* STEP HEAD */
+.step-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; background: var(--white); }
+.step-card.active .step-head { background: var(--step-active); }
+.step-card.done .step-head { background: var(--bg); }
+.step-num { width: 34px; height: 34px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-card.active .step-num { background: rgba(255,255,255,.25); color: #fff; }
+.step-card.done .step-num { background: var(--dark); color: var(--white); }
+.step-label { flex: 1; }
+.step-title { font-size: 15px; font-weight: 600; color: var(--black); }
+.step-card.active .step-title { color: #fff; }
+.step-card.done .step-title { color: var(--mid); }
+.step-dur { font-size: 11px; color: var(--light); margin-top: 2px; }
+.step-card.active .step-dur { color: rgba(255,255,255,.6); }
+.step-chevron { font-size: 13px; color: var(--light); transition: transform .25s; }
+.step-card.active .step-chevron { color: rgba(255,255,255,.7); }
+.step-card.open .step-chevron { transform: rotate(180deg); }
+.step-body { display: none; padding: 14px; border-top: 1px solid var(--border); }
+.step-card.open .step-body { display: block; }
+/* SCRIPT BLOCKS */
+.script-block { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+.script-tag { font-size: 11px; font-weight: 700; color: var(--gold-tag); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+.script-text { font-size: 14px; color: var(--gold-text); line-height: 1.6; font-style: italic; }
+.script-text strong { color: var(--gold-strong); font-style: normal; }
+.question-block { background: var(--bg2); border-left: 3px solid var(--gold-tag); border-radius: 0 8px 8px 0; padding: 10px 12px; margin: 10px 0; }
+.question-arrow { font-size: 11px; font-weight: 700; color: var(--gold-tag); letter-spacing: .05em; margin-bottom: 4px; }
+.question-text { font-size: 14px; font-weight: 600; color: var(--step-active); line-height: 1.5; }
+.script-note { font-size: 13px; color: var(--mid); border-left: 3px solid var(--gold-border); padding: 7px 10px; margin: 8px 0; background: var(--gold-bg); border-radius: 0 6px 6px 0; }
+/* STEP FIELDS */
+.step-fields { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+/* NEXT BTN */
+.next-btn { width: 100%; margin-top: 16px; padding: 15px; background: var(--step-active); color: var(--white); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none; min-height: 52px; }
+.next-btn:active { opacity: .7; }
+/* SUMMARY */
+#summaryPanel { display: none; margin-top: 4px; }
+.sum-card .card-inner { padding: 16px; }
+.sum-title { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 14px; }
+.sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sum-item label { font-size: 11px; color: var(--light); display: block; }
+.sum-item p { font-size: 14px; color: var(--black); font-weight: 500; margin-top: 2px; }
+.sum-notes-box { margin-top: 12px; background: var(--bg); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--dark); line-height: 1.6; white-space: pre-wrap; }
+/* SAVE BUTTONS */
+.save-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.save-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; -webkit-appearance: none; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.save-btn:active { opacity: .7; }
+.save-btn.warm { background: #7a5c00; color: #fff; }
+.save-btn.warm-outline { background: var(--gold-bg); color: var(--gold-strong); border: 2px solid var(--gold-border); }
+.save-btn.grey { background: var(--bg2); color: var(--mid); border: 1px solid var(--border); }
+.save-btn:disabled, .save-btn[disabled] { background: var(--bg2); color: var(--light); border: 1px solid var(--border); cursor: not-allowed; opacity: .6; }
+/* LANG */
+[data-lang="ch"] { display: none; }
+body.lang-ch [data-lang="en"] { display: none; }
+body.lang-ch [data-lang="ch"] { display: block; }
+span[data-lang="ch"], button span[data-lang="ch"] { display: none; }
+body.lang-ch span[data-lang="en"], body.lang-ch button span[data-lang="en"] { display: none; }
+body.lang-ch span[data-lang="ch"], body.lang-ch button span[data-lang="ch"] { display: inline; }
+/* TOAST */
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; }
+.toast.show { opacity: 1; }
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: flex-end; }
+.modal-overlay.open { display: flex; }
+.modal-sheet { background: var(--white); width: 100%; border-radius: 18px 18px 0 0; padding: 20px 16px calc(20px + var(--safe-bottom)); max-height: 72vh; overflow-y: auto; }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.saved-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.saved-item:last-child { border-bottom: none; }
+.saved-item:active { opacity: .6; }
+.saved-name { font-size: 15px; font-weight: 600; }
+.saved-meta { font-size: 12px; color: var(--light); margin-top: 2px; }
+.del-btn { color: var(--red); font-size: 13px; font-weight: 700; padding: 8px 12px; background: none; border: none; cursor: pointer; flex-shrink: 0; }
+.modal-close { width: 100%; padding: 14px; background: var(--bg2); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; color: var(--dark); cursor: pointer; margin-top: 14px; }
+.empty-state { text-align: center; color: var(--light); font-size: 14px; padding: 32px 0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title">Door Knocking</div>
+      <div class="app-sub">Pinnacle Listing System · Peter Luo</div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="openLoadModal()">📂 <span data-lang="en">Load</span><span data-lang="ch">加载</span></button>
+    </div>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnCH" onclick="setLang('ch')">中文</button>
+  </div>
+</div>
+
+<!-- RECORD STRIP -->
+<div class="rec-strip">
+  <span class="rec-label">Rec</span>
+  <button class="rbtn" id="btnRecord" onclick="toggleRecord()">
+    <span>⏺</span><span id="recLabel">Record</span>
+  </button>
+  <button class="rbtn" id="btnPause" onclick="togglePause()">⏸ Pause</button>
+  <span id="recTimer">0:00</span>
+  <span id="recStatus">Ready</span>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span data-lang="en">Progress</span><span data-lang="ch">进度</span>
+    <span id="progressText">0 / 6</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<main>
+
+<!-- SESSION INFO -->
+<div class="meta-card">
+  <div class="card-inner">
+    <div class="card-title" data-lang="en">Session Info</div>
+    <div class="card-title" data-lang="ch">本次敲门信息</div>
+    <div class="frow c2">
+      <div class="field">
+        <label data-lang="en">Date</label>
+        <label data-lang="ch">日期</label>
+        <input type="date" id="dkDate">
+      </div>
+      <div class="field">
+        <label data-lang="en">Street / Area</label>
+        <label data-lang="ch">街道 / 区域</label>
+        <input type="text" id="dkStreet" placeholder="e.g. Elmwood Ave, Markham" autocomplete="off">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-card open active" id="step1">
+  <div class="step-head" onclick="toggleStep('step1')">
+    <div class="step-num">1</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Warm Opening & Introduction</div>
+      <div class="step-title" data-lang="ch">开场 · 自我介绍</div>
+      <div class="step-dur" data-lang="en">Smile, relax, not salesy</div>
+      <div class="step-dur" data-lang="ch">微笑、放松，无销售感</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-note" data-lang="en">〔 Smile, make eye contact — be relaxed, not salesy 〕</div>
+    <div class="script-note" data-lang="ch">〔 保持微笑、眼神接触——自然亲切，不要有销售感 〕</div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Compliment</div>
+      <div class="script-tag" data-lang="ch">开场赞美</div>
+      <div class="script-text" data-lang="en">"Good morning! I couldn't help but notice — <strong>your front lawn looks absolutely wonderful.</strong> You've clearly put a lot of care into it."</div>
+      <div class="script-text" data-lang="ch">"早上好！我一走过来就注意到——<strong>您家的草坪真的非常漂亮</strong>，一看就知道您花了很多心思。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Introduce Yourself</div>
+      <div class="script-tag" data-lang="ch">自我介绍</div>
+      <div class="script-text" data-lang="en">"My name is <strong>Peter Luo</strong>, and I'm a real estate agent with <strong>RE/MAX Realtron</strong> — I work a lot in this neighbourhood."</div>
+      <div class="script-text" data-lang="ch">"我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的地产经纪，经常在这一带工作。"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Door #</label>
+          <label data-lang="ch">门牌号</label>
+          <input type="text" id="doorNumber" placeholder="e.g. 45">
+        </div>
+        <div class="field">
+          <label data-lang="en">Homeowner Name</label>
+          <label data-lang="ch">屋主姓名</label>
+          <input type="text" id="ownerName" placeholder="e.g. Mary" autocomplete="off">
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">First impression / notes</label>
+          <label data-lang="ch">第一印象 / 备注</label>
+          <textarea id="notes1" placeholder="Friendly, in a hurry, dogs barking…"></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step1');openStep('step2')">
+      <span data-lang="en">Next →</span><span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-card" id="step2">
+  <div class="step-head" onclick="toggleStep('step2')">
+    <div class="step-num">2</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">The Specific Ask</div>
+      <div class="step-title" data-lang="ch">具体提问</div>
+      <div class="step-dur" data-lang="en">Referral request</div>
+      <div class="step-dur" data-lang="ch">寻求推荐</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">The Ask</div>
+      <div class="script-tag" data-lang="ch">寻求帮助</div>
+      <div class="script-text" data-lang="en">"I'm actually hoping you can help me — I have a buyer who is <strong>specifically looking for a home on this street</strong>. They love the neighbourhood and want to stay in this area."</div>
+      <div class="script-text" data-lang="ch">"我是来寻求您帮助的——我有一个买家，<strong>专门想在这条街上买房</strong>，他们非常喜欢这个区域，一心想在这里定居。"</div>
+    </div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ DISCOVERY</div>
+      <div class="question-arrow" data-lang="ch">▶ 发现问题</div>
+      <div class="question-text" data-lang="en">"In the time you've lived here — has anyone mentioned they might be thinking about moving?"</div>
+      <div class="question-text" data-lang="ch">"您在这里住了一段时间了——有没有听说哪家邻居有搬家的打算？"</div>
+    </div>
+    <div class="script-note" data-lang="en">〔 Pause and wait — give them time to think. Don't fill the silence. 〕</div>
+    <div class="script-note" data-lang="ch">〔 停顿，等对方思考——不要急着说话，让沉默发挥作用 〕</div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Thank & Card</div>
+      <div class="script-tag" data-lang="ch">致谢 · 递名片</div>
+      <div class="script-text" data-lang="en">"Thank you so much for thinking about it — I really appreciate it."</div>
+      <div class="script-text" data-lang="ch">"非常感谢您帮忙想想，真的很感激。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Leave Card</div>
+      <div class="script-tag" data-lang="ch">递名片</div>
+      <div class="script-text" data-lang="en">"Here's my card. If you do hear of anyone thinking about selling — even just considering it — I'd love to know. <strong>Would that be okay?</strong>"</div>
+      <div class="script-text" data-lang="ch">"这是我的名片。如果您听到哪位邻居有卖房的想法——哪怕只是在考虑——请一定告诉我。<strong>可以吗？</strong>"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Their response to the referral ask</label>
+          <label data-lang="ch">对方对推荐问题的反应</label>
+          <select id="referralResponse">
+            <option value="">— Select —</option>
+            <option>Mentioned a neighbour</option>
+            <option>Nothing right now</option>
+            <option>Thinking themselves</option>
+            <option>Not receptive</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Neighbour mentioned (if any)</label>
+          <label data-lang="ch">提到的邻居（如有）</label>
+          <input type="text" id="neighbourMentioned" placeholder="e.g. The Smiths at #47…">
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step2');openStep('step3')">
+      <span data-lang="en">Next →</span><span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-card" id="step3">
+  <div class="step-head" onclick="toggleStep('step3')">
+    <div class="step-num">3</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Natural Transition to Discovery</div>
+      <div class="step-title" data-lang="ch">自然过渡 · 了解需求</div>
+      <div class="step-dur" data-lang="en">Only if they seem open</div>
+      <div class="step-dur" data-lang="ch">仅在对方有兴趣时</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-note" data-lang="en">〔 Only if they seem open and relaxed — skip if they look busy 〕</div>
+    <div class="script-note" data-lang="ch">〔 仅在对方看起来有兴趣、不忙碌时才进入——不要强行推进 〕</div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Get Their Name</div>
+      <div class="script-tag" data-lang="ch">了解姓名</div>
+      <div class="script-text" data-lang="en">"By the way — I don't think we've met before. How should I address you?"</div>
+      <div class="script-text" data-lang="ch">"对了，我们好像还没见过——请问怎么称呼您？"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Affirm</div>
+      <div class="script-tag" data-lang="ch">认可</div>
+      <div class="script-text" data-lang="en">"<strong>[Name]</strong> — great to meet you. It's clear you really love this neighbourhood."</div>
+      <div class="script-text" data-lang="ch">"<strong>[姓名]</strong>，很高兴认识您。看得出来您真的很喜欢这里。"</div>
+    </div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ DISCOVERY</div>
+      <div class="question-arrow" data-lang="ch">▶ 发现问题</div>
+      <div class="question-text" data-lang="en">"How long have you been living here?"</div>
+      <div class="question-text" data-lang="ch">"您在这里住多久了？"</div>
+    </div>
+    <div class="script-note" data-lang="en">〔 Listen warmly, acknowledge before asking the next question 〕</div>
+    <div class="script-note" data-lang="ch">〔 用心倾听，对他们说的话先给予回应，再问下一个问题 〕</div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ DISCOVERY</div>
+      <div class="question-arrow" data-lang="ch">▶ 发现问题</div>
+      <div class="question-text" data-lang="en">"What made you choose this particular street?"</div>
+      <div class="question-text" data-lang="ch">"当初是什么原因让您选择了这条街？"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Affirm</div>
+      <div class="script-tag" data-lang="ch">认可</div>
+      <div class="script-text" data-lang="en">"That makes a lot of sense — it really is a special street."</div>
+      <div class="script-text" data-lang="ch">"这很有道理——这条街确实很特别。"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Years Living Here</label>
+          <label data-lang="ch">居住年限</label>
+          <select id="yearsHere">
+            <option value="">— Select —</option>
+            <option>Less than 1 year</option>
+            <option>1–3 years</option>
+            <option>3–5 years</option>
+            <option>5–10 years</option>
+            <option>10+ years</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Openness Level</label>
+          <label data-lang="ch">开放程度</label>
+          <select id="openness">
+            <option value="">— Select —</option>
+            <option>Very open</option>
+            <option>Somewhat open</option>
+            <option>Polite but brief</option>
+            <option>Not interested</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">What they said about the street / neighbourhood</label>
+          <label data-lang="ch">对方对街道 / 社区的评价</label>
+          <textarea id="notes3" placeholder="Why they chose here, what they love about it…"></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step3');openStep('step4')">
+      <span data-lang="en">Next →</span><span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-card" id="step4">
+  <div class="step-head" onclick="toggleStep('step4')">
+    <div class="step-num">4</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Plant the Seed (Future Move)</div>
+      <div class="step-title" data-lang="ch">埋下种子（未来搬家）</div>
+      <div class="step-dur" data-lang="en">Curiosity, not pressure</div>
+      <div class="step-dur" data-lang="ch">好奇，不要有压迫感</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-note" data-lang="en">〔 Ask lightly — curiosity, not pressure. Skip gracefully if they're not receptive. 〕</div>
+    <div class="script-note" data-lang="ch">〔 轻松地问——保持好奇，不要有压迫感。如果对方不感兴趣，优雅地跳过 〕</div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ SEED QUESTION</div>
+      <div class="question-arrow" data-lang="ch">▶ 种子问题</div>
+      <div class="question-text" data-lang="en">"If you were ever to move again someday — is there somewhere you'd have in mind?"</div>
+      <div class="question-text" data-lang="ch">"如果您将来某一天要再搬家——您心里有没有想去的地方？"</div>
+    </div>
+    <div class="script-note" data-lang="en">〔 Listen fully before following up 〕</div>
+    <div class="script-note" data-lang="ch">〔 完整听完，再追问 〕</div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ FOLLOW UP</div>
+      <div class="question-arrow" data-lang="ch">▶ 追问</div>
+      <div class="question-text" data-lang="en">"What draws you to that area?"</div>
+      <div class="question-text" data-lang="ch">"是什么吸引您去那里？"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Their future move intentions</label>
+          <label data-lang="ch">对方未来搬家意向</label>
+          <select id="futureMove">
+            <option value="">— Select —</option>
+            <option>Actively thinking about it</option>
+            <option>Maybe in 1–2 years</option>
+            <option>Long-term / 5+ years</option>
+            <option>No plans</option>
+            <option>Didn't answer</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Where they'd move / why</label>
+          <label data-lang="ch">想搬去哪里 / 原因</label>
+          <textarea id="notes4" placeholder="Downsizing to condo, moving closer to family…"></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step4');openStep('step5')">
+      <span data-lang="en">Next →</span><span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-card" id="step5">
+  <div class="step-head" onclick="toggleStep('step5')">
+    <div class="step-num">5</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Value Exchange & Email Capture</div>
+      <div class="step-title" data-lang="ch">价值交换 · 留下邮箱</div>
+      <div class="step-dur" data-lang="en">Market update offer</div>
+      <div class="step-dur" data-lang="ch">市场报告邀请</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">The Offer</div>
+      <div class="script-tag" data-lang="ch">提出价值</div>
+      <div class="script-text" data-lang="en">"I send a monthly market update to a <strong>few families on this street</strong> — it covers what's sold nearby, price trends, and what's happening in the market. Most people find it really useful to track what their home is worth."</div>
+      <div class="script-text" data-lang="ch">"我每个月会给<strong>这条街上的几户家庭</strong>发一份市场动态报告——包括附近的成交情况、价格走势和市场动向。很多邻居都觉得，了解自己房产的市场价值很有帮助。"</div>
+    </div>
+    <div class="question-block">
+      <div class="question-arrow" data-lang="en">▶ EMAIL ASK</div>
+      <div class="question-arrow" data-lang="ch">▶ 索取邮箱</div>
+      <div class="question-text" data-lang="en">"Would you like me to add you to the list? I can send it to your email."</div>
+      <div class="question-text" data-lang="ch">"您希望我把您也加进来吗？我可以直接发到您的邮箱。"</div>
+    </div>
+    <div class="script-note" data-lang="en">〔 If yes — write it down on the spot, confirm spelling 〕</div>
+    <div class="script-note" data-lang="ch">〔 如果同意——当场记下来，确认拼写 〕</div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Email Captured?</label>
+          <label data-lang="ch">是否获得邮箱？</label>
+          <select id="emailCaptured">
+            <option value="">— Select —</option>
+            <option>Yes</option>
+            <option>No</option>
+            <option>Maybe later</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Email Address</label>
+          <label data-lang="ch">邮箱地址</label>
+          <input type="email" id="ownerEmail" placeholder="mary@email.com">
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step5');openStep('step6')">
+      <span data-lang="en">Next →</span><span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step-card" id="step6">
+  <div class="step-head" onclick="toggleStep('step6')">
+    <div class="step-num">6</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Warm Close</div>
+      <div class="step-title" data-lang="ch">友好收尾</div>
+      <div class="step-dur">~30 sec</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Thank Them</div>
+      <div class="script-tag" data-lang="ch">致谢</div>
+      <div class="script-text" data-lang="en">"<strong>[Name]</strong>, thank you so much for your time — this has been a real pleasure."</div>
+      <div class="script-text" data-lang="ch">"<strong>[姓名]</strong>，非常感谢您抽出时间——跟您聊天真的很愉快。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Keep Connection Open</div>
+      <div class="script-tag" data-lang="ch">保持联系</div>
+      <div class="script-text" data-lang="en">"I'll be in the neighbourhood regularly, so I'm sure we'll run into each other again. Please do keep me in mind if you hear anything."</div>
+      <div class="script-text" data-lang="ch">"我会经常在附近走动，相信我们很快还会见面的。如果您听到什么消息，请一定想到我。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Sign Off</div>
+      <div class="script-tag" data-lang="ch">道别</div>
+      <div class="script-text" data-lang="en">"Have a wonderful day!"</div>
+      <div class="script-text" data-lang="ch">"祝您今天愉快！"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Lead Rating</label>
+          <label data-lang="ch">潜力评级</label>
+          <select id="leadRating">
+            <option value="">— Select —</option>
+            <option>🔥 Hot</option>
+            <option>☀️ Warm</option>
+            <option>❄️ Cool</option>
+            <option>🌱 Nurture</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Card Left?</label>
+          <label data-lang="ch">是否留了名片？</label>
+          <select id="cardLeft">
+            <option value="">— Select —</option>
+            <option>Yes, accepted</option>
+            <option>Yes, reluctant</option>
+            <option>No answer / left in door</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Follow-Up Notes</label>
+          <label data-lang="ch">跟进备注</label>
+          <textarea id="notesFinal" placeholder="Key things said, follow-up actions, when to revisit…"></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step6');showSummary()">
+      <span data-lang="en">✓ Complete Door</span>
+      <span data-lang="ch">✓ 完成此户</span>
+    </button>
+  </div>
+</div>
+
+<!-- SAVE PANEL -->
+<div id="savePanel" style="display:none;">
+  <div class="save-row">
+    <button class="save-btn warm" onclick="saveAllData()">
+      <span>💾</span>
+      <span data-lang="en">Save Door Record</span>
+      <span data-lang="ch">保存敲门记录</span>
+    </button>
+    <button class="save-btn warm-outline" id="btnSaveRec" onclick="saveRecording()" disabled>
+      <span>🎙</span>
+      <span data-lang="en">Save Voice Recording</span>
+      <span data-lang="ch">保存录音文件</span>
+    </button>
+    <div style="font-size:12px;color:#aaa;text-align:center;margin-top:-4px;" data-lang="en">Saves to iPhone Files app → Downloads</div>
+    <div style="font-size:12px;color:#aaa;text-align:center;margin-top:-4px;" data-lang="ch">保存至「文件」App → 下载文件夹</div>
+    <button class="save-btn grey" onclick="resetForm()">
+      <span>🔄</span>
+      <span data-lang="en">Next Door</span>
+      <span data-lang="ch">下一户</span>
+    </button>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summaryPanel">
+  <div class="sum-card">
+    <div class="card-inner">
+      <div class="sum-title" data-lang="en">📋 Door Summary</div>
+      <div class="sum-title" data-lang="ch">📋 本户摘要</div>
+      <div class="sum-grid" id="summaryGrid"></div>
+      <div class="sum-notes-box" id="summaryNotes"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- LOAD MODAL -->
+<div class="modal-overlay" id="loadModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span data-lang="en">📂 Saved Records</span><span data-lang="ch">📂 已保存记录</span></div>
+    <div id="savedList"></div>
+    <button class="modal-close" onclick="closeLoadModal()"><span data-lang="en">Close</span><span data-lang="ch">关闭</span></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FIELDS = ['dkDate','dkStreet','doorNumber','ownerName',
+  'notes1','referralResponse','neighbourMentioned',
+  'yearsHere','openness','notes3','futureMove','notes4',
+  'emailCaptured','ownerEmail','leadRating','cardLeft','notesFinal'];
+
+const totalSteps = 6;
+let doneSteps = new Set();
+
+// ── Language ──
+const langText = {
+  en: {
+    referralResponse: ['— Select —', 'Mentioned a neighbour', 'Nothing right now', 'Thinking themselves', 'Not receptive'],
+    yearsHere:        ['— Select —', 'Less than 1 year', '1–3 years', '3–5 years', '5–10 years', '10+ years'],
+    openness:         ['— Select —', 'Very open', 'Somewhat open', 'Polite but brief', 'Not interested'],
+    futureMove:       ['— Select —', 'Actively thinking about it', 'Maybe in 1–2 years', 'Long-term / 5+ years', 'No plans', "Didn't answer"],
+    emailCaptured:    ['— Select —', 'Yes', 'No', 'Maybe later'],
+    leadRating:       ['— Select —', '🔥 Hot', '☀️ Warm', '❄️ Cool', '🌱 Nurture'],
+    cardLeft:         ['— Select —', 'Yes, accepted', 'Yes, reluctant', 'No answer / left in door'],
+  },
+  ch: {
+    referralResponse: ['— 请选择 —', '提到了邻居', '目前没有', '自己在考虑', '不感兴趣'],
+    yearsHere:        ['— 请选择 —', '不到1年', '1–3年', '3–5年', '5–10年', '10年以上'],
+    openness:         ['— 请选择 —', '非常开放', '有些开放', '礼貌但简短', '没有兴趣'],
+    futureMove:       ['— 请选择 —', '正在积极考虑', '可能1–2年内', '长期/5年以上', '没有计划', '没有回答'],
+    emailCaptured:    ['— 请选择 —', '已获得', '没有提供', '之后可能'],
+    leadRating:       ['— 请选择 —', '🔥 热', '☀️ 一般', '❄️ 冷淡', '🌱 跟进'],
+    cardLeft:         ['— 请选择 —', '接受了', '不情愿地接受', '没人/放在门口'],
+  }
+};
+
+const langPlaceholders = {
+  en: {
+    dkStreet: 'e.g. Elmwood Ave, Markham',
+    doorNumber: 'e.g. 45',
+    ownerName: 'e.g. Mary',
+    notes1: 'Friendly, in a hurry, dogs barking…',
+    neighbourMentioned: 'e.g. The Smiths at #47…',
+    notes3: 'Why they chose here, what they love about it…',
+    notes4: 'Downsizing to condo, moving closer to family…',
+    ownerEmail: 'mary@email.com',
+    notesFinal: 'Key things said, follow-up actions, when to revisit…',
+  },
+  ch: {
+    dkStreet: '例如：万锦市Elmwood大道',
+    doorNumber: '例如：45号',
+    ownerName: '例如：玛丽',
+    notes1: '友好、很忙、有狗叫声……',
+    neighbourMentioned: '例如：47号的史密斯一家……',
+    notes3: '为什么选择这里，喜欢什么……',
+    notes4: '换小公寓、搬近家人……',
+    ownerEmail: 'mary@email.com',
+    notesFinal: '关键内容、跟进事项、下次拜访时间……',
+  }
+};
+
+function setLang(lang) {
+  document.body.classList.toggle('lang-ch', lang === 'ch');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnCH').classList.toggle('active', lang === 'ch');
+  const texts = langText[lang];
+  Object.keys(texts).forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = texts[selId].map((t,i) => `<option value="${i===0?'':t}">${t}</option>`).join('');
+    Array.from(sel.options).forEach(o => { if (o.value === cur) sel.value = o.value; });
+  });
+  const phs = langPlaceholders[lang];
+  Object.keys(phs).forEach(id => { const el = document.getElementById(id); if (el) el.placeholder = phs[id]; });
+}
+
+// ── Steps ──
+function toggleStep(id) { document.getElementById(id).classList.toggle('open'); }
+function openStep(id) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('open','active'));
+  const card = document.getElementById(id);
+  card.classList.add('open','active');
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
+}
+function markDone(id) {
+  const card = document.getElementById(id);
+  card.classList.add('done'); card.classList.remove('active','open');
+  doneSteps.add(parseInt(id.replace('step','')));
+  updateProgress();
+}
+function updateProgress() {
+  const pct = (doneSteps.size / totalSteps) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = doneSteps.size + ' / ' + totalSteps;
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// ── Summary ──
+function showSummary() {
+  document.getElementById('savePanel').style.display = 'block';
+  document.getElementById('summaryPanel').style.display = 'block';
+  const items = [
+    {l:'Date',              v: v('dkDate')},
+    {l:'Street',            v: v('dkStreet')},
+    {l:'Door #',            v: v('doorNumber')},
+    {l:'Homeowner',         v: v('ownerName')},
+    {l:'Email',             v: v('ownerEmail')},
+    {l:'Referral Response', v: v('referralResponse')},
+    {l:'Neighbour Lead',    v: v('neighbourMentioned')},
+    {l:'Years Here',        v: v('yearsHere')},
+    {l:'Openness',          v: v('openness')},
+    {l:'Future Move',       v: v('futureMove')},
+    {l:'Email Captured',    v: v('emailCaptured')},
+    {l:'Lead Rating',       v: v('leadRating')},
+    {l:'Card Left',         v: v('cardLeft')},
+  ];
+  document.getElementById('summaryGrid').innerHTML = items
+    .filter(i => i.v.trim())
+    .map(i => `<div class="sum-item"><label>${i.l}</label><p>${i.v}</p></div>`)
+    .join('');
+  const notes = [v('notes1'), v('notes3'), v('notes4'), v('notesFinal')].filter(Boolean).join('\n\n─────\n\n');
+  document.getElementById('summaryNotes').textContent = notes || '—';
+  setTimeout(() => document.getElementById('savePanel').scrollIntoView({ behavior:'smooth' }), 80);
+}
+
+// ── Filename ──
+function buildFilename() {
+  const name = (v('ownerName') || v('doorNumber') || 'Door').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\u4e00-\u9fff]/g,'');
+  const now = new Date();
+  const YYYY = now.getFullYear();
+  const MM = String(now.getMonth()+1).padStart(2,'0');
+  const DD = String(now.getDate()).padStart(2,'0');
+  let HH = now.getHours();
+  const min = String(now.getMinutes()).padStart(2,'0');
+  const ampm = HH >= 12 ? 'PM' : 'AM';
+  HH = (HH % 12) || 12;
+  return `DoorKnocking_${name}.${YYYY}_${MM}_${DD}_${String(HH).padStart(2,'0')}${ampm}_${min}`;
+}
+
+// ── Save ──
+function saveAllData() {
+  const data = { savedAt: new Date().toISOString(), ownerNameSnapshot: v('ownerName') || v('doorNumber') || 'Unknown' };
+  FIELDS.forEach(id => { data[id] = v(id); });
+  const all = JSON.parse(localStorage.getItem('pinnacle_dk') || '[]');
+  all.unshift(data);
+  if (all.length > 50) all.splice(50);
+  localStorage.setItem('pinnacle_dk', JSON.stringify(all));
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = buildFilename() + '.json';
+  a.click();
+  showToast('Saved ✓');
+}
+
+// ── Load ──
+function openLoadModal() { renderSavedList(); document.getElementById('loadModal').classList.add('open'); }
+function closeLoadModal() { document.getElementById('loadModal').classList.remove('open'); }
+document.getElementById('loadModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('loadModal')) closeLoadModal();
+});
+function renderSavedList() {
+  const all = JSON.parse(localStorage.getItem('pinnacle_dk') || '[]');
+  const el = document.getElementById('savedList');
+  if (!all.length) { el.innerHTML = '<div class="empty-state">No saved records yet</div>'; return; }
+  el.innerHTML = all.map((c,i) => {
+    const d = c.savedAt ? new Date(c.savedAt).toLocaleDateString() : '—';
+    return `<div class="saved-item" onclick="loadRecord(${i})">
+      <div>
+        <div class="saved-name">${c.ownerNameSnapshot || 'Unknown'}</div>
+        <div class="saved-meta">${c.dkDate||'—'} · ${c.dkStreet||'—'} · ${d}</div>
+      </div>
+      <button class="del-btn" onclick="event.stopPropagation();deleteRecord(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+function loadRecord(i) {
+  const all = JSON.parse(localStorage.getItem('pinnacle_dk') || '[]');
+  const data = all[i]; if (!data) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el && data[id] !== undefined) el.value = data[id]; });
+  doneSteps.clear();
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('done','active','open'));
+  document.getElementById('step1').classList.add('open');
+  updateProgress();
+  document.getElementById('summaryPanel').style.display = 'none';
+  document.getElementById('savePanel').style.display = 'none';
+  closeLoadModal(); showToast('Loaded ✓');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function deleteRecord(i) {
+  if (!confirm('Delete this record?')) return;
+  const all = JSON.parse(localStorage.getItem('pinnacle_dk') || '[]');
+  all.splice(i,1);
+  localStorage.setItem('pinnacle_dk', JSON.stringify(all));
+  renderSavedList();
+}
+
+// ── Reset ──
+function resetForm() {
+  if (!confirm('Start a new door? Current data will be cleared.')) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  doneSteps.clear(); updateProgress();
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('done','active','open'));
+  document.getElementById('step1').classList.add('open','active');
+  document.getElementById('summaryPanel').style.display = 'none';
+  document.getElementById('savePanel').style.display = 'none';
+  stopRecording();
+  document.getElementById('dkDate').value = new Date().toISOString().split('T')[0];
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Set today ──
+document.getElementById('dkDate').value = new Date().toISOString().split('T')[0];
+
+// ── Recording ──
+let mediaRecorder = null, audioChunks = [], recordedBlob = null;
+let timerInterval = null, elapsedSec = 0;
+
+async function toggleRecord() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+                     : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        recordedBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        document.getElementById('btnSaveRec').removeAttribute('disabled');
+        document.getElementById('recStatus').textContent = 'Done — tap Save Recording';
+      };
+      mediaRecorder.start(500); elapsedSec = 0; startTimer();
+      document.getElementById('btnRecord').classList.add('recording');
+      document.getElementById('recLabel').textContent = 'Stop';
+      document.getElementById('btnPause').style.display = 'flex';
+      document.getElementById('recTimer').style.display = 'inline';
+      document.getElementById('recStatus').textContent = '● Recording…';
+    } catch(e) { alert('Microphone access denied.\nPlease allow mic access in Safari Settings.'); }
+  } else { stopRecording(); }
+}
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop(); mediaRecorder.stream?.getTracks().forEach(t => t.stop());
+  }
+  clearInterval(timerInterval);
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('recLabel').textContent = 'Record';
+  document.getElementById('btnPause').style.display = 'none';
+}
+function togglePause() {
+  if (!mediaRecorder) return;
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause(); clearInterval(timerInterval);
+    document.getElementById('btnPause').textContent = '▶ Resume';
+    document.getElementById('recStatus').textContent = '⏸ Paused';
+  } else if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume(); startTimer();
+    document.getElementById('btnPause').textContent = '⏸ Pause';
+    document.getElementById('recStatus').textContent = '● Recording…';
+  }
+}
+function startTimer() {
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    const m = Math.floor(elapsedSec/60);
+    const s = String(elapsedSec%60).padStart(2,'0');
+    document.getElementById('recTimer').textContent = m+':'+s;
+  }, 1000);
+}
+function saveRecording() {
+  if (!recordedBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(recordedBlob);
+  a.download = buildFilename() + '.m4a';
+  a.click();
+  showToast('Recording saved ✓');
+}
+</script>
+</body>
+</html>

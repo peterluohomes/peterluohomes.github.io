@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Showings vs. Weeks on Market – Peter Luo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: #fff;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 24px 36px; min-height: 100vh;
+}
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 3vw, 30px);
+  color: #c9922a; text-align: center; margin-bottom: 6px;
+}
+.page-sub { font-size: 13px; color: #888; text-align: center; margin-bottom: 10px; }
+.gold-line { width: auto; max-width: fit-content; height: 2px; background: #c9922a; margin: 0 auto 28px; border-radius: 2px; }
+
+.chart-wrap {
+  width: 100%; max-width: 820px;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(26,47,94,.10);
+  padding: 28px 24px 20px;
+  position: relative;
+}
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 420px !important;
+}
+.phase-boxes {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 12px; width: 100%; max-width: 820px; margin-top: 18px;
+}
+@media (max-width: 560px) { .phase-boxes { grid-template-columns: 1fr; } }
+.phase-box {
+  border-radius: 10px; padding: 14px 16px;
+  border: 1.5px solid #e0e0e0;
+}
+.phase-box .phase-label { font-size: 11px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.phase-box .phase-name  { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+.phase-box .phase-sub   { font-size: 12px; color: #777; }
+
+.phase-peak    { background: #e8f0ff; border-color: #5b7fd4; }
+.phase-peak    .phase-label { color: #5b7fd4; }
+.phase-peak    .phase-name  { color: #1e3a8a; }
+.phase-decline { background: #fff8e8; border-color: #c9922a; }
+.phase-decline .phase-label { color: #c9922a; }
+.phase-decline .phase-name  { color: #b07010; }
+.phase-stale   { background: #f5f5f5; border-color: #aaa; }
+.phase-stale   .phase-label { color: #777; }
+.phase-stale   .phase-name  { color: #444; }
+
+.branding {
+  margin-top: 28px; font-size: 11px; color: #aaa;
+  letter-spacing: 1px; text-transform: uppercase;
+  width: 100%; line-height: 1.8;
+}
+.branding div { text-align: center; width: 100%; }
+.branding span { color: #e87722; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="page-title">House Showings vs. Weeks on Market</div>
+<div class="page-sub" id="subtitle">Typical showing activity pattern for residential listings</div>
+<div class="gold-line" id="goldLine"></div>
+
+<div class="chart-wrap">
+  <canvas id="showingsChart"></canvas>
+</div>
+
+<div class="phase-boxes">
+  <div class="phase-box phase-peak">
+    <div class="phase-label">Peak Activity</div>
+    <div class="phase-name">Weeks 1–2</div>
+    <div class="phase-sub">Highest buyer interest</div>
+  </div>
+  <div class="phase-box phase-decline">
+    <div class="phase-label">Decline Phase</div>
+    <div class="phase-name">Weeks 3–4</div>
+    <div class="phase-sub">Activity drops sharply</div>
+  </div>
+  <div class="phase-box phase-stale">
+    <div class="phase-label">Stale Listing</div>
+    <div class="phase-name">Week 4+</div>
+    <div class="phase-sub">Minimal new interest</div>
+  </div>
+</div>
+
+<div class="branding">
+  <div><span>Peter Luo</span> &nbsp;·&nbsp; RE/MAX Realtron Realty Inc.</div>
+  <div>&nbsp;·&nbsp; Pinnacle Listing System</div>
+</div>
+
+<script>
+function syncLine() {
+  const sub  = document.getElementById('subtitle');
+  const line = document.getElementById('goldLine');
+  line.style.width = sub.offsetWidth + 'px';
+}
+window.addEventListener('load',   syncLine);
+window.addEventListener('resize', syncLine);
+</script>
+
+<script>
+const weeks = [1, 2, 3, 4, 5, 6, 7];
+const pct   = [100, 70, 35, 20, 11, 8, 5];
+
+// Background zone colours
+const bgPlugin = {
+  id: 'bgZones',
+  beforeDraw(chart) {
+    const { ctx, chartArea: { left, right, top, bottom }, scales: { x } } = chart;
+    if (!x) return;
+    ctx.save();
+    const zones = [
+      { from: 1, to: 2.5, color: 'rgba(91,127,212,0.08)' },
+      { from: 2.5, to: 4,  color: 'rgba(201,146,42,0.08)' },
+      { from: 4,   to: 7,  color: 'rgba(180,180,180,0.08)' },
+    ];
+    zones.forEach(z => {
+      const x1 = x.getPixelForValue(z.from);
+      const x2 = x.getPixelForValue(z.to);
+      ctx.fillStyle = z.color;
+      ctx.fillRect(x1, top, x2 - x1, bottom - top);
+    });
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('showingsChart'), {
+  type: 'line',
+  plugins: [bgPlugin],
+  data: {
+    labels: weeks,
+    datasets: [{
+      label: '% of Peak Showings',
+      data: pct,
+      borderColor: '#4a7fd4',
+      borderWidth: 3,
+      backgroundColor: 'rgba(91,127,212,0.12)',
+      fill: true,
+      tension: 0.45,
+      pointBackgroundColor: '#4a7fd4',
+      pointRadius: 6,
+      pointHoverRadius: 8,
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: ctx => `Week ${ctx[0].label}`,
+          label: ctx => ` ${ctx.parsed.y}% of Peak Showings`
+        }
+      }
+    },
+    scales: {
+      y: {
+        min: 0, max: 110,
+        ticks: { callback: v => v + '%', stepSize: 20 },
+        title: { display: true, text: 'Percentage of Peak Showings', font: { size: 12 } },
+        grid: { color: '#f0f0f0' }
+      },
+      x: {
+        title: { display: true, text: 'Weeks on Market', font: { size: 12 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

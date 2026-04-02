@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duties to Clients — Law of Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5efe3;
+    --gold: #b8922a;
+    --gold-light: #d4a94a;
+    --gold-pale: #f0e0b0;
+    --rule: #c8a84a;
+    --accent: #7a1c1c;
+    --muted: #6b5c3e;
+    --white: #fdfaf4;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 3.5rem 2rem 2.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    margin-top: 2.5rem;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    border: 1px solid var(--gold);
+    padding: 0.3em 1.1em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.1s;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.25s;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  header p.subtitle {
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a89070;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.4s;
+  }
+
+  /* ── INTRO BAND ── */
+  .intro-band {
+    background: var(--white);
+    border-bottom: 1px solid var(--gold-pale);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.55s;
+  }
+
+  .intro-band p {
+    max-width: 720px;
+    margin: 0 auto;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.22rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  .intro-band p strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .section-label span.num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .section-label .text h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.9rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+
+  .section-label .text p {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 0.15rem;
+  }
+
+  /* ── DUTIES GRID ── */
+  .duties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.4rem;
+    margin-bottom: 4rem;
+  }
+
+  .duty-card {
+    background: var(--white);
+    border: 1px solid var(--gold-pale);
+    border-top: 3px solid var(--gold);
+    padding: 1.8rem 1.6rem;
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .duty-card:hover {
+    box-shadow: 0 8px 32px rgba(184,146,42,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    transform: translateY(-3px);
+  }
+
+  .duty-card .icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .duty-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.01em;
+  }
+
+  .duty-card p {
+    font-size: 0.83rem;
+    line-height: 1.78;
+    color: #4a3c26;
+    font-weight: 300;
+  }
+
+  .duty-card .loyalty-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.2em 0.6em;
+  }
+
+  /* Special card: loyalty */
+  .duty-card.loyalty {
+    background: var(--white);
+  }
+
+  /* ── DIVIDER ── */
+  .gold-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+
+  .gold-rule::before, .gold-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule));
+  }
+
+  .gold-rule::after {
+    background: linear-gradient(90deg, var(--rule), transparent);
+  }
+
+  .gold-rule span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* ── THIRD PARTIES SECTION ── */
+  .third-party-box {
+    background: var(--white);
+    border: 1px solid var(--gold-pale);
+    border-left: 4px solid var(--accent);
+    padding: 2rem 2rem 2rem 2.2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .third-party-box h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .third-party-box p {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #4a3c26;
+    font-weight: 300;
+  }
+
+  .third-party-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+  }
+
+  .pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid;
+    padding: 0.3em 0.9em;
+  }
+
+  .pill.honesty { color: var(--accent); border-color: var(--accent); }
+  .pill.legal { color: var(--gold); border-color: var(--gold); }
+  .pill.care { color: #3a6a3a; border-color: #3a6a3a; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    text-align: center;
+    padding: 1.8rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6b5c3e;
+    border-top: 1px solid #2a2010;
+  }
+
+  footer span { color: var(--gold); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Stagger cards ── */
+  .duty-card:nth-child(1) { animation-delay: 0.65s; }
+  .duty-card:nth-child(2) { animation-delay: 0.75s; }
+  .duty-card:nth-child(3) { animation-delay: 0.85s; }
+  .duty-card:nth-child(4) { animation-delay: 0.95s; }
+  .duty-card:nth-child(5) { animation-delay: 1.05s; }
+  .duty-card:nth-child(6) { animation-delay: 1.15s; }
+
+  .section-label:nth-of-type(1) { animation-delay: 0.55s; }
+  .section-label:nth-of-type(2) { animation-delay: 1.3s; }
+  .third-party-box { animation-delay: 1.45s; }
+
+  @media (max-width: 600px) {
+    .duty-card.loyalty { flex-direction: column; gap: 0.8rem; }
+    .duties-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">TRESA 2002 · Law of Agency</div>
+  <h1>Duties to <em>Clients</em></h1>
+  <p class="subtitle">Fiduciary Obligations &amp; Professional Responsibilities</p>
+</header>
+
+<div class="intro-band">
+  <p>
+    The agent is considered in law to represent the <strong>principal</strong> and to bring the principal into legal relationships with other parties. Fiduciary duties are explained through <strong>six core categories</strong> — each binding the agent to the highest standard of care.
+  </p>
+</div>
+
+<main>
+
+  <div class="section-label">
+    <span class="num">I</span>
+    <div class="text">
+      <h2>Six Fiduciary Duties to Clients</h2>
+      <p>Owed to the Principal (Client)</p>
+    </div>
+  </div>
+
+  <div class="duties-grid">
+
+    <div class="duty-card">
+      <span class="icon">🔍</span>
+      <h3>Disclosure</h3>
+      <p>The agent must disclose to the principal any information relevant to the transaction, including all facts affecting the value or desirability of the property and all known relevant and material information.</p>
+    </div>
+
+    <div class="duty-card">
+      <span class="icon">⚖️</span>
+      <h3>Competence</h3>
+      <p>The agent must exercise a degree of competence expected from an average person in that profession. As an extension of the principal, the agent must use superior skill and knowledge. A specialist must exercise competence in that specialty.</p>
+    </div>
+
+    <div class="duty-card">
+      <span class="icon">📋</span>
+      <h3>Obedience</h3>
+      <p>An agent is obligated to obey the principal's lawful and reasonable instructions, even if the agent personally disagrees with them.</p>
+    </div>
+
+    <div class="duty-card">
+      <span class="icon">🗂️</span>
+      <h3>Accounting</h3>
+      <p>An agent is obligated to account for all monies or property entrusted to their care that belongs to the principal — safeguarding any money or documents relative to the principal's transactions or affairs.</p>
+    </div>
+
+    <div class="duty-card">
+      <span class="icon">🔒</span>
+      <h3>Confidentiality</h3>
+      <p>An agent must not use information acquired as the principal's agent for any purpose likely to cause the principal harm or interfere with the principal's business, now or in the future. This is distinct from the duty to disclose known material facts about property to non-principals.</p>
+    </div>
+
+    <div class="duty-card loyalty">
+      <div class="loyalty-badge">Most Important</div>
+      <span class="icon">⭐</span>
+      <h3>Loyalty</h3>
+      <p>The most important duty an agent has toward the principal is loyalty. The agent must place the interests of the principal above all else — except the law — in carrying out functions as an agent.</p>
+    </div>
+
+  </div>
+
+  <div class="gold-rule"><span>✦</span></div>
+
+  <div class="section-label">
+    <span class="num">II</span>
+    <div class="text">
+      <h2>Duties to Third Parties</h2>
+      <p>Owed to Customers &amp; Non-Principals</p>
+    </div>
+  </div>
+
+  <div class="third-party-box">
+    <h3>Obligations Beyond the Principal Relationship</h3>
+    <p>
+      Agents owe third parties (e.g., customers) the ethical duty to be honest, the legal duty not to misrepresent, and the responsibility to exercise due care when answering inquiries. These obligations arise independently of the fiduciary relationship and reflect the professional's broader duty to treat all persons fairly and honestly.
+    </p>
+    <div class="third-party-pills">
+      <span class="pill honesty">Ethical Honesty</span>
+      <span class="pill legal">No Misrepresentation</span>
+      <span class="pill care">Due Care</span>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Trust in Real Estate Services Act, 2002 (TRESA)</span> &nbsp;·&nbsp; Agency &amp; Agent Obligations
+</footer>
+
+</body>
+</html>

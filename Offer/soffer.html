@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Offer Details Tracking</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b4a;--gold:#c9a84c;--gold2:#e0c070;--cream:#faf6ee;--cream2:#f0e8d5;--border:#ddd3bc;--text:#2c2c2c;--muted:#888;--orange:#e07a20;--red:#c0392b;--tap:44px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);font-size:15px}
+.page-header{background:var(--navy);border-bottom:3px solid var(--gold);padding:16px 20px;text-align:center}
+.page-header h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
+.page-header p{font-size:11px;color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}
+.container{max-width:800px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-header{background:var(--navy);color:var(--gold);font-family:'Playfair Display',serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:10px 16px}
+.card-body{padding:16px}
+.fg{display:grid;gap:12px}.fg2{grid-template-columns:1fr 1fr}.fg3{grid-template-columns:1fr 1fr 1fr}.fg4{grid-template-columns:1fr 1fr 1fr 1fr}
+.flex-row{display:flex;gap:12px}
+.field label{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:9px 10px;min-height:38px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--cream);outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);background:#fff}
+.field textarea{resize:vertical;min-height:60px;font-size:13px}
+.field input[type="date"],.field select.time-sel{font-family:'DM Mono',monospace;font-size:13px}
+.field input.mono{font-family:'DM Mono',monospace}
+.words-box{font-size:13px;color:var(--muted);padding:9px 10px;min-height:38px;background:var(--cream);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;word-break:break-word}
+.divider{height:1px;background:var(--cream2);margin:12px 0}
+.cond-table{width:100%;border-collapse:collapse}
+.cond-table th{text-align:left;font-size:10px;font-weight:600;color:var(--muted);padding:6px 8px;border-bottom:2px solid var(--border)}
+.cond-table td{padding:5px 8px;border-bottom:1px solid var(--cream2)}
+.cond-table .cond-num{width:28px;font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);font-weight:600;text-align:center}
+.cond-table input{width:100%;border:1px solid var(--border);border-radius:5px;padding:7px 8px;font-size:13px;color:var(--text);background:var(--cream);outline:none;min-height:36px}
+.cond-table .days-inp{width:50px;text-align:center;font-family:'DM Mono',monospace}
+.cond-table .date-inp{font-family:'DM Mono',monospace;font-size:12px}
+.clause-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream2)}
+.clause-row:last-child{border-bottom:none}
+.clause-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);font-weight:600;min-width:24px;text-align:center}
+.clause-row textarea{flex:1;border:1px solid var(--border);border-radius:5px;padding:7px 8px;font-size:13px;color:var(--text);background:var(--cream);outline:none;min-height:36px;resize:vertical}
+.toolbar{display:flex;gap:8px;justify-content:center;padding:12px 0 24px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 18px;min-height:var(--tap);border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+.btn-primary{background:var(--gold);color:var(--navy)}
+.save-indicator{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;padding:0 8px}
+.save-indicator.saved{color:#2ecc71}
+.page-footer{border-top:2px solid var(--gold);padding:12px 20px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);background:var(--cream2)}
+.page-footer strong{color:var(--navy)}
+#debug{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.85);color:#0f0;font-family:monospace;font-size:11px;padding:6px 10px;z-index:9999;max-height:80px;overflow:auto;display:none}
+@media(max-width:500px){.fg2,.fg3,.fg4{grid-template-columns:1fr 1fr}.flex-row{flex-wrap:wrap}.field input,.field select,.field textarea{font-size:16px}}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{background:#fff;font-size:11px}
+  .page-header{padding:10px 16px}
+  .page-header h1{font-size:16px}
+  .toolbar,#debug,.btn{display:none!important}
+  .container{padding:8px}
+  .card{margin-bottom:8px;box-shadow:none;page-break-inside:avoid}
+  .card-header{padding:6px 12px;font-size:10px}
+  .card-body{padding:10px 12px}
+  .divider{margin:6px 0}
+  .field input,.field select,.field textarea,.words-box{min-height:unset;padding:4px 6px;font-size:11px;border-color:#ccc}
+  .fg,.fg2,.fg3,.fg4{gap:6px}
+  .flex-row{gap:6px}
+  .clause-row{padding:3px 0}
+  .clause-row textarea{min-height:unset;padding:3px 6px;font-size:11px}
+  .cond-table td{padding:3px 6px}
+  .cond-table input{padding:3px 6px;font-size:11px;min-height:unset}
+  .page-footer{padding:8px 16px;font-size:10px}
+  .print-hide{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="page-header"><h1>Offer Details Tracking</h1><p>Pinnacle Listing System</p></div>
+<div class="container">
+  <div class="card"><div class="card-header">🏠 Property &amp; Seller</div><div class="card-body">
+    <div class="flex-row">
+      <div class="field" style="flex:1"><label>Property Address</label><input type="text" id="f-property" placeholder="123 Main St, Toronto"></div>
+      <div class="field" style="flex:0 0 160px"><label>Size (Front × Depth)</label>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="text" id="f-frontage" class="mono" placeholder="###.##" maxlength="6" style="width:65px;text-align:center"> × <input type="text" id="f-depth" class="mono" placeholder="###.##" maxlength="6" style="width:65px;text-align:center">
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fg">
+      <div class="field"><label>Seller Name</label><input type="text" id="f-seller" placeholder="Seller name(s)" maxlength="80"></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="card-header">📋 Offer Information</div><div class="card-body">
+    <div class="fg fg3">
+      <div class="field"><label>Agent Name</label><input type="text" id="f-agent"></div>
+      <div class="field"><label>Agent Phone</label><input type="tel" id="f-agent-phone" maxlength="12"></div>
+      <div class="field"><label>Agent Email</label><input type="text" id="f-agent-email"></div>
+    </div><div class="divider"></div>
+    <div class="fg fg2">
+      <div class="field"><label>Co-Op Brokerage</label><input type="text" id="f-coop"></div>
+      <div class="field"><label>Co-Op Comm</label><input type="text" id="f-coop-comm" placeholder="e.g. 2.5%"></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:1"><label>Buyers</label><input type="text" id="f-buyers"></div>
+      <div class="field" style="flex:0 0 140px"><label>Offer Date</label><input type="date" id="f-offer-date"></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:0 0 150px"><label>Price</label><input type="text" id="f-price" class="mono" placeholder="0.00"></div>
+      <div class="field" style="flex:1"><label>Price in Words</label><div id="price-words" class="words-box">—</div></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:0 0 120px"><label>Deposit</label><input type="text" id="f-deposit" class="mono" placeholder="0.00"></div>
+      <div class="field" style="flex:1"><label>Deposit in Words</label><div id="deposit-words" class="words-box">—</div></div>
+    </div><div class="divider"></div>
+    <div class="fg fg3">
+      <div class="field"><label>Deposit Submit</label><select id="f-deposit-submit"><option value="">—</option><option>Herewith</option><option>Upon Acceptance</option><option>As Otherwise</option></select></div>
+      <div class="field"><label>Deposit %</label><div id="deposit-pct" class="words-box" style="font-family:'DM Mono',monospace;font-size:14px">—</div></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="card-header">⏰ Irrevocable &amp; Closing</div><div class="card-body">
+    <div class="fg fg4">
+      <div class="field"><label>Irrevocable Date</label><input type="date" id="f-irrv-date"></div>
+      <div class="field"><label>Irrevocable Time</label><select id="f-irrv-time" class="time-sel"></select></div>
+      <div class="field"><label>Irrevocable Party</label><select id="f-irrv-party"><option value="">—</option><option>Buyer</option><option>Seller</option></select></div>
+      <div class="field"><label>Accept Party</label><select id="f-accept-party"><option value="">—</option><option>Buyer</option><option>Seller</option></select></div>
+    </div><div class="divider"></div>
+    <div class="fg fg4">
+      <div class="field"><label>Accept Date</label><input type="date" id="f-accept-date"></div>
+      <div class="field"><label>Accept Time</label><select id="f-accept-time" class="time-sel"></select></div>
+      <div class="field"><label>Closing Date</label><input type="date" id="f-closing-date"></div>
+      <div class="field"><label>Title Search Date</label><input type="date" id="f-title-search"></div>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="card-header">📦 Inclusions &amp; Exclusions</div><div class="card-body">
+    <div class="field"><label>Inclusions</label><textarea id="f-incl"></textarea></div><div class="divider"></div>
+    <div class="field"><label>Exclusions</label><textarea id="f-excl"></textarea></div>
+  </div></div>
+
+  <div class="card"><div class="card-header">📝 Conditions</div><div class="card-body" style="padding:10px 12px">
+    <table class="cond-table"><thead><tr><th style="width:28px">#</th><th>Condition</th><th style="width:60px">Days</th><th style="width:130px">Date</th></tr></thead>
+    <tbody id="cond-body">
+      <tr><td class="cond-num">1</td><td><input type="text" placeholder="e.g. Financing"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">2</td><td><input type="text" placeholder="e.g. Home Inspection"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">3</td><td><input type="text" placeholder="e.g. Status Certificate"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">4</td><td><input type="text"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">5</td><td><input type="text"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+    </tbody></table>
+  </div></div>
+
+  <div class="card"><div class="card-header">📄 Clauses</div><div class="card-body" id="clause-body">
+    <div class="clause-row"><span class="clause-num">1</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">2</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">3</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">4</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">5</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">6</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">7</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">8</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">9</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">10</span><textarea></textarea></div>
+  </div></div>
+
+  <div class="toolbar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear</button>
+    <button class="btn btn-outline" onclick="exportJSON()">📤 Export JSON</button>
+    <button class="btn btn-outline" onclick="document.getElementById('load-input').click()">📂 Import JSON</button>
+    <input type="file" id="load-input" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="btn btn-primary" onclick="prepPrint()">🖨 Print</button>
+    <span class="save-indicator" id="save-status">●  Auto-save off</span>
+  </div>
+</div>
+<div class="page-footer"><span><strong>Peter Luo</strong> · RE/MAX Realtron Realty Inc., Brokerage</span><span>647-824-3718</span></div>
+<div id="debug"></div>
+
+<script>
+/* ===== IndexedDB Layer ===== */
+var DB_NAME='PinnacleOffers';
+var DB_VERSION=2;
+var STORE_NAME='singleOffer';
+var RECORD_KEY='current';
+var db=null;
+var saveTimer=null;
+
+function openDB(){
+  return new Promise(function(resolve,reject){
+    var req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=function(e){
+      var d=e.target.result;
+      if(!d.objectStoreNames.contains('multiOffers')){
+        d.createObjectStore('multiOffers');
+      }
+      if(!d.objectStoreNames.contains(STORE_NAME)){
+        d.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess=function(e){db=e.target.result;resolve(db);};
+    req.onerror=function(e){console.error('IndexedDB error',e);reject(e);};
+  });
+}
+
+function dbPut(key,value){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readwrite');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.put(value,key);
+    req.onsuccess=function(){resolve();};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function dbGet(key){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readonly');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.get(key);
+    req.onsuccess=function(){resolve(req.result);};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function dbDelete(key){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readwrite');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.delete(key);
+    req.onsuccess=function(){resolve();};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function showSaveStatus(msg,ok){
+  var el=document.getElementById('save-status');
+  el.textContent='● '+msg;
+  el.className='save-indicator'+(ok?' saved':'');
+}
+
+function autoSave(){
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    var data=gatherData();
+    dbPut(RECORD_KEY,data).then(function(){
+      showSaveStatus('Saved',true);
+    }).catch(function(e){
+      showSaveStatus('Save failed',false);
+      console.error('Auto-save error:',e);
+    });
+  },400);
+}
+
+/* ===== DEBUG ===== */
+function dbg(msg){var el=document.getElementById('debug');el.style.display='block';el.textContent=msg;}
+
+/* ===== TIME DROPDOWN: build options 12:00AM..11:59PM ===== */
+function buildTimeOptions(){
+  var html='<option value="">—</option>';
+  for(var totalMin=0;totalMin<1440;totalMin+=15){
+    var h24=Math.floor(totalMin/60);
+    var mm=totalMin%60;
+    var ap=h24<12?'AM':'PM';
+    var h12=h24%12;if(h12===0)h12=12;
+    var label=h12+':'+String(mm).padStart(2,'0')+ap;
+    var val24=String(h24).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+    html+='<option value="'+val24+'">'+label+'</option>';
+  }
+  /* add 11:59PM (23:59) and 11:59AM (11:59) */
+  html+='<option value="23:59">11:59PM</option>';
+  html+='<option value="11:59">11:59AM</option>';
+  return html;
+}
+document.getElementById('f-irrv-time').innerHTML=buildTimeOptions();
+document.getElementById('f-accept-time').innerHTML=buildTimeOptions();
+document.getElementById('f-irrv-time').value='23:59';
+document.getElementById('f-accept-time').value='23:00';
+
+/* ===== NUMBER TO WORDS ===== */
+var ONES=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+var TENS=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function ck(n){if(n===0)return'';if(n<20)return ONES[n];if(n<100)return TENS[Math.floor(n/10)]+(n%10?' '+ONES[n%10]:'');return ONES[Math.floor(n/100)]+' Hundred'+(n%100?' '+ck(n%100):'');}
+function numberToWords(n){if(!n||isNaN(n)||n<=0)return'—';var w=Math.floor(n),c=Math.round((n-w)*100),r='';if(w>=1e6){r+=ck(Math.floor(w/1e6))+' Million';w%=1e6;if(w>0)r+=' ';}if(w>=1e3){r+=ck(Math.floor(w/1e3))+' Thousand';w%=1e3;if(w>0)r+=' ';}if(w>0)r+=ck(w);if(!r)r='Zero';r+=' Dollars';if(c>0)r+=' and '+ck(c)+' Cents';return r;}
+
+/* ===== MONEY ===== */
+function parseMoney(s){if(!s)return 0;var v=parseFloat(s.replace(/[^0-9.]/g,''));return isNaN(v)?0:v;}
+function toMoney(n){if(!n||isNaN(n))return'';return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+/* ===== BUILD DATETIME from date input + time select (24h value) ===== */
+function mkDT(dateId,timeId){
+  var dv=document.getElementById(dateId).value;
+  var tv=document.getElementById(timeId).value;
+  if(!dv||!tv)return null;
+  return new Date(dv+'T'+tv+':00');
+}
+
+/* ===== STYLE ===== */
+function warn(ids,color){
+  for(var i=0;i<ids.length;i++){
+    var el=document.getElementById(ids[i]);
+    if(!el)continue;
+    el.style.color=color||'';
+    el.style.borderColor=color||'';
+    el.style.fontWeight=color?'700':'';
+  }
+}
+
+/* ===== UPDATES ===== */
+function updPrice(){var v=parseMoney(document.getElementById('f-price').value);document.getElementById('price-words').textContent=v>0?numberToWords(v):'—';}
+function updDeposit(){var v=parseMoney(document.getElementById('f-deposit').value);document.getElementById('deposit-words').textContent=v>0?numberToWords(v):'—';}
+function updPct(){
+  var p=parseMoney(document.getElementById('f-price').value),d=parseMoney(document.getElementById('f-deposit').value);
+  var el=document.getElementById('deposit-pct'),di=document.getElementById('f-deposit');
+  if(p>0&&d>0){var pct=d/p*100;el.textContent=pct.toFixed(2)+'%';var lo=pct<5;
+    el.style.color=lo?'var(--orange)':'';el.style.fontWeight=lo?'600':'';
+    di.style.color=lo?'var(--orange)':'';di.style.fontWeight=lo?'600':'';
+  }else{el.textContent='—';el.style.color='';el.style.fontWeight='';di.style.color='';di.style.fontWeight='';}
+}
+
+/* ===== CHECK 1: Irrevocable: RED if past, ORANGE if within 2h ===== */
+function chkIrrv(){
+  var dt=mkDT('f-irrv-date','f-irrv-time');
+  if(!dt){warn(['f-irrv-date','f-irrv-time']);return;}
+  var hrs=(dt.getTime()-Date.now())/3600000;
+  var color=null;
+  if(hrs<0)color='#c0392b';
+  else if(hrs<=2)color='#e07a20';
+  warn(['f-irrv-date','f-irrv-time'],color);
+  dbg('IRRV: '+dt.toLocaleString()+' | hrs='+hrs.toFixed(2)+' | '+(hrs<0?'RED-past':hrs<=2?'ORANGE-urgent':'OK'));
+}
+
+/* ===== CHECK 2: Accept LATER than Irrevocable → RED ===== */
+function chkAccept(){
+  var irr=mkDT('f-irrv-date','f-irrv-time');
+  var acc=mkDT('f-accept-date','f-accept-time');
+  if(!irr||!acc){warn(['f-accept-date','f-accept-time']);return;}
+  var late=acc.getTime()>irr.getTime();
+  warn(['f-accept-date','f-accept-time'],late?'#c0392b':null);
+  dbg('ACCEPT: irr='+irr.toLocaleString()+' acc='+acc.toLocaleString()+' late='+late);
+}
+
+/* ===== CHECK 3: Same party → RED ===== */
+function chkParty(){
+  var a=document.getElementById('f-irrv-party'),b=document.getElementById('f-accept-party');
+  var bad=a.value&&b.value&&a.value===b.value;
+  a.style.color=bad?'#c0392b':'';a.style.borderColor=bad?'#c0392b':'';a.style.fontWeight=bad?'700':'';
+  b.style.color=bad?'#c0392b':'';b.style.borderColor=bad?'#c0392b':'';b.style.fontWeight=bad?'700':'';
+}
+
+/* ===== CHECK 4: Title Search 7-14d before closing ===== */
+function calcTS(){
+  var cv=document.getElementById('f-closing-date').value,el=document.getElementById('f-title-search');
+  if(!cv){el.value='';chkTS();return;}
+  var d=new Date(cv+'T12:00:00');d.setDate(d.getDate()-7);
+  el.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  chkTS();
+}
+function chkTS(){
+  var cv=document.getElementById('f-closing-date').value,tv=document.getElementById('f-title-search').value;
+  if(!cv||!tv){warn(['f-title-search']);return;}
+  var diff=Math.round((new Date(cv+'T12:00:00')-new Date(tv+'T12:00:00'))/86400000);
+  warn(['f-title-search'],(diff<7||diff>14)?'#e07a20':null);
+}
+
+/* ===== CHECK 5: Closing date <5d red, >120d orange ===== */
+function chkClose(){
+  var el=document.getElementById('f-closing-date');
+  if(!el.value){warn(['f-closing-date']);return;}
+  var today=new Date();today.setHours(0,0,0,0);
+  var diff=Math.round((new Date(el.value+'T12:00:00')-today)/86400000);
+  if(diff<5)warn(['f-closing-date'],'#c0392b');
+  else if(diff>120)warn(['f-closing-date'],'#e07a20');
+  else warn(['f-closing-date']);
+}
+
+/* ===== PHONE ===== */
+function fmtPh(inp){var d=inp.value.replace(/\D/g,'').slice(0,10),o='';if(d.length>0)o=d.slice(0,3);if(d.length>=4)o+='-'+d.slice(3,6);if(d.length>=7)o+='-'+d.slice(6,10);inp.value=o;}
+
+/* ===== WIRE EVENTS (with auto-save) ===== */
+document.getElementById('f-price').addEventListener('input',function(){updPrice();updPct();autoSave();});
+document.getElementById('f-price').addEventListener('blur',function(){var v=parseMoney(this.value);if(v>0)this.value=toMoney(v);updPrice();updPct();autoSave();});
+document.getElementById('f-deposit').addEventListener('input',function(){updDeposit();updPct();autoSave();});
+document.getElementById('f-deposit').addEventListener('blur',function(){var v=parseMoney(this.value);if(v>0)this.value=toMoney(v);updDeposit();updPct();autoSave();});
+document.getElementById('f-agent-phone').addEventListener('input',function(){fmtPh(this);autoSave();});
+
+document.getElementById('f-irrv-date').addEventListener('change',function(){chkIrrv();chkAccept();autoSave();});
+document.getElementById('f-irrv-time').addEventListener('change',function(){chkIrrv();chkAccept();autoSave();});
+document.getElementById('f-accept-date').addEventListener('change',function(){chkAccept();autoSave();});
+document.getElementById('f-accept-time').addEventListener('change',function(){chkAccept();autoSave();});
+document.getElementById('f-irrv-party').addEventListener('change',function(){chkParty();autoSave();});
+document.getElementById('f-accept-party').addEventListener('change',function(){chkParty();autoSave();});
+document.getElementById('f-closing-date').addEventListener('change',function(){calcTS();chkClose();autoSave();});
+document.getElementById('f-title-search').addEventListener('change',function(){chkTS();autoSave();});
+
+/* Auto-save on all remaining tracked fields */
+['f-property','f-frontage','f-depth','f-seller','f-buyers','f-agent','f-agent-email','f-offer-date','f-coop','f-coop-comm','f-deposit-submit','f-incl','f-excl'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('input',autoSave);
+  if(el) el.addEventListener('change',autoSave);
+});
+
+/* Condition & clause auto-save */
+document.querySelectorAll('#cond-body input').forEach(function(inp){
+  inp.addEventListener('input',autoSave);
+  inp.addEventListener('change',autoSave);
+});
+document.querySelectorAll('#clause-body textarea').forEach(function(ta){
+  ta.addEventListener('input',autoSave);
+});
+
+/* Condition date checks */
+document.querySelectorAll('#cond-body .date-inp').forEach(function(inp){
+  inp.addEventListener('change',function(){chkCondDates();autoSave();});
+});
+
+setInterval(function(){chkIrrv();chkAccept();chkClose();chkCondDates();},60000);
+
+/* ===== CHECK: Condition dates — orange if before tomorrow or after 7 days ===== */
+function chkCondDates(){
+  var today=new Date();today.setHours(0,0,0,0);
+  var tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);
+  var sevenDays=new Date(today);sevenDays.setDate(sevenDays.getDate()+7);
+  document.querySelectorAll('#cond-body .date-inp').forEach(function(inp){
+    if(!inp.value){inp.style.color='';inp.style.borderColor='';return;}
+    var cd=new Date(inp.value+'T12:00:00');
+    var bad=cd<tomorrow||cd>sevenDays;
+    inp.style.color=bad?'#e07a20':'';
+    inp.style.borderColor=bad?'#e07a20':'';
+    inp.style.fontWeight=bad?'600':'';
+  });
+}
+
+/* ===== GATHER / APPLY DATA ===== */
+var FF=['f-property','f-frontage','f-depth','f-seller','f-buyers','f-agent','f-agent-phone','f-agent-email','f-offer-date','f-coop','f-coop-comm','f-price','f-deposit','f-deposit-submit','f-irrv-date','f-irrv-time','f-irrv-party','f-accept-party','f-accept-date','f-accept-time','f-closing-date','f-title-search','f-incl','f-excl'];
+function gatherData(){var d={};FF.forEach(function(id){var e=document.getElementById(id);d[id]=e?e.value:'';});d.conditions=[];document.querySelectorAll('#cond-body tr').forEach(function(tr){var i=tr.querySelectorAll('input');d.conditions.push({text:i[0]?i[0].value:'',days:i[1]?i[1].value:'',date:i[2]?i[2].value:''});});d.clauses=[];document.querySelectorAll('#clause-body textarea').forEach(function(t){d.clauses.push(t.value);});return d;}
+function applyData(d){FF.forEach(function(id){var e=document.getElementById(id);if(e&&d[id]!==undefined)e.value=d[id];});if(d.conditions){var rows=document.querySelectorAll('#cond-body tr');d.conditions.forEach(function(c,i){if(!rows[i])return;var inp=rows[i].querySelectorAll('input');if(inp[0])inp[0].value=c.text||'';if(inp[1])inp[1].value=c.days||'';if(inp[2])inp[2].value=c.date||'';});}if(d.clauses){var tas=document.querySelectorAll('#clause-body textarea');d.clauses.forEach(function(c,i){if(tas[i])tas[i].value=c;});}updPrice();updDeposit();updPct();calcTS();chkParty();chkIrrv();chkAccept();chkClose();chkCondDates();}
+
+/* ===== EXPORT / IMPORT JSON (secondary) ===== */
+function exportJSON(){var d=gatherData();var addr=(d['f-property']||'property').replace(/[^a-z0-9]/gi,'_').slice(0,30);var agent=(d['f-agent']||'agent').replace(/[^a-z0-9]/gi,'_').slice(0,20);var odate=d['f-offer-date']||'nodate';var fname=addr+'_'+agent+'_'+odate+'.json';var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download=fname;a.click();}
+function importJSON(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{applyData(JSON.parse(e.target.result));autoSave();}catch(err){alert('Could not load.');}ev.target.value='';};r.readAsText(f);}
+function clearForm(){if(!confirm('Clear all fields?'))return;document.querySelectorAll('input[type="text"],input[type="tel"],input[type="date"],textarea').forEach(function(e){e.value='';});document.querySelectorAll('select').forEach(function(e){e.selectedIndex=0;});document.getElementById('deposit-pct').textContent='—';document.getElementById('deposit-pct').style.color='';document.getElementById('deposit-pct').style.fontWeight='';document.getElementById('price-words').textContent='—';document.getElementById('deposit-words').textContent='—';document.getElementById('f-deposit').style.color='';document.getElementById('f-deposit').style.fontWeight='';chkParty();chkIrrv();chkAccept();chkTS();chkClose();chkCondDates();
+  dbDelete(RECORD_KEY).then(function(){showSaveStatus('Cleared',false);});
+}
+
+/* ===== PRINT: hide empty clauses/conditions, compact layout ===== */
+function prepPrint(){
+  document.querySelectorAll('#clause-body .clause-row').forEach(function(row){
+    var ta=row.querySelector('textarea');
+    row.classList.toggle('print-hide',!ta||!ta.value.trim());
+  });
+  document.querySelectorAll('#cond-body tr').forEach(function(tr){
+    var inputs=tr.querySelectorAll('input');
+    var hasData=false;
+    for(var i=0;i<inputs.length;i++){if(inputs[i].value.trim()){hasData=true;break;}}
+    tr.classList.toggle('print-hide',!hasData);
+  });
+  var incl=document.getElementById('f-incl');
+  var excl=document.getElementById('f-excl');
+  if(incl)incl.closest('.field').classList.toggle('print-hide',!incl.value.trim());
+  if(excl)excl.closest('.field').classList.toggle('print-hide',!excl.value.trim());
+  document.querySelectorAll('.card-body .divider').forEach(function(d){
+    var next=d.nextElementSibling;
+    var prev=d.previousElementSibling;
+    if((next&&next.classList.contains('print-hide'))||(prev&&prev.classList.contains('print-hide'))){
+      d.classList.add('print-hide');
+    }
+  });
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){
+      document.querySelectorAll('.print-hide').forEach(function(el){el.classList.remove('print-hide');});
+    },500);
+  },100);
+}
+
+/* ===== INIT: Open DB, load saved data ===== */
+openDB().then(function(){
+  return dbGet(RECORD_KEY);
+}).then(function(data){
+  if(data){
+    applyData(data);
+  }
+  showSaveStatus('Auto-save on',true);
+}).catch(function(e){
+  console.error('DB init error:',e);
+  showSaveStatus('Auto-save off',false);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Open House Objections — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+/* TOP BAR */
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+.lang-row { display: flex; gap: 8px; }
+.lang-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.lang-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+.back-btn { background: var(--bg2); border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+.back-btn:active { opacity: .6; }
+/* MAIN */
+main { padding: 12px 14px; max-width: 500px; margin: 0 auto; }
+/* CATEGORY LABEL */
+.cat-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 8px 2px; }
+.cat-label:first-of-type { margin-top: 4px; }
+/* PRINCIPLES CARD */
+.principles-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+.principles-head { display: flex; align-items: center; gap: 10px; padding: 13px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; background: var(--gold-bg); border-bottom: 1px solid var(--gold-border); }
+.principles-head-title { font-size: 13px; font-weight: 700; color: var(--step-active); flex: 1; }
+.principles-chevron { font-size: 13px; color: var(--gold-tag); transition: transform .25s; }
+.principles-card.open .principles-chevron { transform: rotate(180deg); }
+.principles-body { display: none; padding: 12px 14px; }
+.principles-card.open .principles-body { display: block; }
+.principle-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; color: var(--dark); }
+.principle-item:last-child { border-bottom: none; }
+.principle-dot { color: var(--gold-tag); font-weight: 700; flex-shrink: 0; }
+/* OBJECTION CARDS */
+.obj-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.obj-card.open { border-color: var(--step-active); border-width: 2px; }
+.obj-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.obj-card.open .obj-head { background: var(--step-active); }
+.obj-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.obj-card.open .obj-num { background: rgba(255,255,255,.2); color: #fff; }
+.obj-label { flex: 1; min-width: 0; }
+.obj-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.35; }
+.obj-card.open .obj-title { color: #fff; }
+.obj-tag { font-size: 11px; color: var(--light); margin-top: 3px; }
+.obj-card.open .obj-tag { color: rgba(255,255,255,.55); }
+.obj-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.obj-card.open .obj-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.obj-body { display: none; border-top: 1px solid var(--border); }
+.obj-card.open .obj-body { display: block; }
+.obj-context { padding: 11px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); font-style: italic; line-height: 1.5; }
+.obj-script { padding: 14px; background: var(--gold-bg); border-left: 4px solid var(--gold-tag); font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.7; }
+.obj-script strong { color: var(--gold-strong); font-style: normal; font-weight: 700; }
+.obj-notes-wrap { padding: 12px 14px; background: var(--white); border-top: 1px solid var(--border); }
+.obj-notes-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.obj-notes-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: var(--black); resize: vertical; min-height: 68px; }
+.obj-notes-input:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+/* LANG */
+[data-lang="ch"] { display: none; }
+body.lang-ch [data-lang="en"] { display: none; }
+body.lang-ch [data-lang="ch"] { display: block; }
+span[data-lang="ch"] { display: none; }
+body.lang-ch span[data-lang="en"] { display: none; }
+body.lang-ch span[data-lang="ch"] { display: inline; }
+/* TOAST */
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title"><span data-lang="en">Open House Objections</span><span data-lang="ch">开放参观异议处理</span></div>
+      <div class="app-sub">Open House · Pinnacle Listing System</div>
+    </div>
+    <a href="./open_house.html" class="back-btn">← <span data-lang="en">Script</span><span data-lang="ch">脚本</span></a>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnCH" onclick="setLang('ch')">中文</button>
+  </div>
+</div>
+
+<main>
+
+<!-- PRINCIPLES -->
+<div class="principles-card open" id="principlesCard">
+  <div class="principles-head" onclick="document.getElementById('principlesCard').classList.toggle('open')">
+    <span style="font-size:16px;">📌</span>
+    <div class="principles-head-title">
+      <span data-lang="en">Core Principles — Open House Objections</span>
+      <span data-lang="ch">核心原则——开放参观异议处理</span>
+    </div>
+    <span class="principles-chevron">▼</span>
+  </div>
+  <div class="principles-body">
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">They came in — that's already a yes. Every objection is just a speed bump, not a wall</span>
+      <span data-lang="ch">他们主动进门——这本身就是一个"是"。每个异议只是减速带，不是墙</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Acknowledge first, always — never jump straight to your response</span>
+      <span data-lang="ch">永远先认可对方——不要直接跳到您的回应</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Never defend the price or the property — redirect to their needs</span>
+      <span data-lang="ch">永远不要为价格或房子辩护——引导回他们的需求</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">Your goal is a consultation, not a sale today — stay relaxed and curious</span>
+      <span data-lang="ch">您的目标是约到咨询，不是今天成交——保持轻松和好奇心</span>
+    </div>
+    <div class="principle-item">
+      <span class="principle-dot">✦</span>
+      <span data-lang="en">The softer your response, the more trust you build</span>
+      <span data-lang="ch">回应越温和，建立的信任越深</span>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: WORKING WITH YOU -->
+<div class="cat-label">
+  <span data-lang="en">About Working With You</span>
+  <span data-lang="ch">关于与您合作</span>
+</div>
+
+<!-- OBJ 1 -->
+<div class="obj-card" id="obj1">
+  <div class="obj-head" onclick="toggleObj('obj1')">
+    <div class="obj-num">1</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We're just looking / just browsing."</span>
+        <span data-lang="ch">"我们只是随便看看。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Most common opener — stay relaxed, agree with them</span>
+        <span data-lang="ch">最常见的开场——保持轻松，顺着对方说</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">This is a defensive reflex, not a real objection — they're protecting themselves from a sales pitch. Agree immediately, lower the pressure, then engage naturally.</span>
+      <span data-lang="ch">这是一种防御反应，不是真正的异议——他们在保护自己不被推销。立刻表示认同，降低压力，然后自然地展开对话。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — that's exactly what today is for. <strong>Please take your time and make yourself at home.</strong> I'll be around if anything catches your eye or you have questions." <em>(let them walk — reconnect naturally after a few minutes)</em></span>
+      <span data-lang="ch">"当然——今天的开放参观就是为了让大家随意看的。<strong>请慢慢参观，就当自己家一样。</strong>如果有什么想了解的，我就在这里。"<em>（让他们先走走——几分钟后自然地重新接触）</em></span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note1"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 2 -->
+<div class="obj-card" id="obj2">
+  <div class="obj-head" onclick="toggleObj('obj2')">
+    <div class="obj-num">2</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We already have an agent."</span>
+        <span data-lang="ch">"我们已经有经纪了。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Respect loyalty — shift to the property conversation</span>
+        <span data-lang="ch">尊重忠诚——转向房子本身</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They're pre-empting a pitch. Acknowledge it warmly and move on — your value today is the property knowledge, not competing for their agency.</span>
+      <span data-lang="ch">他们在预先防御推销。温和地认可，然后继续——今天您的价值在于对房子的了解，不是在争夺他们的代理关系。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's great — <strong>I'm not here to step on anyone's toes.</strong> I'm just hosting today and happy to answer any questions about the property. Is there anything specific you'd like to know about the home or the neighbourhood?"</span>
+      <span data-lang="ch">"那很好——<strong>我今天完全不是来抢生意的。</strong>我只是在这里主持开放参观，很乐意回答任何关于这套房子的问题。您对这套房子或这个社区有什么想了解的吗？"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note2"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 3 -->
+<div class="obj-card" id="obj3">
+  <div class="obj-head" onclick="toggleObj('obj3')">
+    <div class="obj-num">3</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We're not ready to buy yet."</span>
+        <span data-lang="ch">"我们还没准备好买房。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Future buyer — plant a seed, offer value</span>
+        <span data-lang="ch">未来买家——埋下种子，提供价值</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They're giving you a timeline, not a rejection. The best buyers to know are the ones still 3–6 months out — they have time to build trust.</span>
+      <span data-lang="ch">他们是在告诉您时间线，不是拒绝。最值得认识的买家，往往是还有3–6个月才准备好的——双方有时间建立信任。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's actually the <strong>best time to be looking</strong> — before the pressure kicks in. Understanding what's out there now means you'll make a much better decision when the time comes. <strong>How far out are you thinking?</strong>" <em>(then listen — this often opens a real conversation)</em></span>
+      <span data-lang="ch">"其实这正是<strong>最好的看房时机</strong>——在压力到来之前。现在了解市场，到时候做决定会更有把握。<strong>您大概打算什么时候开始认真看？</strong>"<em>（然后倾听——这往往能打开真正的对话）</em></span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note3"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: ABOUT THE PROPERTY -->
+<div class="cat-label">
+  <span data-lang="en">About the Property</span>
+  <span data-lang="ch">关于房产本身</span>
+</div>
+
+<!-- OBJ 4 -->
+<div class="obj-card" id="obj4">
+  <div class="obj-head" onclick="toggleObj('obj4')">
+    <div class="obj-num">4</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"The price is too high."</span>
+        <span data-lang="ch">"价格太高了。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Never defend — redirect to market context</span>
+        <span data-lang="ch">永远不辩护——引向市场背景</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Never defend the price — that puts you in an argument. Instead, validate their instinct, then anchor it to the market data. This also positions you as someone who can help them understand value.</span>
+      <span data-lang="ch">永远不要为价格辩护——那会让您陷入争论。先认可他们的感受，然后用市场数据来锚定。这也将您定位为能帮他们理解价值的人。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a fair reaction — and it's worth looking at what's actually sold nearby to see how this compares. <strong>Would it help if I pulled together some recent comparables for you?</strong> That way you can judge for yourself whether the number makes sense."</span>
+      <span data-lang="ch">"这个感受很正常——其实可以看看附近近期的成交情况，对比一下就清楚了。<strong>如果我帮您整理一份近期成交数据，您觉得有帮助吗？</strong>这样您自己就能判断这个价格合不合理。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note4"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 5 -->
+<div class="obj-card" id="obj5">
+  <div class="obj-head" onclick="toggleObj('obj5')">
+    <div class="obj-num">5</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"It's too small / missing what we need."</span>
+        <span data-lang="ch">"太小了 / 没有我们需要的。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Discovery opportunity — find out what they actually need</span>
+        <span data-lang="ch">发现机会——找出他们真正需要什么</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">This is a gift — they're telling you exactly what they want. Don't defend the property; pivot to discovery. You're now the person who can find them the right one.</span>
+      <span data-lang="ch">这是一个礼物——他们正在告诉您他们想要什么。不要为房子辩护，转向发现问题。您现在是能帮他们找到合适房子的人。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's really helpful to know. <strong>What would the ideal layout look like for you?</strong> I work with a number of properties in this area — and understanding exactly what you're looking for means I can point you in the right direction, whether it's something I'm involved with or not."</span>
+      <span data-lang="ch">"这个信息非常有帮助。<strong>您理想中的户型是什么样的？</strong>我在这个区域有接触不少房源——了解您真正想要的，我可以给您指个方向，不管是不是我的盘都可以。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note5"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 6 -->
+<div class="obj-card" id="obj6">
+  <div class="obj-head" onclick="toggleObj('obj6')">
+    <div class="obj-num">6</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"The neighbourhood isn't quite right for us."</span>
+        <span data-lang="ch">"这个社区不太适合我们。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Understand their ideal area — become the guide</span>
+        <span data-lang="ch">了解他们的理想区域——成为引路人</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Don't argue for the neighbourhood. This tells you what matters to them — and positions you as the area expert who can help them find the right location.</span>
+      <span data-lang="ch">不要为社区辩护。这告诉您什么对他们重要——并将您定位为能帮他们找到合适地段的区域专家。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"I appreciate you being direct — that really helps. <strong>What would the ideal neighbourhood feel like for your family?</strong> I know this area well, and I'm also across several nearby communities — I'd love to help you think through where might actually be the best fit."</span>
+      <span data-lang="ch">"感谢您直接说出来——这很有帮助。<strong>对您家人来说，理想的社区是什么感觉？</strong>我对这一带非常了解，也熟悉附近几个社区——很乐意帮您想想哪里才是真正最合适的地方。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note6"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: CONSULTATION INVITE -->
+<div class="cat-label">
+  <span data-lang="en">About the Consultation Invite</span>
+  <span data-lang="ch">关于咨询邀请</span>
+</div>
+
+<!-- OBJ 7 -->
+<div class="obj-card" id="obj7">
+  <div class="obj-head" onclick="toggleObj('obj7')">
+    <div class="obj-num">7</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We can find homes ourselves online."</span>
+        <span data-lang="ch">"我们自己网上可以找到房子。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Agree — then show what online can't give them</span>
+        <span data-lang="ch">同意——然后展示网上给不了的东西</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Don't argue against online tools — you'll lose. Instead, agree and then elevate the conversation to what online can't provide: interpretation, negotiation, and timing.</span>
+      <span data-lang="ch">不要反驳网上工具——您会输。先表示认同，然后将对话提升到网上无法提供的层面：解读数据、谈判策略和时机判断。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"You're absolutely right — <strong>the listings are all there.</strong> Where most buyers tell me they got stuck is figuring out whether a price is actually fair, knowing when to move and how fast, and knowing what to ask for in an offer. That's the part I help with — and it costs you nothing as a buyer. <strong>Would a 15-minute conversation be worth it just to know your options?</strong>"</span>
+      <span data-lang="ch">"您说得完全对——<strong>房源网上都有。</strong>大多数买家告诉我，真正卡住他们的是：这个价格到底值不值、什么时候出手、怎么出价才能争取到最好的条件。这正是我能帮上忙的地方——而且作为买家，您完全不需要付任何费用。<strong>花15分钟了解一下您的选择，您觉得值得吗？</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note7"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 8 -->
+<div class="obj-card" id="obj8">
+  <div class="obj-head" onclick="toggleObj('obj8')">
+    <div class="obj-num">8</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We don't want to feel pressured / obligated."</span>
+        <span data-lang="ch">"我们不想有压力或者任何义务。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Validate their concern — remove all pressure explicitly</span>
+        <span data-lang="ch">认可他们的顾虑——明确消除所有压力</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">They've had a bad experience or they're wary of agents. Validate strongly — this is not the moment to be persuasive, it's the moment to be reassuring.</span>
+      <span data-lang="ch">他们有过不好的经历，或者对经纪有戒心。要强有力地认可——这不是说服的时刻，而是让对方放心的时刻。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a completely fair thing to say — and honestly, <strong>that's exactly how it should feel.</strong> I'm not here to sign anyone up for anything today. I genuinely enjoy helping people think through their options — no agenda, no follow-up unless you want it. What questions do you have about the home?"</span>
+      <span data-lang="ch">"这个顾虑完全合理——老实说，<strong>本来就应该是这种感觉。</strong>我今天不是来让任何人签什么东西的。我真心享受帮人梳理思路——没有任何议程，除非您愿意，我也不会主动跟进。您对这套房子有什么问题想问吗？"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note8"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- OBJ 9 -->
+<div class="obj-card" id="obj9">
+  <div class="obj-head" onclick="toggleObj('obj9')">
+    <div class="obj-num">9</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We need to think about it / talk to family first."</span>
+        <span data-lang="ch">"我们需要再想想 / 先跟家人商量一下。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Respect the process — ask what would help them decide</span>
+        <span data-lang="ch">尊重他们的流程——问什么能帮助他们做决定</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">This is usually genuine, not a brush-off. The question is whether they have what they need to think clearly. Give them something useful to take away.</span>
+      <span data-lang="ch">这通常是真心话，不是推辞。关键是他们是否有足够的信息来清晰地思考。给他们一些有用的东西带走。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — that's the right way to approach it. <strong>Is there anything I can put together for you</strong> — recent sales in the area, a summary of the property details — that would make that conversation easier? I can email it to you today."</span>
+      <span data-lang="ch">"当然——这是正确的做法。<strong>有没有什么我可以帮您整理的</strong>——比如附近近期成交情况、房产详情摘要——让您和家人的讨论更有依据？我今天就可以发给您。"</span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note9"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: MISC -->
+<div class="cat-label">
+  <span data-lang="en">Miscellaneous</span>
+  <span data-lang="ch">其他情况</span>
+</div>
+
+<!-- OBJ 10 -->
+<div class="obj-card" id="obj10">
+  <div class="obj-head" onclick="toggleObj('obj10')">
+    <div class="obj-num">10</div>
+    <div class="obj-label">
+      <div class="obj-title">
+        <span data-lang="en">"We're just here for the free look / being nosy."</span>
+        <span data-lang="ch">"我们只是来看看 / 随便看看热闹的。"</span>
+      </div>
+      <div class="obj-tag">
+        <span data-lang="en">Laugh with them — then turn neighbour into a referral source</span>
+        <span data-lang="ch">跟他们一起笑——然后将邻居转化为推荐来源</span>
+      </div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context">
+      <span data-lang="en">Often a neighbour. Don't dismiss them — they know every family on the street. A warm, humorous response turns a casual visitor into a potential referral source.</span>
+      <span data-lang="ch">通常是邻居。不要忽视他们——他们认识街上每一户人家。温暖幽默的回应能让随意的访客变成潜在的推荐来源。</span>
+    </div>
+    <div class="obj-script">
+      <span data-lang="en">"<strong>Honestly, the best visitors are the neighbours</strong> — you know this street better than anyone. Please, look around as much as you like. And if you ever hear of anyone thinking about making a move — I'd love to know. Here's my card." <em>(smile warmly — don't oversell it)</em></span>
+      <span data-lang="ch">"<strong>说真的，邻居才是最好的访客</strong>——您比任何人都更了解这条街。请随意参观。如果您听说有人在考虑搬家——我很希望您能告诉我。这是我的名片。"<em>（温暖地微笑——不要过度推销）</em></span>
+    </div>
+    <div class="obj-notes-wrap">
+      <div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div>
+      <textarea class="obj-notes-input" id="note10"></textarea>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('lang-ch', lang === 'ch');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnCH').classList.toggle('active', lang === 'ch');
+  const ph = lang === 'en' ? 'Their reaction, what worked…' : '对方反应、哪句话奏效了……';
+  document.querySelectorAll('.obj-notes-input').forEach(el => el.placeholder = ph);
+}
+
+function toggleObj(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+</script>
+</body>
+</html>

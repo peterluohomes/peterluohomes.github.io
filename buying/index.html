@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buying Toolkit — Pinnacle Listing System</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy:   #0A192F;
+      --gold:   #C5A059;
+      --text:   #333;
+      --light:  #f8f8f8;
+      --border: #e0e0e0;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Montserrat', system-ui, sans-serif;
+      background: #f5f5f5;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    header {
+      text-align: center;
+      padding-bottom: 30px;
+      border-bottom: 3px solid var(--gold);
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--navy);
+      font-size: 2.6rem;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      color: var(--gold);
+      font-style: italic;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .intro {
+      max-width: 800px;
+      margin: 0 auto 50px;
+      text-align: center;
+      font-size: 1.05rem;
+      color: #444;
+      line-height: 1.7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--light);
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: white;
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .card-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--navy);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    .card-body {
+      padding: 20px 18px;
+      flex-grow: 1;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+
+    .card-text {
+      font-size: 0.93rem;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .card-footer {
+      padding: 0 18px 18px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 24px;
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      text-decoration: none;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      color: white;
+    }
+
+    @media (max-width: 900px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Buying Toolkit</h1>
+      <div class="subtitle">— Buyer Consultation · Due Diligence · Pre-Closing —</div>
+    </header>
+
+    <div class="intro">
+      A complete set of buyer-focused tools to guide every stage of the purchase process — from initial consultation and risk assessment through to final walk-through before closing.
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-label">Due Diligence</div>
+          <div class="card-title">Buyer's Risk &amp; Due Diligence Checklist</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Buyer Protection · 8 Categories · 74 Factors</div>
+          <p class="card-text">
+            A complete risk checklist covering property condition, legal title, environmental hazards, financial obligations, and neighbourhood factors — everything a buyer needs to research before committing.
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="./riskcheck" class="btn">Open Tool</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-label">Buyer Consultation</div>
+          <div class="card-title">Factors Affecting a Transaction</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Transaction Intelligence</div>
+          <p class="card-text">
+            A comprehensive reference framework covering key, market, personal, and property factors — from consideration and timing to deal-breakers — that influence a real estate transaction.
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="./factors" class="btn">Open Tool</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-label">Buyer Consultation</div>
+          <div class="card-title">Key Factors for Buying</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Purchase Consideration</div>
+          <p class="card-text">
+            A structured consultation checklist covering 20 key purchase factors — from budget, location, and property condition to stigmas and negotiation strategy — with individual notes for each item.
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="./keyfactors" class="btn">Open Tool</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-label">Pre-Closing</div>
+          <div class="card-title">Buyer Final Walk-Through Checklist</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Comprehensive Pre-Closing Inspection</div>
+          <p class="card-text">
+            A thorough pre-closing walk-through checklist to verify the property's condition, confirm all agreed repairs are complete, and ensure all inclusions are present before closing day.
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="./walkthrough" class="btn">Open Tool</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-label">Showings</div>
+          <div class="card-title">Showing Sheet</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Daily Showing Management</div>
+          <p class="card-text">
+            Organize and track all showings for a given day — property address, start and end times, lockbox access, showing instructions, agent contact, and personal notes for each property visited.
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="./showing" class="btn">Open Tool</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

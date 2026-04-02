@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinnacle Listing System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Montserrat:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #0A192F;
+            --accent-gold: #C5A059;
+            --text-charcoal: #333333;
+            --border-light: #E0E0E0;
+            --bg-offwhite: #FDFDFD;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            color: var(--text-charcoal);
+            margin: 0;
+            padding: 20px;
+            /* FIX: Removed display:flex to allow natural page scrolling */
+            display: block; 
+        }
+
+        .page-container {
+            background-color: white;
+            width: 100%;
+            max-width: 1200px;
+            /* FIX: Changed min-height to auto and used margin: 0 auto for centering */
+            min-height: auto;
+            margin: 0 auto;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            /* Ensures content is never clipped */
+            overflow: visible;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--accent-gold);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28pt;
+            color: var(--primary-navy);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .pillar-subtitle {
+            font-size: 11pt;
+            font-style: italic;
+            color: var(--accent-gold);
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .pillar-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            flex-grow: 1;
+            margin-bottom: 30px;
+        }
+
+        .pillar-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pillar-title-box {
+            background-color: #FAFAFA;
+            padding: 20px 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .pillar-label {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-navy);
+            font-weight: 700;
+        }
+
+        .pillar-main-text {
+            font-size: 13pt;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+
+        .section-header {
+            font-weight: 700;
+            font-size: 10pt;
+            color: var(--primary-navy);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+        }
+
+        .pillar-content {
+            font-size: 10.5pt;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .pillar-cta {
+            text-align: center;
+            margin-top: auto; 
+            padding-top: 10px;
+        }
+
+        .pillar-cta a, .final-step-cta a {
+            display: inline-block;
+            color: var(--primary-navy);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 9pt;
+            text-transform: uppercase;
+            border: 2px solid var(--accent-gold);
+            transition: 0.3s;
+        }
+
+        .pillar-cta a:hover, .final-step-cta a:hover {
+            background-color: var(--accent-gold);
+            color: white;
+        }
+
+        .final-step-container {
+            margin-top: 20px;
+            border: 2px solid var(--accent-gold);
+            background-color: var(--bg-offwhite);
+            padding: 30px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .pillar-row { grid-template-columns: 1fr; }
+            .page-container { padding: 20px; }
+            h1 { font-size: 24pt; }
+        }
+    </style>
+<script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <h1 id="main-title">Pinnacle Listing System</h1>
+            <div class="pillar-subtitle" id="subtitle">- The Maximum Value Strategy: Your Blueprint for Success -</div>
+        </header>
+<div style="max-width: 900px; margin: 0 auto 50px auto; text-align: center; line-height: 1.6; color: var(--text-charcoal); font-size: 12pt; font-weight: 400;">
+    The Pinnacle Listing System is a rigorous, evidence-based framework engineered to optimize your property’s market value. Through our strategic and systematic three-pillar methodology, we consistently secure premium pricing and the most favorable contractual terms.
+</div>
+        <div class="pillar-row">
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">Pillar 1</span>
+                    <span class="pillar-main-text" id="pillar-1-title">Prepare Your Home for Maximum Buyer Appeal</span>
+                </div>
+                <div class="section-header">Making Your Property Irresistible To Buyers</div>
+                <p class="pillar-content" id="pillar-1-content">We transform your home into its most attractive version through professional enhancements, staging, and sensory details, creating powerful first impressions that help buyers envision living there and drive higher, faster offers.</p>
+                <div class="pillar-cta"><a href="./pillar1.html" target="_blank">Learn More</a></div>
+            </div>
+
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">Pillar 2</span>
+                    <span class="pillar-main-text" id="pillar-2-title">Market to the Maximum Number of Buyers</span>
+                </div>
+                <div class="section-header">Reaching Every Potential Buyer Through Proactive Strategies</div>
+                <p class="pillar-content" id="pillar-2-content">We deploy an aggressive, multi-channel marketing plan with 24/7 availability and targeted outreach to expose your property to the widest audience of qualified buyers, generating strong interest, more showings, and competitive offers quickly.</p>
+                <div class="pillar-cta"><a href="./pillar2.html" target="_blank">Learn More</a></div>
+            </div>
+
+            <div class="pillar-column">
+                <div class="pillar-title-box">
+                    <span class="pillar-label">Pillar 3</span>
+                    <span class="pillar-main-text" id="pillar-3-title">Negotiate the Highest Price and Favorable Terms</span>
+                </div>
+                <div class="section-header">Expert Strategy to Maximize Your Proceeds</div>
+                <p class="pillar-content" id="pillar-3-content">Using a proven three-phase process, we build leverage early, manage offers and concessions masterfully, and secure the agreement to deliver the strongest possible price with the most favorable terms while protecting your equity.</p>
+                <div class="pillar-cta"><a href="./pillar3.html" target="_blank">Learn More</a></div>
+            </div>
+        </div>
+
+        <div class="final-step-container">
+            <h2 id="final-title" style="font-family: 'Playfair Display', serif; font-size: 18pt; color: var(--primary-navy); margin-bottom: 10px;">Ensuring a Successful Appraisal</h2>
+            <p id="final-content">Protecting Your Maximum Sale Price</p>
+            <div class="final-step-cta"><a href="./appraisal.html" target="_blank">Learn About Appraisal Strategy</a></div>
+        </div>
+    </div>
+
+    <script src="/_sdk/element_sdk.js"></script>
+    <script>
+        const defaultConfig = {
+            main_title: "Pinnacle Listing System",
+            subtitle: "- The Maximum Value Strategy: Your Blueprint for Success -",
+            pillar_1_title: "Prepare Your Home for Maximum Buyer Appeal",
+            pillar_1_content: "We transform your home into its most attractive version through professional enhancements, staging, and sensory details...",
+            pillar_2_title: "Market to the Maximum Number of Buyers",
+            pillar_2_content: "We deploy an aggressive, multi-channel marketing plan with 24/7 availability...",
+            pillar_3_title: "Negotiate the Highest Price and Favorable Terms",
+            pillar_3_content: "Using a proven three-phase process, we build leverage early...",
+            final_title: "Ensuring a Successful Appraisal",
+            final_content: "Protecting Your Maximum Sale Price"
+        };
+
+        const configKeys = Object.keys(defaultConfig);
+        
+        function onConfigChange(config) {
+            configKeys.forEach(key => {
+                const el = document.getElementById(key.replace(/_/g, '-'));
+                if (el) el.textContent = config[key] || defaultConfig[key];
+            });
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: () => ({ recolorables: [], borderables: [] }),
+                mapToEditPanelValues: (config) => new Map(configKeys.map(k => [k, config[k] || defaultConfig[k]]))
+            });
+        }
+    </script>
+</body>
+</html>

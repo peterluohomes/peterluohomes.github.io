@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Pinnacle Planner — Peter Luo</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pinnacle">
+<meta name="theme-color" content="#1a2b4a">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%231a2b4a'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='%23c9a84c'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b4a;--navy2:#243560;--gold:#c9a84c;--gold2:#e0c070;--gold-dim:rgba(201,168,76,0.15);--cream:#faf6ee;--cream2:#f0e8d5;--border:#ddd3bc;--text:#2c2c2c;--muted:#888;--faint:#bbb;--surface:#fff;--radius:8px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;max-width:600px;margin:0 auto;padding-bottom:100px;overscroll-behavior-y:none}
+.app-header{background:var(--navy);border-bottom:3px solid var(--gold);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand h1{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold)}
+.brand p{font-size:9px;color:#aaa;letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:6px}
+.streak-badge{background:rgba(201,168,76,0.15);border:1px solid var(--gold);border-radius:20px;padding:3px 8px;font-size:10px;color:var(--gold2);font-weight:600;white-space:nowrap}
+.hdr-btn{background:none;border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:#aaa;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.hdr-btn:hover{border-color:var(--gold);color:var(--gold2)}
+.hdr-btn.gold{color:var(--gold);border-color:rgba(201,168,76,0.5)}
+.page{display:none;padding:14px}
+.page.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);opacity:0.45;margin-bottom:12px}
+.section-divider{height:1px;background:var(--border);margin:12px 0}
+/* GOALS */
+.tier{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px}
+.tier-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--cream2);cursor:pointer;user-select:none;transition:background 0.15s}
+.tier-hdr:hover{background:rgba(201,168,76,0.1)}
+.tier-left{display:flex;align-items:center;gap:8px}
+.tier-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.5;flex-shrink:0}
+.tier-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy)}
+.tier-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.tier-arrow{font-size:9px;color:var(--faint);transition:transform 0.2s}
+.tier-arrow.open{transform:rotate(180deg)}
+.tier-body{padding:10px 14px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.goal-item{display:flex;align-items:center;gap:10px}
+.goal-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.goal-item input[type=text]{flex:1;border:none;border-bottom:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);padding:2px 0;outline:none}
+.goal-item input[type=text]:focus{border-bottom-color:var(--gold)}
+.goal-item input[type=text]::placeholder{color:var(--faint)}
+.add-btn{font-size:11px;color:var(--faint);background:none;border:none;cursor:pointer;padding:2px 0;text-align:left;font-family:'DM Sans',sans-serif;transition:color 0.15s}
+.add-btn:hover{color:var(--gold)}
+/* DATE */
+.date-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.date-nav{display:flex;align-items:center;gap:8px}
+.date-nav button{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--muted);transition:all 0.15s}
+.date-nav button:hover{border-color:var(--gold);color:var(--navy)}
+.date-label{font-size:14px;font-weight:600;color:var(--navy)}
+.today-btn{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;color:var(--gold);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.today-btn:hover{background:var(--gold-dim)}
+/* FIELDS */
+.field-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);opacity:0.8;margin-bottom:4px}
+.field-inp{width:100%;border:none;border-bottom:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);padding:3px 0;outline:none}
+.field-inp:focus{border-bottom-color:var(--gold)}
+.field-inp::placeholder{color:var(--faint)}
+/* PLAN ROWS */
+.plan-hdr-row{display:grid;grid-template-columns:130px 1fr 40px 20px;gap:4px;padding:0 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy);opacity:0.4}
+.plan-row{display:grid;grid-template-columns:130px 1fr 40px 20px 22px;gap:4px;align-items:center;padding:5px 0;border-bottom:1px solid var(--cream2)}
+.plan-row.planned-row{grid-template-columns:130px 1fr 28px 40px 20px 22px}
+.plan-row:last-child{border-bottom:none}
+.plan-hdr-row.planned-hdr{grid-template-columns:130px 1fr 28px 40px 20px 22px}
+.cat-sel{font-size:10px;font-weight:700;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:2px 0;outline:none;cursor:pointer;width:100%;font-family:'DM Mono',monospace;-webkit-appearance:auto;appearance:auto;position:relative;z-index:1;color:var(--navy);text-align:center}
+.cat-sel[data-cat="listing"]{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.4);color:#8a6010}
+.cat-sel[data-cat="review-offer"]{background:rgba(192,57,43,0.07);border-color:rgba(192,57,43,0.3);color:#9a2d20}
+.cat-sel[data-cat="buyer"]{background:rgba(43,108,176,0.08);border-color:rgba(43,108,176,0.3);color:#1a5090}
+.cat-sel[data-cat="showing"]{background:rgba(60,140,80,0.08);border-color:rgba(60,140,80,0.3);color:#246040}
+.cat-sel[data-cat="write-offer"]{background:rgba(120,60,160,0.08);border-color:rgba(120,60,160,0.3);color:#6030a0}
+.row-del-btn{background:none;border:none;color:var(--faint);font-size:14px;cursor:pointer;padding:0;line-height:1;transition:color 0.15s;justify-self:center}
+.row-del-btn:hover{color:#c0392b}
+.time-ampm{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.time-inp{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);background:transparent;border:none;border-bottom:1px solid var(--border);outline:none;padding:2px 0;width:36px;letter-spacing:0.5px}
+.time-inp:focus{border-bottom-color:var(--gold);color:var(--text)}
+.ampm-inp{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:var(--navy);background:var(--cream2);border:1px solid var(--border);border-radius:4px;outline:none;padding:1px 0;width:26px;text-align:center;cursor:pointer;letter-spacing:0.5px;flex-shrink:0;transition:border-color 0.15s}
+.ampm-inp:focus{border-color:var(--gold);background:var(--gold-dim)}
+.dur-sel{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--cream);border:1px solid var(--border);border-radius:4px;outline:none;padding:1px 0;width:46px;cursor:pointer;-webkit-appearance:auto;appearance:auto;font-weight:500;flex-shrink:0}
+.dur-sel:focus{border-color:var(--gold);color:var(--text)}
+.name-inp{font-size:13px;color:var(--text);background:transparent;border:none;border-bottom:1px solid var(--border);outline:none;padding:2px 0;width:100%;font-family:'DM Sans',sans-serif}
+.name-inp:focus{border-bottom-color:var(--gold)}
+.name-inp.done{text-decoration:line-through;color:var(--faint)}
+.pri-sel{font-size:10px;font-weight:700;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:2px 1px;outline:none;cursor:pointer;width:100%;text-align:center;font-family:'DM Sans',sans-serif;-webkit-appearance:auto;appearance:auto;position:relative;z-index:1}
+.pri-sel[data-pri="high"]{color:#c0392b;border-color:rgba(192,57,43,0.35);background:rgba(192,57,43,0.07)}
+.pri-sel[data-pri="med"]{color:#c07820;border-color:rgba(192,120,32,0.35);background:rgba(192,120,32,0.07)}
+.pri-sel[data-pri="low"]{color:#2b6cb0;border-color:rgba(43,108,176,0.35);background:rgba(43,108,176,0.07)}
+.col-done{justify-self:center;width:14px;height:14px;accent-color:var(--gold);cursor:pointer}
+/* TASKS */
+.task-row{display:grid;grid-template-columns:1fr 40px 20px 22px;gap:4px;align-items:center;padding:6px 0;border-bottom:1px solid var(--cream2)}
+.task-row:last-child{border-bottom:none}
+/* TOP 3 */
+.top3-list{display:flex;flex-direction:column;gap:8px}
+.top3-item{display:flex;align-items:center;gap:10px}
+.top3-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);font-weight:600;flex-shrink:0;width:14px}
+.top3-inp{flex:1;border:none;border-bottom:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);padding:2px 0;outline:none}
+.top3-inp:focus{border-bottom-color:var(--gold)}
+.top3-inp::placeholder{color:var(--faint)}
+/* WEEK GRID */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.week-day{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 4px;text-align:center;cursor:pointer;transition:all 0.15s}
+.week-day:hover,.week-day.active{border-color:var(--gold);background:var(--gold-dim)}
+.week-day.today{border-color:var(--navy)}
+.week-day.today .wd-num{color:crimson}
+.week-day.has-data{background:rgba(201,168,76,0.08)}
+.week-day.active{background:var(--gold-dim)!important}
+.wd-name{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.wd-num{font-size:13px;font-weight:600;color:var(--navy);margin:2px 0}
+.wd-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);margin:0 auto;opacity:0}
+.week-day.has-data .wd-dot{opacity:1}
+/* DIARY */
+.diary-section{margin-bottom:14px}
+.diary-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;opacity:0.8}
+.diary-area{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);resize:none;outline:none;min-height:70px;line-height:1.7}
+.diary-area::placeholder{color:var(--faint)}
+.gratitude-inp{width:100%;border:none;border-bottom:1px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);padding:3px 0;outline:none}
+.gratitude-inp:focus{border-bottom-color:var(--gold)}
+.gratitude-inp::placeholder{color:var(--faint)}
+/* ENERGY */
+.energy-row{display:flex;align-items:center;gap:10px;padding:6px 0}
+.energy-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);opacity:0.5;flex-shrink:0}
+.energy-stars{display:flex;gap:4px}
+.energy-star{font-size:22px;cursor:pointer;opacity:0.25;transition:opacity 0.15s,transform 0.1s;user-select:none;line-height:1}
+.energy-star.active{opacity:1}
+.energy-star:hover{transform:scale(1.2)}
+/* EOD */
+.eod-list{display:flex;flex-direction:column;gap:10px}
+.eod-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.eod-q{font-size:13px;color:var(--text);flex:1;line-height:1.4;padding-top:2px}
+.eod-btns{display:flex;gap:6px;flex-shrink:0}
+.eod-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--cream);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.eod-btn.yes.active{background:rgba(60,140,80,0.12);border-color:rgba(60,140,80,0.4);color:#2e7d50}
+.eod-btn.no.active{background:rgba(192,57,43,0.1);border-color:rgba(192,57,43,0.3);color:#c0392b}
+.eod-score{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--navy);text-align:center;padding:10px 0 2px}
+.eod-score-label{font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+/* SCRIPT */
+.script-card{background:var(--navy);border-radius:var(--radius);padding:14px;margin-bottom:12px;position:relative}
+.script-tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:8px}
+.script-text{font-size:13px;color:var(--cream2);line-height:1.7;font-style:italic;padding-right:50px}
+.script-anchor{font-size:11px;color:var(--gold);margin-top:8px;font-weight:600;letter-spacing:0.3px}
+.script-nav{position:absolute;top:12px;right:12px;display:flex;gap:4px}
+.script-nav button{background:none;border:1px solid rgba(201,168,76,0.3);border-radius:4px;color:var(--gold2);font-size:11px;padding:2px 7px;cursor:pointer;transition:border-color 0.15s}
+.script-nav button:hover{border-color:var(--gold)}
+/* PIPELINE */
+.pipeline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.pipeline-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px}
+.pipeline-stage{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.pipeline-val{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:var(--navy);line-height:1;margin-bottom:6px}
+.pipeline-inp{width:100%;border:1px solid var(--border);border-radius:4px;background:var(--cream);font-family:'DM Mono',monospace;font-size:12px;color:var(--text);padding:4px 6px;outline:none;transition:border-color 0.2s}
+.pipeline-inp:focus{border-color:var(--gold)}
+/* TRACKING */
+.track-section{margin-bottom:18px}
+.track-section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--gold-dim)}
+.track-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.track-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 9px}
+.track-lbl{font-size:9px;color:var(--muted);margin-bottom:4px;line-height:1.3}
+.track-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--navy);line-height:1.1;margin-bottom:2px}
+.track-unit{font-size:8px;color:var(--faint);margin-bottom:6px}
+.track-input{width:100%;border:1px solid var(--border);border-radius:4px;background:var(--cream);font-family:'DM Mono',monospace;font-size:12px;color:var(--text);padding:4px 6px;outline:none;transition:border-color 0.2s}
+.track-input:focus{border-color:var(--gold)}
+.track-card-computed{background:var(--cream2);border-color:var(--border)}
+/* REVIEW */
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.review-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy)}
+.period-btns{display:flex;gap:6px}
+.period-btn{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.period-btn.active{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+.review-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.review-nav button{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--muted);transition:all 0.15s}
+.review-nav button:hover{border-color:var(--gold);color:var(--navy)}
+.review-nav-label{font-size:13px;font-weight:600;color:var(--navy)}
+.wdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px}
+.wdr.empty{opacity:0.4}
+.wdr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.wdr-date{font-size:12px;font-weight:600;color:var(--navy)}
+.wdr-stars{display:flex;gap:2px}
+.wdr-star{font-size:11px;opacity:0.2}
+.wdr-star.on{opacity:1}
+.wdr-stats{display:flex;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--muted);line-height:1.6}
+.wdr-stat{white-space:nowrap}
+.wdr-stat strong{color:var(--navy);font-family:'DM Mono',monospace;font-size:10px}
+.wdr-eod{font-size:11px;color:var(--muted);margin-top:4px}
+.monthly-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.monthly-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.monthly-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.monthly-val{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--navy);line-height:1}
+.monthly-unit{font-size:9px;color:var(--faint);margin-top:2px}
+/* TOAST */
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);border:1px solid var(--gold);color:var(--gold);font-size:12px;font-weight:500;padding:8px 18px;border-radius:20px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* FAB */
+.fab{position:fixed;bottom:92px;right:16px;width:46px;height:46px;border-radius:50%;background:var(--navy);border:2px solid var(--gold);color:var(--gold);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(26,43,74,0.3);z-index:200;transition:all 0.2s;line-height:1}
+.fab:hover{transform:scale(1.08)}
+.fab-menu{position:fixed;bottom:146px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:200;opacity:0;pointer-events:none;transition:all 0.2s;transform:translateY(10px)}
+.fab-menu.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.fab-item{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.fab-label{background:var(--navy);color:var(--cream);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;white-space:nowrap;letter-spacing:0.5px}
+.fab-btn{width:34px;height:34px;border-radius:50%;background:var(--navy);border:1px solid var(--gold);color:var(--gold);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:600px;margin:0 auto;background:var(--navy);border-top:2px solid var(--gold);display:flex;z-index:100}
+/* DATE BAR (mobile base) */
+#global-date-bar{position:sticky;top:43px;z-index:99;background:var(--cream);border-bottom:1px solid var(--border);}
+/* PROSPECTING GRID: mobile wraps 3+2 */
+.track-grid-prospecting{grid-template-columns:repeat(3,1fr);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:17px 2px 19px;cursor:pointer;color:#777;font-size:7.5px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;gap:3px;transition:color 0.2s;user-select:none;border:none;background:none;font-family:'DM Sans',sans-serif}
+.nav-item .icon{font-size:17px;line-height:1}
+.nav-item.active{color:var(--gold)}
+.nav-item:hover{color:var(--gold2)}
+.install-banner{position:fixed;bottom:0;left:0;right:0;max-width:600px;margin:0 auto;background:var(--navy);border-top:2px solid var(--gold);padding:14px 18px;z-index:10000}
+.install-banner h3{font-family:'Playfair Display',serif;color:var(--gold);font-size:14px;margin-bottom:6px}
+/* SCRIPT LIBRARY */
+.script-item{background:var(--navy);border-radius:var(--radius);padding:14px;margin-bottom:10px;position:relative}
+.script-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.script-tag-inp{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,0.3);outline:none;width:100%;font-family:'DM Sans',sans-serif;padding:1px 0}
+.script-tag-inp:focus{border-bottom-color:var(--gold)}
+.script-tag-inp::placeholder{color:rgba(201,168,76,0.4)}
+.script-del-btn{background:none;border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:#aaa;font-size:11px;padding:2px 7px;cursor:pointer;flex-shrink:0;transition:all 0.15s}
+.script-del-btn:hover{border-color:#e07070;color:#e07070}
+.script-body-inp{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--cream2);padding:8px 10px;outline:none;resize:none;line-height:1.65;min-height:80px;transition:border-color 0.15s}
+.script-body-inp:focus{border-color:rgba(201,168,76,0.4)}
+.script-body-inp::placeholder{color:rgba(253,248,240,0.2)}
+.script-anchor-inp{width:100%;background:transparent;border:none;border-top:1px solid rgba(201,168,76,0.15);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gold);padding:7px 0 0;outline:none;margin-top:8px;font-weight:600;letter-spacing:0.3px}
+.script-anchor-inp::placeholder{color:rgba(201,168,76,0.3)}
+.script-anchor-inp:focus{color:var(--gold2)}
+.script-nav-btn{background:none;border:1px solid rgba(201,168,76,0.3);border-radius:4px;color:var(--gold2);font-size:14px;padding:1px 8px;cursor:pointer;transition:border-color 0.15s;line-height:1.4}
+.script-nav-btn:hover{border-color:var(--gold)}
+
+
+/* ── RESPONSIVE: iPad Pro 13" portrait/landscape + Desktop ── */
+
+/* ── 768px+: header fixed, sidebar nav, full-viewport pages ── */
+@media (min-width:768px){
+  body{max-width:100%;padding-bottom:0;min-height:100vh;}
+  .app-header{max-width:100%;position:fixed;top:0;left:0;right:0;z-index:200;}
+  .brand h1{font-size:20px;}
+  .hdr-btn{font-size:11px;padding:5px 12px;}
+  .streak-badge{font-size:11px;padding:4px 10px;}
+
+  /* Sidebar nav */
+  .bottom-nav{
+    position:fixed;top:57px;left:0;bottom:0;right:auto;
+    max-width:none;width:90px;
+    flex-direction:column;
+    border-top:none;border-right:2px solid var(--gold);
+    padding-top:16px;
+    z-index:150;
+    justify-content:flex-start;
+    gap:0;
+    background:var(--navy);
+  }
+  .nav-item{padding:16px 6px;font-size:7.5px;letter-spacing:0.5px;width:90px;}
+  .nav-item .icon{font-size:20px;}
+
+  /* Pages container: fixed, fills all space right of sidebar */
+  #pages{
+    position:fixed;
+    top:57px;left:90px;right:0;bottom:0;
+    overflow:hidden;
+  }
+
+  /* Each page: absolute, fills #pages entirely, scrollable */
+  .page{
+    display:none;
+    position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    overflow-y:auto;
+    padding:20px 32px 40px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .page.active{display:block;}
+
+  /* Date bar: fixed below header, right of sidebar on desktop */
+  #global-date-bar{
+    position:fixed;
+    top:57px;left:90px;right:0;
+    z-index:99;
+    background:var(--cream);
+    border-bottom:1px solid var(--border);
+  }
+  #global-date-bar .date-bar{padding:8px 28px 0;}
+  #global-date-bar > div:last-child{padding:4px 28px 6px;}
+
+  /* Pages: add top padding to clear fixed date bar (~90px) or header only when no date bar */
+  .page{padding-top:20px;}
+  .page[id="page-planner"],
+  .page[id="page-diary"],
+  .page[id="page-tracking"]{padding-top:110px;}
+
+  .card{padding:20px 22px;margin-bottom:16px;}
+  .card-title{font-size:10px;}
+
+  .plan-hdr-row{grid-template-columns:150px 1fr 44px 22px;}
+  .plan-row{grid-template-columns:150px 1fr 44px 22px 24px;}
+  .plan-row.planned-row{grid-template-columns:150px 1fr 34px 44px 22px 24px;}
+  .plan-hdr-row.planned-hdr{grid-template-columns:150px 1fr 34px 44px 22px 24px;}
+
+  .track-grid{grid-template-columns:repeat(4,1fr);}
+  /* Prospecting: all 5 cards in one row */
+  .track-grid-prospecting{grid-template-columns:repeat(5,1fr);}
+  .pipeline-grid{grid-template-columns:repeat(3,1fr);}
+  .monthly-grid{grid-template-columns:repeat(3,1fr);}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .fab{position:fixed;bottom:24px;right:28px;}
+  .fab-menu{position:fixed;bottom:80px;right:28px;}
+
+  .install-banner{left:90px;max-width:none;}
+  .energy-star{font-size:26px;}
+  .name-inp{font-size:14px;}
+  .field-inp{font-size:14px;}
+  .diary-area{font-size:14px;}
+}
+
+/* ── 1024px (iPad Pro 13" portrait): two-column card layout in Planner ── */
+@media (min-width:1024px){
+  #page-planner{display:none;flex-wrap:wrap;align-content:flex-start;gap:16px;padding:110px 32px 40px;}
+  #page-planner.active{display:flex;}
+  #page-planner .card{flex:1 1 calc(50% - 8px);min-width:300px;margin-bottom:0;}
+
+  /* Weekly review: bigger, more spacious */
+  .wdr{padding:18px 20px;margin-bottom:14px;}
+  .wdr-date{font-size:16px;font-weight:700;}
+  .wdr-star{font-size:15px;}
+  .wdr-stats{font-size:13px;gap:12px;line-height:2;}
+  .wdr-stat strong{font-size:13px;}
+  .wdr-eod{font-size:14px;margin-top:8px;}
+  .review-nav-label{font-size:17px;}
+  .review-nav button{font-size:15px;padding:6px 16px;}
+  .review-title{font-size:22px;}
+  .period-btn{font-size:12px;padding:7px 18px;}
+}
+
+/* ── 1280px+ (iPad Pro 13" landscape / Desktop) ── */
+@media (min-width:1280px){
+  .bottom-nav{width:110px;}
+  .nav-item{width:110px;font-size:8px;}
+  #pages{left:110px;}
+  #global-date-bar{left:110px;}
+  .install-banner{left:110px;}
+  .card{padding:22px 26px;}
+  .track-grid{grid-template-columns:repeat(5,1fr);}
+  .track-grid-prospecting{grid-template-columns:repeat(5,1fr);}
+  .page[id="page-planner"],
+  .page[id="page-diary"],
+  .page[id="page-tracking"]{padding-top:110px;}
+
+  /* Weekly review: even bigger on desktop */
+  .wdr{padding:22px 26px;margin-bottom:18px;}
+  .wdr-date{font-size:18px;}
+  .wdr-star{font-size:17px;}
+  .wdr-stats{font-size:14px;gap:16px;line-height:2.2;}
+  .wdr-stat strong{font-size:14px;}
+  .wdr-eod{font-size:15px;margin-top:10px;}
+  .review-nav-label{font-size:19px;}
+  .review-title{font-size:24px;}
+}
+
+/* ── 1600px+ (wide desktop) ── */
+@media (min-width:1600px){
+  .bottom-nav{width:120px;}
+  .nav-item{width:120px;font-size:9px;padding:18px 8px;}
+  .nav-item .icon{font-size:22px;}
+  #pages{left:120px;}
+  #global-date-bar{left:120px;}
+  .install-banner{left:120px;}
+  .card{padding:24px 30px;}
+  .name-inp,.field-inp,.diary-area{font-size:15px;}
+  #page-planner .card{flex:1 1 calc(33% - 11px);}
+  .track-grid{grid-template-columns:repeat(6,1fr);}
+  .track-grid-prospecting{grid-template-columns:repeat(5,1fr);}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand"><h1>Planner</h1></div>
+  <div class="header-right">
+    <div class="streak-badge" id="streak-badge">🔥 0 days</div>
+    <button class="hdr-btn gold" id="bell-btn" onclick="toggleReminders()">🔕</button>
+    <button class="hdr-btn gold" onclick="exportToIOSReminders()" title="Set iPhone Reminders">📲</button>
+    <button class="hdr-btn" onclick="backupData()">Backup</button>
+    <button class="hdr-btn" onclick="document.getElementById('restore-input').click()">Restore</button>
+    <input type="file" id="restore-input" accept=".json" style="display:none" onchange="restoreBackup(event)">
+  </div>
+</header>
+
+<div id="global-date-bar" style="display:none">
+  <div class="date-bar" style="padding:8px 14px 0">
+    <div class="date-nav">
+      <button onclick="changeDate(-1)">←</button>
+      <span class="date-label" id="plan-date-label"></span>
+      <button onclick="changeDate(1)">→</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="week-num-badge" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);white-space:nowrap"></span>
+      <button id="copy-week-btn" class="today-btn" onclick="copyRepeatFromPrevWeek()" style="white-space:nowrap"></button>
+      <button class="today-btn" onclick="goToday()">Today</button>
+    </div>
+  </div>
+  <div style="padding:4px 14px 6px"><div class="week-grid" id="week-grid"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="fab-menu" id="fab-menu">
+  <div class="fab-item"><span class="fab-label">Add activity</span><button class="fab-btn" onclick="quickAddActivity()">📅</button></div>
+  <div class="fab-item"><span class="fab-label">Add task</span><button class="fab-btn" onclick="quickAddTask()">✅</button></div>
+  <div class="fab-item"><span class="fab-label">Add goal</span><button class="fab-btn" onclick="quickAddGoal()">🎯</button></div>
+</div>
+<button class="fab" id="fab" onclick="toggleFab()">+</button>
+
+<div id="pages">
+
+<!-- GOALS -->
+<div class="page active" id="page-goals">
+  <div id="goal-tiers"></div>
+
+  <!-- Scripts Library -->
+  <div style="margin-top:4px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);opacity:0.5">Scripts Library</div>
+      <button class="add-btn" onclick="addScript()" style="color:var(--gold);font-weight:600">+ new script</button>
+    </div>
+    <!-- Single script card with navigation -->
+    <div class="script-item" id="script-display">
+      <div class="script-item-header">
+        <input class="script-tag-inp" id="script-tag-inp" type="text" placeholder="Script name / tag…">
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <span id="script-counter" style="font-size:9px;color:rgba(201,168,76,0.5);letter-spacing:1px;font-family:'DM Mono',monospace"></span>
+          <button class="script-nav-btn" onclick="navigateScript(-1)">‹</button>
+          <button class="script-nav-btn" onclick="navigateScript(1)">›</button>
+          <button class="script-del-btn" onclick="deleteCurrentScript()">✕</button>
+        </div>
+      </div>
+      <textarea class="script-body-inp" id="script-body-inp" rows="4" placeholder="Write your script here…"></textarea>
+      <input class="script-anchor-inp" id="script-anchor-inp" type="text" placeholder="Anchor words (optional)…">
+    </div>
+    <div id="script-list" style="display:none"></div>
+  </div>
+</div>
+
+<!-- PLANNER -->
+<div class="page" id="page-planner">
+
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div><div class="field-lbl">Affirmation</div><input class="field-inp" id="field-affirmation" type="text" placeholder="I am…"></div>
+      <div><div class="field-lbl">Neighbourhood Focus</div><input class="field-inp" id="field-neighbourhood" type="text" placeholder="Area / street…"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Repeat Activities</div>
+    <div class="plan-hdr-row"><span>Start / Dur</span><span>Activity</span><span>Pri</span><span></span></div>
+    <div id="repeat-list"></div>
+    <button class="add-btn" style="margin-top:8px" onclick="addPlanRow('repeat-list')">+ add activity</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Planned Activities</div>
+    <div class="plan-hdr-row planned-hdr"><span>Start / Dur</span><span>Activity</span><span>Cat</span><span>Pri</span><span></span><span></span></div>
+    <div id="planned-list"></div>
+    <button class="add-btn" style="margin-top:8px" onclick="addPlanRow('planned-list')">+ add activity</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Today's Tasks</div>
+    <div id="task-list"></div>
+    <button class="add-btn" style="margin-top:8px" onclick="addTaskRow()">+ add task</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tomorrow's Top 3</div>
+    <div class="top3-list">
+      <div class="top3-item"><span class="top3-num">1</span><input class="top3-inp" type="text" placeholder="Most important thing tomorrow…" id="top3-1"></div>
+      <div class="top3-item"><span class="top3-num">2</span><input class="top3-inp" type="text" placeholder="Second priority…" id="top3-2"></div>
+      <div class="top3-item"><span class="top3-num">3</span><input class="top3-inp" type="text" placeholder="Third priority…" id="top3-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIARY -->
+<div class="page" id="page-diary">
+  <div class="card">
+    <div class="diary-section">
+      <div class="diary-label">Day Rating</div>
+      <div class="energy-row">
+        <span class="energy-label">Energy</span>
+        <div class="energy-stars" id="energy-stars">
+          <span class="energy-star" data-v="1" onclick="setEnergy(1)">★</span>
+          <span class="energy-star" data-v="2" onclick="setEnergy(2)">★</span>
+          <span class="energy-star" data-v="3" onclick="setEnergy(3)">★</span>
+          <span class="energy-star" data-v="4" onclick="setEnergy(4)">★</span>
+          <span class="energy-star" data-v="5" onclick="setEnergy(5)">★</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="diary-section"><div class="diary-label">Gratitude</div><input class="gratitude-inp" type="text" id="diary-gratitude" placeholder="I am grateful for…"></div>
+    <div class="section-divider"></div>
+    <div class="diary-section"><div class="diary-label">Morning Intention</div><textarea class="diary-area" id="diary-morning" placeholder="My intention for today is…" rows="3"></textarea></div>
+    <div class="section-divider"></div>
+    <div class="diary-section"><div class="diary-label">Wins Today</div><textarea class="diary-area" id="diary-wins" placeholder="What went well today…" rows="3"></textarea></div>
+    <div class="section-divider"></div>
+    <div class="diary-section"><div class="diary-label">Evening Reflection</div><textarea class="diary-area" id="diary-evening" placeholder="How did the day go…" rows="3"></textarea></div>
+    <div class="section-divider"></div>
+    <div class="diary-section" style="margin-bottom:0"><div class="diary-label">What I'd Do Differently</div><textarea class="diary-area" id="diary-differently" placeholder="Next time I would…" rows="3"></textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">End-of-Day Score</div>
+    <div class="eod-list">
+      <div class="eod-item"><span class="eod-q">Did I complete my most important activity?</span><div class="eod-btns"><button class="eod-btn yes" data-q="0" onclick="setEod(0,'yes',this)">Yes</button><button class="eod-btn no" data-q="0" onclick="setEod(0,'no',this)">No</button></div></div>
+      <div class="eod-item"><span class="eod-q">Did I follow up on leads today?</span><div class="eod-btns"><button class="eod-btn yes" data-q="1" onclick="setEod(1,'yes',this)">Yes</button><button class="eod-btn no" data-q="1" onclick="setEod(1,'no',this)">No</button></div></div>
+      <div class="eod-item"><span class="eod-q">Did I prospect today?</span><div class="eod-btns"><button class="eod-btn yes" data-q="2" onclick="setEod(2,'yes',this)">Yes</button><button class="eod-btn no" data-q="2" onclick="setEod(2,'no',this)">No</button></div></div>
+    </div>
+    <div class="eod-score" id="eod-score">—</div>
+    <div class="eod-score-label">today's score</div>
+  </div>
+</div>
+
+<!-- TRACKING -->
+<div class="page" id="page-tracking">
+
+  <!-- 1. Prospecting -->
+  <div class="track-section">
+    <div class="track-section-title">Prospecting</div>
+    <div class="track-grid track-grid-prospecting">
+      <div class="track-card"><div class="track-lbl">Doors Knocked</div><div class="track-val" id="tv-doors">0</div><div class="track-unit">doors</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('doors',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Calls Made</div><div class="track-val" id="tv-calls">0</div><div class="track-unit">calls</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('calls',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Referrals Asked</div><div class="track-val" id="tv-referrals">0</div><div class="track-unit">asks</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('referrals',this.value)"></div>
+      <div class="track-card track-card-computed"><div class="track-lbl">Total Contacted</div><div class="track-val" id="tv-total-contacted">0</div><div class="track-unit">auto-calculated</div></div>
+      <div class="track-card"><div class="track-lbl">Total New Leads</div><div class="track-val" id="tv-new-leads">0</div><div class="track-unit">leads</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('new-leads',this.value)"></div>
+    </div>
+  </div>
+
+  <!-- 2. Follow Up -->
+  <div class="track-section">
+    <div class="track-section-title">Follow Up</div>
+    <div class="track-grid">
+      <div class="track-card"><div class="track-lbl">Follow Ups</div><div class="track-val" id="tv-followups">0</div><div class="track-unit">contacts</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('followups',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Appts Asked</div><div class="track-val" id="tv-appts-asked">0</div><div class="track-unit">asked</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('appts-asked',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Appts Booked</div><div class="track-val" id="tv-appts-booked">0</div><div class="track-unit">booked</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('appts-booked',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Buyer Showings</div><div class="track-val" id="tv-showings">0</div><div class="track-unit">showings</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('showings',this.value)"></div>
+    </div>
+  </div>
+
+  <!-- 3. Listings & Deals -->
+  <div class="track-section">
+    <div class="track-section-title">Listings & Deals <button onclick="recalcCategoryTotals(true)" style="font-size:9px;padding:2px 6px;cursor:pointer">Debug</button></div>
+    <div class="track-grid">
+      <div class="track-card track-card-computed"><div class="track-lbl">Listing Presentations</div><div class="track-val" id="tv-presentations">0</div><div class="track-unit">auto-calculated</div></div>
+      <div class="track-card track-card-computed"><div class="track-lbl">Buyer Presentations</div><div class="track-val" id="tv-buyer-presentations">0</div><div class="track-unit">auto-calculated</div></div>
+      <div class="track-card"><div class="track-lbl">Active Listings</div><div class="track-val" id="tv-listings">0</div><div class="track-unit">active</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('listings',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Buyer Offer Written</div><div class="track-val" id="tv-buyer-offers">0</div><div class="track-unit">offers</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('buyer-offers',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Listing Offer Reviewed</div><div class="track-val" id="tv-listing-offers">0</div><div class="track-unit">offers</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('listing-offers',this.value)"></div>
+    </div>
+  </div>
+
+  <!-- 4. Marketing -->
+  <div class="track-section">
+    <div class="track-section-title">Marketing</div>
+    <div class="track-grid">
+      <div class="track-card"><div class="track-lbl">Social Posts</div><div class="track-val" id="tv-social">0</div><div class="track-unit">posts</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('social',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Videos Posted</div><div class="track-val" id="tv-videos">0</div><div class="track-unit">videos</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('videos',this.value)"></div>
+      <div class="track-card"><div class="track-lbl">Marketing Time</div><div class="track-val" id="tv-marketing">0</div><div class="track-unit">minutes</div><input class="track-input" type="number" min="0" placeholder="—" oninput="setTrack('marketing',this.value)"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- REVIEW -->
+<div class="page" id="page-review">
+  <div class="review-header">
+    <div class="review-title">Review</div>
+    <div class="period-btns">
+      <button class="period-btn active" id="btn-weekly" onclick="switchReview('weekly')">Weekly</button>
+      <button class="period-btn" id="btn-monthly" onclick="switchReview('monthly')">Monthly</button>
+    </div>
+  </div>
+  <div id="review-weekly">
+    <div class="review-nav">
+      <button onclick="reviewChangeWeek(-1)">←</button>
+      <span class="review-nav-label" id="review-week-label"></span>
+      <button onclick="reviewChangeWeek(1)">→</button>
+    </div>
+    <div id="weekly-day-list"></div>
+  </div>
+  <div id="review-monthly" style="display:none">
+    <div class="review-nav">
+      <button onclick="reviewChangeMonth(-1)">←</button>
+      <span class="review-nav-label" id="review-month-label"></span>
+      <button onclick="reviewChangeMonth(1)">→</button>
+    </div>
+    <div class="monthly-grid" id="monthly-totals"></div>
+    <div class="card"><div class="card-title">Daily Average</div><div id="monthly-averages" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div></div>
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<nav class="bottom-nav">
+  <button class="nav-item active" data-page="goals" onclick="showPage('goals',this)"><span class="icon">🎯</span>Goals</button>
+  <button class="nav-item" data-page="planner" onclick="showPage('planner',this)"><span class="icon">📅</span>Planner</button>
+  <button class="nav-item" data-page="diary" onclick="showPage('diary',this)"><span class="icon">📖</span>Diary</button>
+  <button class="nav-item" data-page="tracking" onclick="showPage('tracking',this)"><span class="icon">📊</span>Track</button>
+  <button class="nav-item" data-page="review" onclick="showPage('review',this);loadReview()"><span class="icon">📈</span>Review</button>
+</nav>
+
+<script>
+'use strict';
+// ── DB ──
+var DB_NAME='PinnaclePlanner',DB_VER=1,db=null;
+function openDB(){return new Promise(function(res,rej){var r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=function(e){var d=e.target.result;if(!d.objectStoreNames.contains('days'))d.createObjectStore('days',{keyPath:'date'});if(!d.objectStoreNames.contains('goals'))d.createObjectStore('goals',{keyPath:'id'});if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta',{keyPath:'key'});};r.onsuccess=function(e){db=e.target.result;res(db);};r.onerror=function(){rej(r.error);};});}
+function dbGet(s,k){return new Promise(function(res){var t=db.transaction(s,'readonly'),r=t.objectStore(s).get(k);r.onsuccess=function(){res(r.result);};r.onerror=function(){res(null);};});}
+function dbPut(s,v){return new Promise(function(res){var t=db.transaction(s,'readwrite');t.objectStore(s).put(v);t.oncomplete=res;});}
+function dbGetAll(s){return new Promise(function(res){var t=db.transaction(s,'readonly'),r=t.objectStore(s).getAll();r.onsuccess=function(){res(r.result||[]);};r.onerror=function(){res([]);};});}
+// ── DATE ──
+var currentDate=new Date();
+function dateKey(d){d=d||currentDate;var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
+function formatDateLabel(d){var isToday=dateKey(d)===dateKey(new Date());return d.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'})+(isToday?' · Today':'');}
+function changeDate(dir){currentDate=new Date(currentDate);currentDate.setDate(currentDate.getDate()+(dir*7));loadDay();}
+function goToday(){currentDate=new Date();loadDay();}
+
+// ── Week number (ISO-like: week containing the most days in the year) ──────
+function getWeekNumber(d){
+  var date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  var dayNum=date.getUTCDay()||7;
+  date.setUTCDate(date.getUTCDate()+4-dayNum);
+  var yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+
+// ── Copy repeat activities from same weekday last week ────────────────────
+function copyRepeatFromPrevWeek(){
+  var prevWn=getWeekNumber(new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate()-7));
+
+  // Find Monday of current week
+  var dow=currentDate.getDay()||7; // Mon=1...Sun=7
+  var monday=new Date(currentDate);
+  monday.setDate(currentDate.getDate()-(dow-1));
+
+  // Build pairs: {prevKey, curKey} for each of the 7 days
+  var pairs=[];
+  for(var i=0;i<7;i++){
+    var cur=new Date(monday); cur.setDate(monday.getDate()+i);
+    var prev=new Date(cur);   prev.setDate(cur.getDate()-7);
+    pairs.push({
+      curKey:  cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0'),
+      prevKey: prev.getFullYear()+'-'+String(prev.getMonth()+1).padStart(2,'0')+'-'+String(prev.getDate()).padStart(2,'0'),
+      dayName: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][cur.getDay()]
+    });
+  }
+
+  // Fetch all 14 records (7 prev + 7 cur) in parallel
+  var allKeys=pairs.map(function(p){return p.prevKey;})
+               .concat(pairs.map(function(p){return p.curKey;}));
+
+  Promise.all(allKeys.map(function(k){return dbGet('days',k);}))
+  .then(function(results){
+    var prevResults=results.slice(0,7);
+    var curResults =results.slice(7,14);
+
+    var totalCopied=0;
+    var saves=[];
+
+    pairs.forEach(function(pair,i){
+      var prevData=prevResults[i];
+      var curData =curResults[i];
+      var prevRepeats=prevData&&prevData.repeat?prevData.repeat:[];
+      if(!prevRepeats.length) return;
+
+      var existingNames=(curData&&curData.repeat?curData.repeat:[])
+        .map(function(r){return (r.name||'').trim().toLowerCase();});
+      var toAdd=prevRepeats.filter(function(r){
+        return existingNames.indexOf((r.name||'').trim().toLowerCase())===-1;
+      });
+      if(!toAdd.length) return;
+
+      // Merge into the current day's record and save directly to DB
+      var mergedRepeat=(curData&&curData.repeat?curData.repeat:[]).concat(toAdd);
+      var newRecord=curData
+        ? Object.assign({},curData,{repeat:mergedRepeat})
+        : {date:pair.curKey,repeat:mergedRepeat,planned:[],tasks:[]};
+      saves.push(dbPut('days',newRecord));
+      totalCopied+=toAdd.length;
+    });
+
+    if(!saves.length){
+      showToast('No new repeat activities found in Wk '+prevWn);
+      return;
+    }
+
+    Promise.all(saves).then(function(){
+      // Reload current day to reflect any changes to today's view
+      loadDay();
+      showToast('Copied '+totalCopied+' activit'+(totalCopied===1?'y':'ies')+' across 7 days from Wk '+prevWn);
+    });
+  });
+}
+// ── NAV ──
+function showPage(name,el){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('page-'+name).classList.add('active');if(el)el.classList.add('active');var datePages={'planner':1,'diary':1,'tracking':1};document.getElementById('global-date-bar').style.display=datePages[name]?'block':'none';closeFab();}
+// ── GOALS ──
+var TIERS=[{id:'yearly',label:'Yearly',badge:'2026'},{id:'halfyear',label:'Half-Year',badge:'H1'},{id:'quarterly',label:'Quarterly',badge:'Q1'},{id:'monthly',label:'Monthly',badge:'Mar'},{id:'weekly',label:'Weekly',badge:'Wk 12'},{id:'daily',label:'Daily',badge:'Today',highlight:true}];
+function buildGoalTiers(){var c=document.getElementById('goal-tiers');c.innerHTML='';TIERS.forEach(function(tier){var d=document.createElement('div');d.className='tier';d.id='tier-'+tier.id;var ds=tier.highlight?'background:var(--gold);opacity:1':'',ls=tier.highlight?'color:var(--gold)':'';d.innerHTML='<div class="tier-hdr" onclick="toggleTier(this)"><div class="tier-left"><div class="tier-dot" style="'+ds+'"></div><span class="tier-label" style="'+ls+'">'+tier.label+'</span></div><div style="display:flex;align-items:center;gap:8px"><span class="tier-badge">'+tier.badge+'</span><span class="tier-arrow open">▼</span></div></div><div class="tier-body" id="tier-body-'+tier.id+'"><button class="add-btn" onclick="addGoalItem(this,\''+tier.id+'\')">+ add goal</button></div>';c.appendChild(d);});}
+function toggleTier(hdr){var b=hdr.nextElementSibling,a=hdr.querySelector('.tier-arrow'),open=b.style.display!=='none';b.style.display=open?'none':'';a.classList.toggle('open',!open);}
+function addGoalItem(btn,tierId,value,checked){var body=btn.parentElement,item=document.createElement('div');item.className='goal-item';item.innerHTML='<input type="checkbox"'+(checked?' checked':'')+'><input type="text" placeholder="Add a goal…" value="'+(value||'').replace(/"/g,'&quot;')+'">';body.insertBefore(item,btn);item.querySelector('input[type=checkbox]').addEventListener('change',saveGoals);var txt=item.querySelector('input[type=text]');txt.addEventListener('input',saveGoals);if(!value)txt.focus();}
+function quickAddGoal(){closeFab();showPage('goals',document.querySelector('[data-page="goals"]'));var btn=document.querySelector('#tier-body-daily .add-btn');if(btn)addGoalItem(btn,'daily');}
+function saveGoals(){var data={};TIERS.forEach(function(tier){var body=document.getElementById('tier-body-'+tier.id);if(!body)return;data[tier.id]=[];body.querySelectorAll('.goal-item').forEach(function(item){data[tier.id].push({text:item.querySelector('input[type=text]').value,checked:item.querySelector('input[type=checkbox]').checked});});});dbPut('goals',{id:'goals',data:data});}
+function loadGoals(){dbGet('goals','goals').then(function(rec){if(!rec)return;TIERS.forEach(function(tier){var body=document.getElementById('tier-body-'+tier.id);if(!body)return;var btn=body.querySelector('.add-btn');(rec.data[tier.id]||[]).forEach(function(g){addGoalItem(btn,tier.id,g.text,g.checked);});});});}
+// ── SCRIPTS ──
+// ── SCRIPTS (carousel, stored in IndexedDB) ──
+var DEFAULT_SCRIPTS=[
+  {id:'s1',tag:'POA Opener',body:'"Thank you for having me today. I\'ve done my homework on your home and the market, and I\'m going to share with you exactly how I plan to get you the best price in the least amount of time."',anchor:'Anchor: "homework done · best price · least time"'},
+  {id:'s2',tag:'Discovery',body:'"If you were to move, where would you go? And what\'s holding you back from making that move right now?"',anchor:'Anchor: "where next · what\'s holding you"'},
+  {id:'s3',tag:'Door Knock Opener',body:'"Hi, I\'m Peter Luo with RE/MAX. I just sold a home on your street and wanted to let you know — there are buyers still looking in this area. Do you know anyone thinking of selling?"',anchor:'Anchor: "just sold · buyers waiting · know anyone"'},
+  {id:'s4',tag:'Price Objection (EER)',body:'"I understand you want the highest price — that\'s exactly what I want for you too. The data shows that homes priced right sell faster and net more than homes that start high and reduce. Can I show you the numbers?"',anchor:'Anchor: "empathize · explain · resolve"'},
+  {id:'s5',tag:'Listing Close',body:'"Based on everything we\'ve discussed today, I believe I\'m the right person to get this done for you. Can we move forward?"',anchor:'Anchor: "right person · get it done · move forward"'},
+  {id:'s6',tag:'Follow-Up Call',body:'"Hi [Name], it\'s Peter Luo — I wanted to follow up on our conversation. Have things changed on your end, or are you still thinking about making a move?"',anchor:'Anchor: "follow up · things changed · still thinking"'},
+  {id:'s7',tag:'Expired Listing',body:'"Your home didn\'t sell, and I know that\'s frustrating. The reason most expired listings don\'t sell isn\'t the home — it\'s the strategy. I\'d like to show you what I\'d do differently."',anchor:'Anchor: "not the home · the strategy · differently"'},
+  {id:'s8',tag:'Referral Ask',body:'"I\'m always looking to help people the way I\'ve helped you. Do you know anyone who\'s thinking of buying or selling in the next few months?"',anchor:'Anchor: "helped you · know anyone · next few months"'},
+];
+var SCRIPTS_DATA=[];
+var scriptIdx=0;
+
+function renderScriptItem(s){return null;} // legacy stub, unused
+
+function flushCurrentScript(){
+  if(!SCRIPTS_DATA.length)return;
+  var s=SCRIPTS_DATA[scriptIdx];
+  s.tag=document.getElementById('script-tag-inp').value;
+  s.body=document.getElementById('script-body-inp').value;
+  s.anchor=document.getElementById('script-anchor-inp').value;
+}
+
+function showScriptAt(idx){
+  if(!SCRIPTS_DATA.length){
+    document.getElementById('script-tag-inp').value='';
+    document.getElementById('script-body-inp').value='';
+    document.getElementById('script-anchor-inp').value='';
+    document.getElementById('script-counter').textContent='0 / 0';
+    return;
+  }
+  scriptIdx=((idx%SCRIPTS_DATA.length)+SCRIPTS_DATA.length)%SCRIPTS_DATA.length;
+  var s=SCRIPTS_DATA[scriptIdx];
+  document.getElementById('script-tag-inp').value=s.tag;
+  document.getElementById('script-body-inp').value=s.body;
+  document.getElementById('script-anchor-inp').value=s.anchor;
+  document.getElementById('script-counter').textContent=(scriptIdx+1)+' / '+SCRIPTS_DATA.length;
+}
+
+function navigateScript(dir){
+  flushCurrentScript();
+  saveScripts();
+  showScriptAt(scriptIdx+dir);
+}
+
+function saveScripts(){
+  dbPut('meta',{key:'scripts',value:SCRIPTS_DATA.map(function(s){return {id:s.id,tag:s.tag,body:s.body,anchor:s.anchor};})});
+}
+
+function addScript(){
+  flushCurrentScript();
+  var s={id:'s'+Date.now(),tag:'New Script',body:'',anchor:''};
+  SCRIPTS_DATA.push(s);
+  showScriptAt(SCRIPTS_DATA.length-1);
+  document.getElementById('script-tag-inp').focus();
+  document.getElementById('script-tag-inp').select();
+  saveScripts();
+}
+
+function deleteCurrentScript(){
+  if(!SCRIPTS_DATA.length)return;
+  if(!confirm('Delete this script?'))return;
+  flushCurrentScript();
+  SCRIPTS_DATA.splice(scriptIdx,1);
+  if(scriptIdx>=SCRIPTS_DATA.length)scriptIdx=SCRIPTS_DATA.length-1;
+  showScriptAt(scriptIdx);
+  saveScripts();
+}
+
+function deleteScript(btn){deleteCurrentScript();}
+
+function loadScripts(){
+  dbGet('meta','scripts').then(function(rec){
+    SCRIPTS_DATA=(rec&&rec.value&&rec.value.length)?rec.value.slice():DEFAULT_SCRIPTS.map(function(s){return {id:s.id,tag:s.tag,body:s.body,anchor:s.anchor};});
+    scriptIdx=0;
+    showScriptAt(0);
+    // wire live-edit auto-save
+    ['script-tag-inp','script-body-inp','script-anchor-inp'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el)el.addEventListener('input',function(){
+        if(SCRIPTS_DATA[scriptIdx]){
+          SCRIPTS_DATA[scriptIdx].tag=document.getElementById('script-tag-inp').value;
+          SCRIPTS_DATA[scriptIdx].body=document.getElementById('script-body-inp').value;
+          SCRIPTS_DATA[scriptIdx].anchor=document.getElementById('script-anchor-inp').value;
+          document.getElementById('script-counter').textContent=(scriptIdx+1)+' / '+SCRIPTS_DATA.length;
+          saveScripts();
+        }
+      });
+    });
+  });
+}
+// ── SORT PLAN ROWS BY START TIME ──
+function parseTimeToMinutes(timeStr, ampm){
+  if(!timeStr)return 9999;
+  var m=timeStr.trim().match(/^(\d{1,2}):(\d{2})$/);
+  if(!m)return 9999;
+  var h=parseInt(m[1]),min=parseInt(m[2]);
+  var mer=(ampm||'AM').trim().toUpperCase();
+  if(mer==='PM'&&h!==12)h+=12;
+  if(mer==='AM'&&h===12)h=0;
+  return h*60+min;
+}
+
+function sortPlanList(listId){
+  var list=document.getElementById(listId);
+  if(!list)return;
+  var rows=Array.prototype.slice.call(list.querySelectorAll('.plan-row'));
+  if(rows.length<2)return;
+  rows.sort(function(a,b){
+    var ta=a.querySelector('.time-inp'),aa=a.querySelector('.ampm-inp');
+    var tb=b.querySelector('.time-inp'),ab=b.querySelector('.ampm-inp');
+    var ma=parseTimeToMinutes(ta?ta.value:'',aa?aa.value:'PM');
+    var mb=parseTimeToMinutes(tb?tb.value:'',ab?ab.value:'PM');
+    return ma-mb;
+  });
+  rows.forEach(function(r){list.appendChild(r);});
+}
+
+// ── PLAN/TASK ROWS ──
+function updatePriColor(sel){sel.setAttribute('data-pri',sel.value);}
+
+// Category → tracking key mapping
+var CAT_TRACK={
+  'listing':'presentations',
+  'review-offer':'listing-offers',
+  'buyer':'buyer-presentations',
+  'showing':'showings',
+  'write-offer':'buyer-offers'
+};
+
+function updateCatColor(sel){
+  var v=sel.value;
+  sel.setAttribute('data-cat',v==='other'?'':v);
+}
+
+function recalcCategoryTotals(showDebug){
+  var counts={presentations:0,'listing-offers':0,'buyer-presentations':0,showings:0,'buyer-offers':0};
+  var rows=document.querySelectorAll('#planned-list .plan-row');
+  var debug='Rows found: '+rows.length+'\n';
+  rows.forEach(function(row,idx){
+    var cat=row.querySelector('.cat-sel');
+    var timeEl=row.querySelector('.time-inp');
+    var catVal=cat?cat.value:'NO-CAT-SEL';
+    var timeVal=timeEl?timeEl.value:'NO-TIME-EL';
+    var hasCatSel=!!cat;
+    debug+='Row'+idx+': cat='+catVal+' time='+timeVal+' hasCatSel='+hasCatSel+'\n';
+    if(!cat||cat.value==='other')return;
+    var key=CAT_TRACK[cat.value];
+    debug+='  mapped key='+key+'\n';
+    if(!key||counts[key]===undefined)return;
+    if(key==='presentations'||key==='buyer-presentations'){
+      if(!timeEl||!timeEl.value.trim()){
+        debug+='  SKIPPED (no time)\n';
+        return;
+      }
+    }
+    counts[key]++;
+    debug+='  COUNTED\n';
+  });
+  debug+='Final: L-Pres='+counts.presentations+' B-Pres='+counts['buyer-presentations'];
+  if(showDebug)alert(debug);
+  Object.keys(counts).forEach(function(k){
+    var el=document.getElementById('tv-'+k);
+    if(el)el.textContent=counts[k];
+  });
+}
+
+var CAT_OPTIONS=[
+  {v:'other',        s:'O', l:'O-Others'},
+  {v:'listing',      s:'L', l:'L-Listing Presentation'},
+  {v:'review-offer', s:'R', l:'R-Review Offer'},
+  {v:'buyer',        s:'B', l:'B-Buyer Presentation'},
+  {v:'showing',      s:'S', l:'S-Showing'},
+  {v:'write-offer',  s:'W', l:'W-Write Offer'},
+];
+
+function makePlanRow(data, isPlanned){
+  data=data||{};
+  var row=document.createElement('div');
+  row.className='plan-row'+(isPlanned?' planned-row':'');
+
+  var catHtml='';
+  if(isPlanned){
+    catHtml='<select class="cat-sel">';
+    CAT_OPTIONS.forEach(function(o){
+      catHtml+='<option value="'+o.v+'"'+(data.category===o.v?' selected':'')+'>'+o.l+'</option>';
+    });
+    catHtml+='</select>';
+  }
+
+  var delHtml='<button class="row-del-btn" onclick="deletePlanRow(this)" title="Remove">✕</button>';
+
+  var durVal=data.duration||'00:15';
+  var DUR_OPTIONS=['00:05','00:10','00:15','00:30','00:45','01:00','01:30','02:00','03:00'];
+  var durHtml='<select class="dur-sel">';
+  DUR_OPTIONS.forEach(function(d){durHtml+='<option value="'+d+'"'+(durVal===d?' selected':'')+'>'+d+'</option>';});
+  durHtml+='</select>';
+
+  row.innerHTML='<div class="time-ampm">'
+    +'<input class="time-inp" type="text" value="'+(data.start||'')+'" placeholder="09:00" maxlength="5">'
+    +'<input class="ampm-inp" type="text" value="'+(data.ampm||'PM')+'" maxlength="2">'
+    +durHtml
+    +'</div>'
+    +'<input class="name-inp'+(data.done?' done':'')+'" type="text" value="'+(data.name||'').replace(/"/g,'&quot;')+'" placeholder="Activity…">'
+    +catHtml
+    +'<select class="pri-sel">'
+    +'<option value="high"'+(data.priority==='high'?' selected':'')+'>H</option>'
+    +'<option value="med"'+((!data.priority||data.priority==='med')?' selected':'')+'>M</option>'
+    +'<option value="low"'+(data.priority==='low'?' selected':'')+'>L</option>'
+    +'</select>'
+    +'<input class="col-done" type="checkbox"'+(data.done?' checked':'')+'>'
+    +delHtml;
+
+  applyTimeMask(row.querySelector('.time-inp'));
+  applyAmpmMask(row.querySelector('.ampm-inp'));
+  updatePriColor(row.querySelector('.pri-sel'));
+
+  // sort list when time changes
+  var listId=isPlanned?'planned-list':'repeat-list';
+  row.querySelector('.time-inp').addEventListener('blur',function(){sortPlanList(listId);recalcCategoryTotals();saveDay();});
+  row.querySelector('.ampm-inp').addEventListener('click',function(){setTimeout(function(){sortPlanList(listId);recalcCategoryTotals();saveDay();},50);});
+
+  var catSel=row.querySelector('.cat-sel');
+  if(catSel){
+    updateCatColor(catSel);
+    catSel.addEventListener('change',function(){updateCatColor(this);recalcCategoryTotals();saveDay();});
+  }
+
+  row.querySelector('.col-done').addEventListener('change',function(){
+    row.querySelector('.name-inp').classList.toggle('done',this.checked);
+    recalcCategoryTotals();saveDay();
+  });
+  row.querySelectorAll('input,select').forEach(function(el){
+    el.addEventListener('change',function(){if(this.classList.contains('pri-sel'))updatePriColor(this);recalcCategoryTotals();saveDay();});
+    el.addEventListener('input',function(){recalcCategoryTotals();saveDay();});
+  });
+  return row;
+}
+
+function deletePlanRow(btn){
+  btn.closest('.plan-row').remove();
+  recalcCategoryTotals();saveDay();
+}
+
+function deleteTaskRow(btn){
+  btn.closest('.task-row').remove();
+  saveDay();
+}
+
+function addPlanRow(listId){
+  var isPlanned=listId==='planned-list';
+  var list=document.getElementById(listId);
+  var row=makePlanRow({ampm:'PM'},isPlanned);
+  list.appendChild(row);
+  row.querySelector('.time-inp').focus();
+}
+function makeTaskRow(data){
+  data=data||{};var row=document.createElement('div');row.className='task-row';
+  row.innerHTML='<input class="name-inp'+(data.done?' done':'')+'" type="text" value="'+(data.name||'').replace(/"/g,'&quot;')+'" placeholder="Task…">'
+    +'<select class="pri-sel"><option value="high"'+(data.priority==='high'?' selected':'')+'>H</option><option value="med"'+((!data.priority||data.priority==='med')?' selected':'')+'>M</option><option value="low"'+(data.priority==='low'?' selected':'')+'>L</option></select>'
+    +'<input class="col-done" type="checkbox"'+(data.done?' checked':'')+'>'
+    +'<button class="row-del-btn" onclick="deleteTaskRow(this)" title="Remove">✕</button>';
+  updatePriColor(row.querySelector('.pri-sel'));
+  row.querySelector('.col-done').addEventListener('change',function(){row.querySelector('.name-inp').classList.toggle('done',this.checked);saveDay();});
+  row.querySelectorAll('input,select').forEach(function(el){el.addEventListener('change',function(){if(this.classList.contains('pri-sel'))updatePriColor(this);saveDay();});el.addEventListener('input',saveDay);});
+  return row;
+}
+function addTaskRow(data){var list=document.getElementById('task-list');var row=makeTaskRow(data);list.appendChild(row);if(!data)row.querySelector('.name-inp').focus();}
+function quickAddTask(){closeFab();showPage('planner',document.querySelector('[data-page="planner"]'));addTaskRow();}
+function quickAddActivity(){closeFab();showPage('planner',document.querySelector('[data-page="planner"]'));addPlanRow('planned-list');}
+// ── ENERGY ──
+var currentEnergy=0;
+function setEnergy(v){currentEnergy=v;document.querySelectorAll('.energy-star').forEach(function(s){s.classList.toggle('active',parseInt(s.dataset.v)<=v);});saveDay();}
+// ── EOD ──
+var eodAnswers=[null,null,null];
+function setEod(q,v,btn){
+  eodAnswers[q]=v;
+  document.querySelectorAll('[data-q="'+q+'"]').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var yes=eodAnswers.filter(function(a){return a==='yes';}).length;
+  var ans=eodAnswers.filter(function(a){return a!==null;}).length;
+  document.getElementById('eod-score').textContent=ans>0?yes+'/3':'—';
+  saveDay();
+}
+// ── TRACKING ──
+function setTrack(key,val){
+  var el=document.getElementById('tv-'+key);
+  if(el)el.textContent=val||0;
+  if(['doors','calls','referrals'].indexOf(key)>=0){
+    var doors=parseInt(document.getElementById('tv-doors').textContent)||0;
+    var calls=parseInt(document.getElementById('tv-calls').textContent)||0;
+    var refs=parseInt(document.getElementById('tv-referrals').textContent)||0;
+    var tc=document.getElementById('tv-total-contacted');
+    if(tc)tc.textContent=doors+calls+refs;
+  }
+  saveDay();
+}
+// ── SAVE/LOAD ──
+var saveTimer=null;
+function saveDay(){clearTimeout(saveTimer);saveTimer=setTimeout(_doSaveDay,600);}
+function collectRows(listId,hasTimes){
+  var rows=[];
+  var isPlanned=listId==='planned-list';
+  document.querySelectorAll('#'+listId+' .plan-row, #'+listId+' .task-row').forEach(function(row){
+    var obj={
+      name:(row.querySelector('.name-inp')||{}).value||'',
+      priority:(row.querySelector('.pri-sel')||{}).value||'med',
+      done:(row.querySelector('.col-done')||{}).checked||false
+    };
+    if(hasTimes){
+      obj.start=(row.querySelector('.time-inp')||{}).value||'';
+      obj.ampm=(row.querySelector('.ampm-inp')||{}).value||'AM';
+      obj.duration=(row.querySelector('.dur-sel')||{}).value||'00:15';
+    }
+    if(isPlanned){
+      var catEl=row.querySelector('.cat-sel');
+      obj.category=catEl?catEl.value:'other';
+    }
+    rows.push(obj);
+  });
+  return rows;
+}
+function collectTracking(){
+  var keys=['doors','calls','referrals','new-leads','showings','followups','appts-asked','appts-booked','presentations','buyer-presentations','listings','buyer-offers','listing-offers','social','videos','marketing'];
+  var obj={};
+  keys.forEach(function(k){var el=document.getElementById('tv-'+k);obj[k]=el?parseInt(el.textContent)||0:0;});
+  return obj;
+}
+function collectPipeline(){return {};}
+function _doSaveDay(){
+  var data={
+    date:dateKey(),
+    affirmation:document.getElementById('field-affirmation').value,
+    neighbourhood:document.getElementById('field-neighbourhood').value,
+    repeat:collectRows('repeat-list',true),planned:collectRows('planned-list',true),tasks:collectRows('task-list',false),
+    energy:currentEnergy,eod:eodAnswers.slice(),
+    top3:[document.getElementById('top3-1').value,document.getElementById('top3-2').value,document.getElementById('top3-3').value],
+    diary:{gratitude:document.getElementById('diary-gratitude').value,morning:document.getElementById('diary-morning').value,wins:document.getElementById('diary-wins').value,evening:document.getElementById('diary-evening').value,differently:document.getElementById('diary-differently').value},
+    tracking:collectTracking(),pipeline:collectPipeline()
+  };
+  dbPut('days',data).then(function(){updateStreak();buildWeekGrid();});
+}
+function loadDay(){
+  document.getElementById('plan-date-label').textContent=formatDateLabel(currentDate);
+  var wn=getWeekNumber(currentDate);
+  var prevDate=new Date(currentDate); prevDate.setDate(prevDate.getDate()-7);
+  var prevWn=getWeekNumber(prevDate);
+  var dayName=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][currentDate.getDay()];
+  var badge=document.getElementById('week-num-badge');
+  var copyBtn=document.getElementById('copy-week-btn');
+  if(badge) badge.textContent='Wk '+wn;
+  if(copyBtn) copyBtn.textContent='Copy '+dayName+' from Wk '+prevWn;
+  buildWeekGrid();
+  dbGet('days',dateKey()).then(function(data){
+    ['repeat-list','planned-list','task-list'].forEach(function(id){document.getElementById(id).innerHTML='';});
+    currentEnergy=0;eodAnswers=[null,null,null];
+    document.querySelectorAll('.energy-star').forEach(function(s){s.classList.remove('active');});
+    document.querySelectorAll('.eod-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('eod-score').textContent='—';
+    ['top3-1','top3-2','top3-3','diary-gratitude','diary-morning','diary-wins','diary-evening','diary-differently','field-affirmation','field-neighbourhood'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    document.querySelectorAll('.track-input').forEach(function(inp){inp.value='';});
+    document.querySelectorAll('[id^="tv-"]').forEach(function(el){el.textContent='0';});
+    if(!data)return;
+    (data.repeat||[]).forEach(function(r){document.getElementById('repeat-list').appendChild(makePlanRow(r,false));});
+    (data.planned||[]).forEach(function(r){document.getElementById('planned-list').appendChild(makePlanRow(r,true));});
+    (data.tasks||[]).forEach(function(r){document.getElementById('task-list').appendChild(makeTaskRow(r));});
+    sortPlanList('repeat-list');
+    sortPlanList('planned-list');
+    if(data.energy)setEnergy(data.energy);
+    if(data.eod){data.eod.forEach(function(v,i){if(v){var btn=document.querySelector('.eod-btn.'+v+'[data-q="'+i+'"]');if(btn)setEod(i,v,btn);}});}
+    if(data.top3)data.top3.forEach(function(v,i){var el=document.getElementById('top3-'+(i+1));if(el)el.value=v||'';});
+    if(data.diary){var d=data.diary;['gratitude','morning','wins','evening','differently'].forEach(function(k){var el=document.getElementById('diary-'+k);if(el)el.value=d[k]||'';});}
+    if(data.affirmation)document.getElementById('field-affirmation').value=data.affirmation;
+    if(data.neighbourhood)document.getElementById('field-neighbourhood').value=data.neighbourhood;
+    if(data.tracking){
+      // Skip presentations and buyer-presentations — these are auto-calculated
+      var computedKeys={'presentations':1,'buyer-presentations':1};
+      Object.keys(data.tracking).forEach(function(k){
+        if(computedKeys[k])return;
+        var el=document.getElementById('tv-'+k);
+        var inp=document.querySelector('[oninput="setTrack(\''+k+'\',this.value)"]');
+        if(el)el.textContent=data.tracking[k]||0;
+        if(inp)inp.value=data.tracking[k]||'';
+      });
+      var doors=data.tracking['doors']||0,calls=data.tracking['calls']||0,refs=data.tracking['referrals']||0;
+      var tc=document.getElementById('tv-total-contacted');
+      if(tc)tc.textContent=doors+calls+refs;
+    }
+    // recalc category-driven counts from planned rows
+    recalcCategoryTotals();
+  });
+}
+// ── WEEK GRID ──
+function buildWeekGrid(){
+  var grid=document.getElementById('week-grid');if(!grid)return;
+  var days=['Su','Mo','Tu','We','Th','Fr','Sa'],todayKey=dateKey(new Date()),curKey=dateKey(currentDate);
+  var ws=new Date(currentDate);ws.setDate(currentDate.getDate()-currentDate.getDay());
+  var promises=[];for(var i=0;i<7;i++){var d=new Date(ws);d.setDate(ws.getDate()+i);promises.push(dbGet('days',dateKey(d)));}
+  Promise.all(promises).then(function(results){
+    grid.innerHTML='';
+    for(var i=0;i<7;i++){
+      var d=new Date(ws);d.setDate(ws.getDate()+i);
+      var dk=dateKey(d),hasData=!!results[i],isToday=dk===todayKey,isActive=dk===curKey;
+      var cell=document.createElement('div');
+      cell.className='week-day'+(isToday?' today':'')+(isActive?' active':'')+(hasData?' has-data':'');
+      cell.innerHTML='<div class="wd-name">'+days[d.getDay()]+'</div><div class="wd-num">'+d.getDate()+'</div><div class="wd-dot"></div>';
+      cell.addEventListener('click',(function(date){return function(){currentDate=date;loadDay();};})(new Date(d)));
+      grid.appendChild(cell);
+    }
+  });
+}
+// ── STREAK ──
+function updateStreak(){dbGetAll('days').then(function(days){if(!days.length)return;var keys=days.map(function(d){return d.date;}).sort().reverse(),streak=0,check=new Date();for(var i=0;i<365;i++){var k=dateKey(check);if(keys.indexOf(k)>=0){streak++;check.setDate(check.getDate()-1);}else break;}dbPut('meta',{key:'streak',value:streak});var badge=document.getElementById('streak-badge');if(badge)badge.textContent='🔥 '+streak+' day'+(streak!==1?'s':'');});}
+// ── REVIEW ──
+var reviewWeekOff=0,reviewMonthOff=0;
+function switchReview(mode){document.getElementById('review-weekly').style.display=mode==='weekly'?'':'none';document.getElementById('review-monthly').style.display=mode==='monthly'?'':'none';document.getElementById('btn-weekly').classList.toggle('active',mode==='weekly');document.getElementById('btn-monthly').classList.toggle('active',mode==='monthly');if(mode==='weekly')renderWeekly();else renderMonthly();}
+function reviewChangeWeek(dir){reviewWeekOff+=dir;renderWeekly();}
+function reviewChangeMonth(dir){reviewMonthOff+=dir;renderMonthly();}
+function renderWeekly(){
+  var ws=new Date();ws.setDate(ws.getDate()-ws.getDay()+(reviewWeekOff*7));ws.setHours(0,0,0,0);
+  var we=new Date(ws);we.setDate(ws.getDate()+6);
+  document.getElementById('review-week-label').textContent=ws.toLocaleDateString('en-CA',{month:'short',day:'numeric'})+' – '+we.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+  var promises=[];for(var i=0;i<7;i++){var d=new Date(ws);d.setDate(ws.getDate()+i);promises.push(dbGet('days',dateKey(d)));}
+  var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var WEEKLY_METRICS=[
+    {key:'doors',lbl:'Doors'},{key:'calls',lbl:'Calls'},{key:'referrals',lbl:'Ref'},{key:'new-leads',lbl:'Leads'},
+    {key:'followups',lbl:'F/U'},{key:'appts-asked',lbl:'ApptAsk'},{key:'appts-booked',lbl:'ApptBk'},
+    {key:'presentations',lbl:'L-Pres'},{key:'showings',lbl:'Show'},{key:'buyer-presentations',lbl:'B-Pres'},
+    {key:'buyer-offers',lbl:'BuyOff'},{key:'listing-offers',lbl:'OffRev'},
+    {key:'social',lbl:'Social'},{key:'videos',lbl:'Video'}
+  ];
+  Promise.all(promises).then(function(results){
+    var list=document.getElementById('weekly-day-list');list.innerHTML='';
+    for(var i=0;i<7;i++){
+      var d=new Date(ws);d.setDate(ws.getDate()+i);
+      var data=results[i];
+      var row=document.createElement('div');row.className='wdr'+(data?'':' empty');
+      var stars='';for(var s=1;s<=5;s++)stars+='<span class="wdr-star'+(data&&data.energy>=s?' on':'')+'">★</span>';
+      var statsHtml='<div class="wdr-stats">';
+      if(data&&data.tracking){
+        var t=data.tracking;
+        WEEKLY_METRICS.forEach(function(m){
+          var v=t[m.key]||0;
+          statsHtml+='<span class="wdr-stat">'+m.lbl+' <strong>'+v+'</strong></span>';
+        });
+      } else {
+        statsHtml+='<span class="wdr-stat">No data</span>';
+      }
+      statsHtml+='</div>';
+      var eod='';if(data&&data.eod){var yes=data.eod.filter(function(a){return a==='yes';}).length,ans=data.eod.filter(function(a){return a!==null;}).length;if(ans>0)eod='<div class="wdr-eod">EOD <strong>'+yes+'/3</strong>'+(data.energy?' · Energy '+data.energy+'/5':'')+'</div>';}
+      row.innerHTML='<div class="wdr-header"><span class="wdr-date">'+dayNames[d.getDay()]+', '+d.toLocaleDateString('en-CA',{month:'short',day:'numeric'})+'</span><div class="wdr-stars">'+stars+'</div></div>'+statsHtml+eod;
+      list.appendChild(row);
+    }
+  });
+}
+function renderMonthly(){
+  var now=new Date(),y=now.getFullYear(),m=now.getMonth()+reviewMonthOff;
+  while(m<0){m+=12;y--;}while(m>11){m-=12;y++;}
+  document.getElementById('review-month-label').textContent=new Date(y,m,1).toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  dbGetAll('days').then(function(allDays){
+    var monthDays=allDays.filter(function(d){var dt=new Date(d.date+'T00:00:00');return dt.getFullYear()===y&&dt.getMonth()===m;});
+    var totals={doors:0,calls:0,referrals:0,'new-leads':0,followups:0,'appts-asked':0,'appts-booked':0,presentations:0,showings:0,'buyer-presentations':0,'buyer-offers':0,'listing-offers':0,social:0,videos:0};
+    monthDays.forEach(function(d){if(d.tracking)Object.keys(totals).forEach(function(k){totals[k]+=(d.tracking[k]||0);});});
+    var n=monthDays.length||1;
+    var metrics=[
+      {key:'doors',label:'Doors Knocked',unit:'doors'},
+      {key:'calls',label:'Calls Made',unit:'calls'},
+      {key:'referrals',label:'Referrals Asked',unit:'asks'},
+      {key:'new-leads',label:'New Leads',unit:'leads'},
+      {key:'followups',label:'Follow-Ups',unit:'contacts'},
+      {key:'appts-asked',label:'Appts Asked',unit:'asked'},
+      {key:'appts-booked',label:'Appts Booked',unit:'booked'},
+      {key:'presentations',label:'L-Presentations',unit:'given'},
+      {key:'showings',label:'Showings',unit:'showings'},
+      {key:'buyer-presentations',label:'B-Presentations',unit:'given'},
+      {key:'buyer-offers',label:'Buyer Offers',unit:'offers'},
+      {key:'listing-offers',label:'Offers Reviewed',unit:'offers'},
+      {key:'social',label:'Social Posts',unit:'posts'},
+      {key:'videos',label:'Videos Posted',unit:'videos'},
+    ];
+    var grid=document.getElementById('monthly-totals');grid.innerHTML='';
+    if(monthDays.length===0){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--faint);font-size:13px">No data for this month yet</div>';return;}
+    metrics.forEach(function(metric){var card=document.createElement('div');card.className='monthly-card';card.innerHTML='<div class="monthly-lbl">'+metric.label+'</div><div class="monthly-val">'+totals[metric.key]+'</div><div class="monthly-unit">'+metric.unit+' this month</div>';grid.appendChild(card);});
+    var avg=document.getElementById('monthly-averages');avg.innerHTML='';
+    [{key:'doors',label:'Doors/day'},{key:'calls',label:'Calls/day'},{key:'new-leads',label:'Leads/day'},{key:'followups',label:'F/U per day'}].forEach(function(m){var d=document.createElement('div');d.style.cssText='background:var(--cream2);border-radius:6px;padding:8px 10px';d.innerHTML='<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:2px">'+m.label+'</div><div style="font-family:\'DM Mono\',monospace;font-size:18px;font-weight:500;color:var(--navy)">'+(totals[m.key]/n).toFixed(1)+'</div>';avg.appendChild(d);});
+    // Appts booked shown as total/days ratio
+    var apptDiv=document.createElement('div');apptDiv.style.cssText='background:var(--cream2);border-radius:6px;padding:8px 10px';apptDiv.innerHTML='<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:2px">Appts/Days</div><div style="font-family:\'DM Mono\',monospace;font-size:18px;font-weight:500;color:var(--navy)">'+totals['appts-booked']+'/'+n+'</div>';avg.appendChild(apptDiv);
+  });
+}
+function loadReview(){reviewWeekOff=0;reviewMonthOff=0;switchReview('weekly');}
+// ── MASKS ──
+function applyTimeMask(inp){
+  inp.addEventListener('keydown',function(e){var a=['Backspace','Delete','ArrowLeft','ArrowRight','Tab'];if(a.indexOf(e.key)>=0)return;if(/^\d$/.test(e.key))return;e.preventDefault();});
+  inp.addEventListener('input',function(){var d=this.value.replace(/\D/g,'').slice(0,4);if(!d){this.value='';return;}this.value=d.length<=2?d:d.slice(0,d.length-2)+':'+d.slice(-2);});
+  inp.addEventListener('blur',function(){var d=this.value.replace(/\D/g,'');if(!d)return;if(d.length===1)d='0'+d+'00';else if(d.length===2)d=d+'00';else if(d.length===3)d='0'+d;d=d.slice(0,4);var h=parseInt(d.slice(0,2)),m=parseInt(d.slice(2));if(h<1)h=1;if(h>12)h=12;if(m>59)m=59;this.value=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');saveDay();});
+}
+function applyAmpmMask(inp){
+  inp.addEventListener('keydown',function(e){if(['Backspace','Delete','Tab'].indexOf(e.key)>=0)return;if(/^[aApP]$/.test(e.key)){e.preventDefault();this.value=e.key.toUpperCase()==='A'?'AM':'PM';var next=this.closest('.plan-row').querySelector('.dur-sel');if(next)next.focus();saveDay();return;}e.preventDefault();});
+  inp.addEventListener('click',function(){this.value=this.value==='AM'?'PM':'AM';saveDay();});
+}
+function applyDurMask(inp){
+  inp.addEventListener('keydown',function(e){var a=['Backspace','Delete','ArrowLeft','ArrowRight','Tab'];if(a.indexOf(e.key)>=0)return;if(/^\d$/.test(e.key))return;e.preventDefault();});
+  inp.addEventListener('input',function(){var d=this.value.replace(/\D/g,'').slice(0,4);this.value=d.length>=3?d.slice(0,2)+':'+d.slice(2):d;});
+  inp.addEventListener('blur',function(){var d=this.value.replace(/\D/g,'').padStart(4,'0').slice(0,4);this.value=d.slice(0,2)+':'+d.slice(2);saveDay();});
+}
+// ── BACKUP/RESTORE ──
+function backupData(){Promise.all([dbGetAll('days'),dbGetAll('goals'),dbGetAll('meta')]).then(function(r){var p={version:3,exported:new Date().toISOString(),days:r[0],goals:r[1],meta:r[2]};var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(p,null,2)],{type:'application/json'}));a.download='Planner_'+dateKey(new Date())+'.json';a.click();showToast('Backup: '+r[0].length+' days, '+r[1].length+' goals, '+r[2].length+' meta');});}
+function restoreBackup(event){var file=event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var p=JSON.parse(e.target.result);var promises=[];(p.days||[]).forEach(function(d){promises.push(dbPut('days',d));});if(p.version>=3){(p.goals||[]).forEach(function(g){promises.push(dbPut('goals',g));});(p.meta||[]).forEach(function(m){promises.push(dbPut('meta',m));});}else{if(p.goals)promises.push(dbPut('goals',p.goals));if(p.streak)promises.push(dbPut('meta',p.streak));}Promise.all(promises).then(function(){showToast('Restored '+(p.days||[]).length+' days');loadDay();loadGoals();loadScripts();updateStreak();});}catch(err){showToast('Error: invalid file');}};reader.readAsText(file);event.target.value='';}
+// ── REMINDERS ──
+var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+function checkStandalone(){return !!(window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone);}
+var remindersOn=false;
+var reminderPollInterval=null;
+var firedReminders={};  // key: "YYYY-MM-DD|HH:MM|name" → true, to avoid double-firing
+
+// Pre-warmed AudioContext (iOS requires creation from user gesture)
+var _audioCtx=null;
+function getAudioCtx(){
+  if(!_audioCtx){try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  // iOS puts AudioContext in 'suspended' state until a user gesture resumes it
+  if(_audioCtx&&_audioCtx.state==='suspended'){try{_audioCtx.resume();}catch(e){}}
+  return _audioCtx;
+}
+
+function parseStartTime(t,ap){
+  if(!t)return null;
+  var m=t.trim().match(/^(\d{1,2}):(\d{2})$/);
+  if(!m)return null;
+  var h=parseInt(m[1]),min=parseInt(m[2]),mer=(ap||'AM').trim().toUpperCase();
+  if(mer==='PM'&&h!==12)h+=12;
+  if(mer==='AM'&&h===12)h=0;
+  return {h:h,min:min};
+}
+
+function playAlertTone(){
+  try{
+    var ctx=getAudioCtx();
+    if(!ctx)return;
+    function beep(freq,start,dur){
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=freq;o.type='sine';
+      g.gain.setValueAtTime(0,ctx.currentTime+start);
+      g.gain.linearRampToValueAtTime(0.35,ctx.currentTime+start+0.02);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+start+dur);
+      o.start(ctx.currentTime+start);o.stop(ctx.currentTime+start+dur+0.05);
+    }
+    beep(880,0,0.12);beep(1100,0.18,0.12);beep(880,0.36,0.22);
+  }catch(e){}
+}
+
+function showReminderBanner(name,pri){
+  var existing=document.getElementById('reminder-banner');
+  if(existing)existing.remove();
+  var label=pri==='high'?'🔴 ':pri==='med'?'🟡 ':'🔵 ';
+  var b=document.createElement('div');
+  b.id='reminder-banner';
+  b.style.cssText='position:fixed;top:60px;left:0;right:0;max-width:600px;margin:0 auto;background:var(--navy);border-top:2px solid var(--gold);border-bottom:2px solid var(--gold);padding:12px 16px;z-index:9998;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:slideDown 0.3s ease';
+  b.innerHTML='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">⏰</span><div><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:2px">Reminder</div><div style="font-size:14px;color:#fff;font-weight:500">'+label+(name||'').replace(/</g,'&lt;')+'</div></div></div><button onclick="document.getElementById(\'reminder-banner\').remove()" style="background:none;border:1px solid rgba(201,168,76,0.4);border-radius:6px;color:var(--gold);font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;flex-shrink:0;font-family:\'DM Sans\',sans-serif">Dismiss</button>';
+  if(!document.getElementById('remind-anim-style')){var st=document.createElement('style');st.id='remind-anim-style';st.textContent='@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}';document.head.appendChild(st);}
+  document.body.appendChild(b);
+  setTimeout(function(){if(b.parentNode)b.remove();},12000);
+}
+
+function pollReminders(){
+  var now=new Date();
+  var nowH=now.getHours(),nowMin=now.getMinutes();
+  var todayKey=dateKey(new Date());
+  document.querySelectorAll('#planned-list .plan-row').forEach(function(row){
+    var nameEl=row.querySelector('.name-inp');
+    var timeEl=row.querySelector('.time-inp');
+    var ampmEl=row.querySelector('.ampm-inp');
+    var doneEl=row.querySelector('.col-done');
+    var priEl=row.querySelector('.pri-sel');
+    if(!nameEl||!nameEl.value.trim())return;
+    if(doneEl&&doneEl.checked)return;
+    if(!timeEl||!timeEl.value.trim())return;
+    var pt=parseStartTime(timeEl.value,ampmEl?ampmEl.value:'AM');
+    if(!pt)return;
+    if(pt.h===nowH&&pt.min===nowMin){
+      var fkey=todayKey+'|'+pt.h+':'+pt.min+'|'+nameEl.value;
+      if(firedReminders[fkey])return;
+      firedReminders[fkey]=true;
+      playAlertTone();
+      showReminderBanner(nameEl.value,priEl?priEl.value:'med');
+      // Guard: only use Notification API if it exists on this platform
+      if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+        var nlabel=priEl&&priEl.value==='high'?'🔴 ':priEl&&priEl.value==='med'?'🟡 ':'🔵 ';
+        try{new Notification('Pinnacle Planner',{body:nlabel+nameEl.value,silent:false});}catch(e){}
+      }
+    }
+  });
+}
+
+// ── iOS CATCH-UP: when user returns to the app, fire any missed reminders ──
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden&&remindersOn){
+    pollReminders();
+    // Re-acquire wake lock if it was released
+    acquireWakeLock();
+  }
+});
+// Also catch iOS standalone resume events
+window.addEventListener('pageshow',function(){
+  if(remindersOn)pollReminders();
+});
+window.addEventListener('focus',function(){
+  if(remindersOn)pollReminders();
+});
+
+// ── SCREEN WAKE LOCK (keeps screen on so timers keep running) ──
+var wakeLock=null;
+function acquireWakeLock(){
+  if(!('wakeLock' in navigator))return;
+  navigator.wakeLock.request('screen').then(function(lock){
+    wakeLock=lock;
+    wakeLock.addEventListener('release',function(){wakeLock=null;});
+  }).catch(function(){});
+}
+function releaseWakeLock(){
+  if(wakeLock){try{wakeLock.release();wakeLock=null;}catch(e){}}
+}
+
+// ── SILENT AUDIO KEEPALIVE (prevents iOS from suspending the PWA) ──
+var keepAliveAudio=null;
+function startKeepAlive(){
+  if(keepAliveAudio)return;
+  try{
+    // Create a tiny silent audio loop — iOS won't suspend a page playing audio
+    var ctx=getAudioCtx();
+    if(!ctx)return;
+    var buf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate); // 2s silence
+    var src=ctx.createBufferSource();
+    src.buffer=buf;src.loop=true;
+    var gain=ctx.createGain();
+    gain.gain.value=0.001; // virtually silent
+    src.connect(gain);gain.connect(ctx.destination);
+    src.start();
+    keepAliveAudio={source:src,gain:gain};
+  }catch(e){}
+}
+function stopKeepAlive(){
+  if(keepAliveAudio){
+    try{keepAliveAudio.source.stop();}catch(e){}
+    keepAliveAudio=null;
+  }
+}
+
+function countScheduledToday(){
+  return new Promise(function(resolve){
+    var plannedRows=document.querySelectorAll('#planned-list .plan-row');
+    var count=0,times=[],parseFails=[];
+    plannedRows.forEach(function(row){
+      var nameEl=row.querySelector('.name-inp');
+      var timeEl=row.querySelector('.time-inp');
+      var ampmEl=row.querySelector('.ampm-inp');
+      var doneEl=row.querySelector('.col-done');
+      var name=nameEl?nameEl.value.trim():'';
+      var time=timeEl?timeEl.value.trim():'';
+      var ampm=ampmEl?ampmEl.value.trim():'AM';
+      if(!name||!time){return;}
+      if(doneEl&&doneEl.checked)return;
+      var pt=parseStartTime(time,ampm);
+      if(!pt){parseFails.push(time+' '+ampm);return;}
+      count++;
+      times.push(time+ampm);
+    });
+    showToast('Reminders: '+count+' timed activit'+(count===1?'y':'ies'));
+    resolve(count);
+  });
+}
+
+function updateBellState(on){
+  remindersOn=on;
+  var btn=document.getElementById('bell-btn');
+  if(btn){btn.textContent=on?'🔔':'🔕';btn.style.color=on?'var(--gold)':'';}
+}
+
+function startReminderPoll(){
+  if(reminderPollInterval)clearTimeout(reminderPollInterval);
+  pollReminders(); // immediate first check
+  // Keep screen awake and audio alive so iOS doesn't suspend timers
+  acquireWakeLock();
+  startKeepAlive();
+  // Use recursive setTimeout instead of setInterval — more resilient on iOS
+  // Aligns each tick to the next minute boundary
+  function scheduleNext(){
+    var now=new Date();
+    var msToNextMin=(60-now.getSeconds())*1000-now.getMilliseconds()+200; // +200ms buffer
+    reminderPollInterval=setTimeout(function(){
+      pollReminders();
+      scheduleNext();
+    },msToNextMin);
+  }
+  scheduleNext();
+}
+
+function stopReminderPoll(){
+  if(reminderPollInterval){clearTimeout(reminderPollInterval);reminderPollInterval=null;}
+  releaseWakeLock();
+  stopKeepAlive();
+}
+
+function toggleReminders(){
+  if(remindersOn){
+    stopReminderPoll();
+    updateBellState(false);
+    showToast('Reminders off');
+    return;
+  }
+  // Pre-warm AudioContext on this user-gesture (iOS requires it)
+  getAudioCtx();
+  function activate(){
+    countScheduledToday().then(function(n){
+      startReminderPoll();
+      updateBellState(true);
+    });
+  }
+  // On iOS in Safari (not standalone), still allow banner+audio reminders
+  // but show a tip about Add to Home Screen for best experience
+  if(isIOS&&!checkStandalone()){
+    activate();
+    showToast('Tip: Add to Home Screen for best reminder experience');
+    return;
+  }
+  if(!('Notification' in window)){
+    // No notification API — still use audio+banner polling
+    activate();
+    return;
+  }
+  if(Notification.permission==='granted'){
+    activate();
+  } else if(Notification.permission==='denied'){
+    // Still run audio+banner even if push denied
+    activate();
+    showToast('Push blocked — audio alerts still active');
+  } else {
+    Notification.requestPermission().then(function(p){activate();});
+  }
+}
+
+function showInstallBanner(){
+  if(document.getElementById('install-banner'))return;
+  var b=document.createElement('div');
+  b.id='install-banner';b.className='install-banner';
+  b.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3>Enable Reminders on iPhone</h3><button onclick="document.getElementById(\'install-banner\').remove()" style="background:none;border:none;color:#aaa;font-size:18px;cursor:pointer">✕</button></div><p>Add to Home Screen first: <strong style="color:var(--gold2)">Safari → Share ⎙ → Add to Home Screen</strong><br>Then open from Home Screen and tap 🔕 again.</p>';
+  document.body.appendChild(b);
+}
+// ── EXPORT TO iOS CALENDAR/REMINDERS ──
+var calQueue=[];
+var calQueueIdx=0;
+function exportToIOSReminders(){
+  var now=new Date();
+  // Use the currently selected planner date, not just today
+  var planDate=currentDate;
+  var planDateStr=planDate.getFullYear()+String(planDate.getMonth()+1).padStart(2,'0')+String(planDate.getDate()).padStart(2,'0');
+  var isToday=dateKey(planDate)===dateKey(now);
+  var items=[];
+  document.querySelectorAll('#planned-list .plan-row').forEach(function(row){
+    var nameEl=row.querySelector('.name-inp');
+    var timeEl=row.querySelector('.time-inp');
+    var ampmEl=row.querySelector('.ampm-inp');
+    var doneEl=row.querySelector('.col-done');
+    var priEl=row.querySelector('.pri-sel');
+    var durEl=row.querySelector('.dur-sel');
+    if(!nameEl||!nameEl.value.trim())return;
+    if(doneEl&&doneEl.checked)return;
+    if(!timeEl||!timeEl.value.trim())return;
+    var pt=parseStartTime(timeEl.value,ampmEl?ampmEl.value:'PM');
+    if(!pt)return;
+    // Only skip past activities if viewing today's planner
+    if(isToday&&(pt.h<now.getHours()||(pt.h===now.getHours()&&pt.min<=now.getMinutes())))return;
+    var pri=priEl?priEl.value:'med';
+    var durMin=15;
+    if(durEl&&durEl.value){
+      var dp=durEl.value.match(/(\d+):(\d+)/);
+      if(dp)durMin=parseInt(dp[1])*60+parseInt(dp[2]);
+    }
+    // Build URL now
+    var startH=String(pt.h).padStart(2,'0');
+    var startM=String(pt.min).padStart(2,'0');
+    var endDate=new Date(planDate.getFullYear(),planDate.getMonth(),planDate.getDate(),pt.h,pt.min+durMin);
+    var endH=String(endDate.getHours()).padStart(2,'0');
+    var endM=String(endDate.getMinutes()).padStart(2,'0');
+    var endDay=endDate.getFullYear()+String(endDate.getMonth()+1).padStart(2,'0')+String(endDate.getDate()).padStart(2,'0');
+    var dates=planDateStr+'T'+startH+startM+'00/'+endDay+'T'+endH+endM+'00';
+    var url='https://calendar.google.com/calendar/render?action=TEMPLATE'
+      +'&text='+encodeURIComponent(nameEl.value.trim()+' ALRM')
+      +'&dates='+dates
+      +'&ctz=America/Toronto'
+      +'&details='+encodeURIComponent('Pinnacle Planner Activity');
+    items.push({name:nameEl.value.trim(),time:startH+':'+startM,url:url});
+  });
+  if(!items.length){
+    showToast('No timed activities to export');
+    return;
+  }
+  // If only 1 item, open directly
+  if(items.length===1){
+    window.open(items[0].url,'_blank');
+    showToast('1 event → Google Calendar');
+    return;
+  }
+  // Multiple items — show sequential modal
+  calQueue=items;
+  calQueueIdx=0;
+  showCalModal();
+}
+
+function showCalModal(){
+  var existing=document.getElementById('cal-modal-overlay');
+  if(existing)existing.remove();
+  var item=calQueue[calQueueIdx];
+  var total=calQueue.length;
+  var overlay=document.createElement('div');
+  overlay.id='cal-modal-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(10,18,35,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:24px;max-width:340px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.3);text-align:center;';
+  modal.innerHTML='<div style="font-size:13px;color:#888;margin-bottom:4px;">Event '+(calQueueIdx+1)+' of '+total+'</div>'
+    +'<div style="font-size:18px;font-weight:700;color:#1a2b4a;margin-bottom:4px;">'+item.name+'</div>'
+    +'<div style="font-size:14px;color:#888;margin-bottom:20px;">'+item.time+'</div>'
+    +'<button onclick="openCalEvent()" style="display:block;width:100%;padding:14px;border:none;border-radius:10px;background:#1a2b4a;color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;">📅 Add to Calendar</button>'
+    +(calQueueIdx<total-1
+      ?'<button onclick="skipCalEvent()" style="display:block;width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#888;font-size:14px;cursor:pointer;margin-bottom:8px;">Skip</button>'
+      :'')
+    +'<button onclick="closeCalModal()" style="display:block;width:100%;padding:10px;border:none;background:none;color:#aaa;font-size:13px;cursor:pointer;">'+(calQueueIdx<total-1?'Cancel all':'Done')+'</button>';
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+function openCalEvent(){
+  window.open(calQueue[calQueueIdx].url,'_blank');
+  calQueueIdx++;
+  if(calQueueIdx<calQueue.length){
+    showCalModal();
+  }else{
+    closeCalModal();
+    showToast(calQueue.length+' events → Google Calendar');
+  }
+}
+
+function skipCalEvent(){
+  calQueueIdx++;
+  if(calQueueIdx<calQueue.length){
+    showCalModal();
+  }else{
+    closeCalModal();
+    showToast('Done');
+  }
+}
+
+function closeCalModal(){
+  var el=document.getElementById('cal-modal-overlay');
+  if(el)el.remove();
+}
+
+// ── FAB ──
+var fabOpen=false;
+function toggleFab(){fabOpen=!fabOpen;document.getElementById('fab-menu').classList.toggle('open',fabOpen);document.getElementById('fab').textContent=fabOpen?'✕':'+';}
+function closeFab(){fabOpen=false;document.getElementById('fab-menu').classList.remove('open');document.getElementById('fab').textContent='+';}
+// ── TOAST ──
+var toastTimer;
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},2400);}
+// ── PWA ──
+(function(){var m={name:'Pinnacle Planner',short_name:'Pinnacle',start_url:window.location.href,display:'standalone',background_color:'#1a2b4a',theme_color:'#1a2b4a',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%231a2b4a'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='%23c9a84c'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml',purpose:'any maskable'}]};var link=document.createElement('link');link.rel='manifest';link.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));document.head.appendChild(link);})();
+// ── AUTO-SAVE ──
+['diary-gratitude','diary-morning','diary-wins','diary-evening','diary-differently','field-affirmation','field-neighbourhood','top3-1','top3-2','top3-3'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',saveDay);});
+// ── DIAG ──
+function diagDB(){
+  var todayKey=dateKey(new Date());
+  dbGetAll('days').then(function(days){
+    if(!days.length){showToast('DB empty — no days saved');return;}
+    var keys=days.map(function(d){return d.date;}).sort();
+    var todayRow=days.find(function(d){return d.date===todayKey;});
+    var msg='Today='+todayKey+' | DB keys: '+keys.join(', ');
+    if(todayRow){
+      var rows=[].concat(todayRow.repeat||[],todayRow.planned||[]);
+      msg+=' | Today rows:'+rows.length;
+      var timed=rows.filter(function(r){return r.start;});
+      msg+=' timed:'+timed.length;
+      if(timed.length)msg+=' eg:'+timed[0].start+' '+(timed[0].ampm||'?');
+    } else {
+      msg+=' | TODAY KEY NOT FOUND IN DB';
+    }
+    alert(msg);
+  });
+}
+// ── INIT ──
+openDB().then(function(){buildGoalTiers();loadGoals();loadScripts();loadDay();updateStreak();}).catch(function(){showToast('Storage error');});
+document.addEventListener('click',function(e){if(fabOpen&&!e.target.closest('#fab')&&!e.target.closest('#fab-menu'))closeFab();});
+</script>
+</body>
+</html>

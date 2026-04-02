@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyer's Risk & Due Diligence Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --accent: #1B4332;
+    --accent-light: #2D6A4F;
+    --accent-pale: #D8F3DC;
+    --text: #1A1A1A;
+    --text-mid: #555;
+    --text-light: #888;
+    --border: #E0DDD5;
+    --danger: #B7410E;
+    --check-done: #40916C;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+    min-height: 100vh;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--accent);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 15px rgba(27,67,50,0.25);
+  }
+
+  .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toolbar-btn:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: white;
+  }
+  .toolbar-btn svg { width: 15px; height: 15px; }
+
+  .toolbar-spacer { flex: 1; }
+
+  .toolbar-progress {
+    font-size: 12.5px;
+    font-weight: 600;
+    opacity: 0.95;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 28px 20px 8px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+    letter-spacing: -0.6px;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    margin-bottom: 20px;
+  }
+
+  /* ADDRESS */
+  .address-bar {
+    max-width: 680px;
+    margin: 0 auto 28px;
+    padding: 0 20px;
+    text-align: center;
+  }
+  .address-bar label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .address-bar input {
+    width: 100%;
+    padding: 11px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .address-bar input:focus { border-color: var(--accent); outline: none; }
+
+  /* CONTENT */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 50px;
+  }
+
+  /* CATEGORY */
+  .category {
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #FAFAF7 0%, #F5F3EE 100%);
+  }
+
+  .category-checkbox-wrap {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .category-checkbox-wrap input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .category-checkbox-wrap .custom-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+  }
+  .category-checkbox-wrap input:checked + .custom-check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .category-checkbox-wrap .custom-check svg {
+    width: 12px; height: 12px;
+    stroke: white;
+    stroke-width: 3;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.2s;
+  }
+  .category-checkbox-wrap input:checked + .custom-check svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .category-title {
+    flex: 1;
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--accent);
+  }
+
+  .category-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    background: var(--bg);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .category-count.complete {
+    background: var(--accent-pale);
+    color: var(--check-done);
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-light);
+    transition: transform 0.3s;
+  }
+  .category.collapsed .chevron { transform: rotate(-90deg); }
+
+  .category-items {
+    padding: 4px 0;
+  }
+
+  /* ITEM */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 4px 16px 5px 36px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .item:hover { background: rgba(27,67,50,0.03); }
+
+  .item-checkbox-wrap {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .item-checkbox-wrap input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .item-checkbox-wrap .custom-check {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #C5C0B6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+  }
+  .item-checkbox-wrap input:checked + .custom-check {
+    background: var(--check-done);
+    border-color: var(--check-done);
+  }
+  .item-checkbox-wrap .custom-check svg {
+    width: 10px; height: 10px;
+    stroke: white;
+    stroke-width: 3;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.2s;
+  }
+  .item-checkbox-wrap input:checked + .custom-check svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .item-title {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .item.checked .item-title { color: var(--check-done); }
+
+  .item-desc {
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-top: 1px;
+    line-height: 1.4;
+  }
+  .item.checked .item-desc { opacity: 0.65; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--accent);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 6px 25px rgba(27,67,50,0.35);
+    opacity: 0;
+    transition: all 0.4s;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* PDF PAGE BREAK MARKERS — hidden on screen, active during PDF generation */
+  .pdf-page-break {
+    display: none;
+  }
+  body.generating-pdf .pdf-page-break {
+    display: block;
+    page-break-before: always;
+    break-before: page;
+    height: 0;
+    overflow: hidden;
+  }
+
+  /* PRINT / PDF OPTIMIZATIONS */
+  @media print {
+    body { background: white; color: black; line-height: 1.35; font-size: 92%; }
+    .toolbar, .toast { display: none !important; }
+    .header { padding-top: 20px; }
+    .header h1 { font-size: 24px; margin-bottom: 6px; }
+    .header .subtitle { font-size: 12px; margin-bottom: 14px; }
+    .address-bar { margin-bottom: 20px; }
+    .address-bar label { font-size: 9px; }
+    .address-bar input { font-size: 13px; padding: 8px 12px; }
+    .content { padding: 0 12px 30px; }
+    .category { margin-bottom: 14px; border: 1px solid #ddd; box-shadow: none; }
+    .category-header { padding: 10px 12px; gap: 8px; }
+    .category-title { font-size: 15px; }
+    .category-count { font-size: 10px; padding: 2px 7px; }
+    .item { padding: 7px 12px 7px 28px; gap: 8px; }
+    .item-title { font-size: 12px; }
+    .item-desc { font-size: 10.5px; line-height: 1.35; }
+    .chevron { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .report-header { padding: 1.8rem 1rem; }
+    .header h1 { font-size: 1.5rem; }
+    .toolbar { padding: 8px 1rem; }
+    .content { padding: 1rem 1rem 4rem; }
+    .address-bar { padding: 12px 1rem; flex-wrap: wrap; }
+  }
+
+  /* ── PDF CONTENT STYLES (html2pdf render target) ── */
+  .pdf-content { width: 740px; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #333; line-height: 1.5; padding: 0 20px 20px; box-sizing: border-box; }
+  .pdf-content .ph { text-align: center; padding: 0 20px 18px; border-bottom: 3px solid #C5A55A; margin-bottom: 6px; }
+  .pdf-content .ph h1 { font-family: Georgia, serif; font-size: 22px; color: #1B365D; margin-top: 0; margin-bottom: 2px; font-weight: 700; }
+  .pdf-content .ph h2 { font-family: Georgia, serif; font-size: 22px; color: #C5A55A; margin-top: 0; margin-bottom: 10px; font-weight: 700; }
+  .pdf-content .pa { font-size: 13px; color: #666; margin-bottom: 3px; }
+  .pdf-content .pa strong { color: #1B365D; }
+  .pdf-content .pc { margin-top: 16px; }
+  .pdf-content .pct { font-family: Georgia, serif; font-size: 13.5px; font-weight: 700; color: #1B365D; padding: 7px 12px; background: #EDF1F7; border-left: 4px solid #C5A55A; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+  .pdf-content .pcc { font-family: Arial, sans-serif; font-weight: 400; font-size: 10.5px; color: #999; margin-left: 8px; }
+  .pdf-content .pi { padding: 4px 12px 4px 16px; font-size: 11px; line-height: 1.5; display: flex; align-items: flex-start; gap: 7px; border-bottom: 1px solid #f0f0f0; }
+  .pdf-content .pi:last-child { border-bottom: none; }
+  .pdf-content .pk { color: #2E7D4F; font-weight: 700; font-size: 13px; flex-shrink: 0; line-height: 1.3; }
+  .pdf-content .pt { font-weight: 600; color: #1B365D; }
+  .pdf-content .pd { color: #666; }
+  .pdf-content .pe { text-align: center; padding: 40px 20px; color: #999; font-style: italic; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="toolbar" id="toolbar">
+  <button class="toolbar-btn" onclick="savePDF()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+    <span>Save PDF</span>
+  </button>
+  <button class="toolbar-btn" onclick="saveJSON()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    <span>Save JSON</span>
+  </button>
+  <button class="toolbar-btn" onclick="loadJSON()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <span>Load JSON</span>
+  </button>
+  <div class="toolbar-spacer"></div>
+  <div class="toolbar-progress" id="globalProgress">0 / 74 checked</div>
+</div>
+
+<div class="page-top-group" id="pageTopGroup">
+  <div class="header">
+    <h1>The Complete Home Buyer's<br>Risk & Due Diligence Checklist</h1>
+    <div class="subtitle">What to Research Before You Buy — 8 Categories · 74 Risk Factors</div>
+  </div>
+  <div class="address-bar">
+    <label for="address">PROPERTY ADDRESS</label>
+    <input type="text" id="address" placeholder="e.g. 123 Main Street, Toronto, ON M5V 1A1">
+  </div>
+</div>
+
+<div class="content" id="checklistContent"></div>
+
+<!-- FOOTER -->
+<div class="pdf-footer" id="pdfFooter" style="display:none; text-align:center; padding:18px 20px 10px; border-top:1.5px solid #2E75B6; margin:20px auto 0; max-width:860px;">
+  <div style="font-style:italic; color:#2E75B6; font-size:11.5px;">Prepared by Peter Luo  |  RE/MAX Realtron Realty Inc., Brokerage</div>
+  <div style="font-style:italic; color:#2E75B6; font-size:11.5px; margin-top:2px;">SRS  ·  MCNE  ·  FRI</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFileLoad(event)">
+
+<script>
+const categories = [
+  {
+    title: "1. Structural, Mechanical & Property Condition",
+    count: 10,
+    items: [
+      { name: "Foundation Issues", desc: "Cracking, shifting, or water infiltration — especially in older GTA homes with stone or block foundations that may need underpinning." },
+      { name: "Undersized Electrical Panel", desc: "Older homes with 60-amp or 100-amp panels that can't support modern loads — upgrading to 200-amp service can cost $3,000–$5,000+." },
+      { name: "Previous Water Damage / Hidden Mold", desc: "Properties with a history of basement flooding or roof leaks where mold may be present behind walls — costly to remediate and a health concern." },
+      { name: "Inadequate Grading and Drainage", desc: "Properties where the lot slopes toward the foundation rather than away — a leading cause of chronic basement water infiltration that's easy to miss during a dry-season showing." },
+      { name: "End-of-Life Roof or HVAC", desc: "Systems nearing replacement age (15–20 year old roof, 15+ year old furnace/AC) represent $10,000–$25,000+ in near-term capital costs that buyers often overlook when budgeting." },
+      { name: "Illegal Disconnection of Mechanical Systems", desc: "Sellers who disconnect or cap off problematic systems (e.g., a leaking humidifier, malfunctioning fireplace, or broken sump pump) rather than repair them — the buyer inherits the hidden problem post-closing." },
+      { name: "Sewer Lateral Line Condition", desc: "City homes face the hidden risk of deteriorating sewer lateral lines (the pipe connecting the house to the municipal sewer). Older homes with clay pipes are highly susceptible to tree root intrusion and collapse, which costs thousands to excavate and replace." },
+      { name: "Pests and Wood-Destroying Insects", desc: "Hidden infestations of termites (which have active pockets in cities like Toronto), carpenter ants, mice, or bats. These can cause severe structural damage and require ongoing, costly professional extermination." },
+      { name: "General Asbestos (Beyond Vermiculite)", desc: "Beyond vermiculite insulation, asbestos was also commonly used in floor tiles (9x9 tiles), pipe wrapping, duct tape, and drywall joint compound in pre-1990 homes. Finding it during a renovation can trigger massive abatement costs." },
+      { name: "Ice Damming and Attic Ventilation", desc: "Poor attic insulation and ventilation can cause ice dams on the roof during Canadian winters, leading to water backing up under the shingles and destroying interior ceilings and walls." }
+    ]
+  },
+  {
+    title: "2. Environmental and Natural Hazards",
+    count: 9,
+    items: [
+      { name: "Flood Zones", desc: "Properties located in 100-year or 500-year floodplains, which carry high risks of water damage and require expensive, mandatory flood insurance." },
+      { name: "Landfill Areas", desc: "Proximity to active or recently capped dumps, which can present long-term issues with soil stability, groundwater contamination, and persistent odors." },
+      { name: "Geological and Climate Risks", desc: "Areas prone to wildfires, sitting on active fault lines, at high risk for sinkholes, or subject to severe coastal/riverbank erosion." },
+      { name: "Contaminated Land (Brownfields)", desc: "Properties built on or adjacent to former industrial sites, gas stations, or dry cleaners that may have lingering soil or groundwater toxicity." },
+      { name: "Radon Gas", desc: "Naturally occurring in many areas — requires testing and mitigation, and many buyers are unaware of the risk until inspection." },
+      { name: "Buried Oil Tanks", desc: "Common in older Ontario homes — can leak, contaminate soil, and cost tens of thousands to remove and remediate." },
+      { name: "Invasive Species / Tree Risks", desc: "Properties with emerald ash borer damage, or large mature trees at risk of falling — removal can cost thousands, and some municipalities restrict tree removal even on private property." },
+      { name: "Lead Paint", desc: "Homes built before 1978 may contain lead-based paint — a serious health hazard, especially for families with young children, and costly to professionally abate." },
+      { name: "Abandoned Wells", desc: "Older rural or semi-rural properties may have undocumented, improperly decommissioned wells on the lot — a safety hazard and potential groundwater contamination pathway that can cost thousands to properly cap." }
+    ]
+  },
+  {
+    title: "3. Property Stigmas and History",
+    count: 4,
+    items: [
+      { name: "Cemeteries", desc: "Being located directly next to a graveyard, which deters a large percentage of buyers due to cultural beliefs, superstition, or simply the psychological discomfort of the view." },
+      { name: "Stigmatized Homes", desc: "Properties with a dark history, such as the site of a highly publicized violent crime, a murder, or even pervasive local rumors of being \"haunted.\"" },
+      { name: "Former Meth Labs", desc: "Houses previously used to manufacture illegal drugs, which can harbor highly toxic, difficult-to-remediate chemical residues in the drywall, carpets, and HVAC systems." },
+      { name: "Grow-Op History", desc: "Similar to meth labs — former marijuana grow operations can leave behind mold, structural damage from moisture, and electrical hazards. In Ontario, this is a common disclosure concern." }
+    ]
+  },
+  {
+    title: "4. Sensory Nuisances and Daily Disruptions",
+    count: 7,
+    items: [
+      { name: "Noise Pollution", desc: "Constant or disruptive sounds from major highways, busy intersections, active train tracks, or airport flight paths." },
+      { name: "Air Quality and Odors", desc: "Being located downwind from sewage treatment plants, large-scale agricultural farms, paper mills, or chemical factories." },
+      { name: "Light Pollution", desc: "Properties adjacent to 24-hour gas stations, commercial parking lots, or sports stadiums where bright floodlights bleed into residential windows at night." },
+      { name: "High-Voltage Power Lines", desc: "Massive transmission towers near the property line that cause an unpleasant buzzing sound, impact the visual landscape, and deter buyers concerned about electromagnetic fields." },
+      { name: "Cell Towers", desc: "Proximity can deter buyers over aesthetic and perceived health concerns, similar to power lines." },
+      { name: "Wind Turbines", desc: "In rural or semi-rural areas, these can cause noise, shadow flicker, and significant resale resistance." },
+      { name: "Construction Staging Areas", desc: "Properties near designated construction staging zones for major projects (condo developments, infrastructure) that can endure years of heavy equipment noise, dust, and truck traffic." }
+    ]
+  },
+  {
+    title: "5. Hazardous Materials & Legacy Systems",
+    count: 7,
+    items: [
+      { name: "Knob-and-Tube Wiring", desc: "Found in pre-1950s homes — many insurers refuse to cover it or charge steep premiums, creating a hidden cost barrier." },
+      { name: "Aluminum Wiring", desc: "Homes from the late 1960s–70s with aluminum branch wiring face insurance surcharges and require specialized \"pigtailing\" to copper at every connection point." },
+      { name: "Vermiculite Insulation (Asbestos)", desc: "Common in older GTA homes — expensive to remove and a deal-breaker for many buyers." },
+      { name: "UFFI (Urea Formaldehyde Foam Insulation)", desc: "While largely a historical concern, it still carries stigma and can affect insurability and resale." },
+      { name: "Kitec Plumbing", desc: "Common in GTA homes built between 1995–2007 — prone to failure and very expensive to replace. Many insurers flag it." },
+      { name: "Polybutylene (Poly-B) Piping", desc: "Another plumbing concern in homes from the 1980s–90s — deteriorates over time and can cause sudden leaks." },
+      { name: "Galvanized Steel Plumbing", desc: "In pre-1960s homes — corrodes internally, reducing water pressure and eventually requiring full replacement." }
+    ]
+  },
+  {
+    title: "6. Infrastructure, Zoning, and Development",
+    count: 13,
+    items: [
+      { name: "Zoning and Future Construction", desc: "Adjacent vacant land or wooded lots that are zoned for disruptive future use, such as high-density apartments, commercial centers, or highway expansions." },
+      { name: "School District Quality", desc: "Lower-rated school zones, which historically appreciate in value much slower than homes in top-tier districts, even for buyers without children." },
+      { name: "Lack of Accessibility", desc: "Being located in a \"food desert\" (far from grocery stores), lacking access to high-speed internet providers, or being dangerously far from emergency services like hospitals and fire stations." },
+      { name: "Heritage Designations", desc: "Properties or areas with heritage status can severely limit renovation options, adding cost and delay to any upgrades." },
+      { name: "Easements and Right-of-Ways", desc: "Utility or municipal easements that restrict what the owner can build or do on portions of their own land." },
+      { name: "Septic Systems and Well Water", desc: "Properties not on municipal services carry ongoing maintenance costs and potential failure risks that many buyers underestimate." },
+      { name: "Transit and Road Expansion Plans", desc: "Planned but not-yet-built LRT lines, highway widenings, or transit stations that could result in years of construction disruption or even partial expropriation." },
+      { name: "Hydro/Utility Corridor Proximity", desc: "Properties backing onto hydro corridors — while some buyers like the green space, they restrict usage, attract unauthorized foot traffic, and can impact resale." },
+      { name: "Private vs. Public Road Access", desc: "Some rural or semi-rural properties are accessed via private roads where the owner shares maintenance costs with neighbors — no municipal plowing, no guaranteed repair timeline." },
+      { name: "Railway Corridor Development", desc: "Properties adjacent to active rail lines that may be slated for GO Transit expansion or freight increases — potential for increased noise, vibration, and construction disruption." },
+      { name: "Waste Processing Facilities", desc: "Proximity to garbage transfer stations, recycling depots, or composting facilities that generate truck traffic, odors, and noise." },
+      { name: "Airport Zoning Restrictions (NAV CANADA)", desc: "Properties within airport vicinity zones may face height restrictions on structures and trees, as well as restrictions on certain land uses — relevant near Pearson, Buttonville, and smaller regional airports in the GTA." },
+      { name: "Retrofit Status / Legal vs. Illegal Multi-Unit", desc: "Beyond general illegal additions, buyers should specifically investigate basement apartments or duplexes. If a secondary suite does not have an official \"Retrofit Status\" (meeting fire, electrical, and zoning codes), the city can force the buyer to evict the tenant and tear out the kitchen." }
+    ]
+  },
+  {
+    title: "7. Financial and Legal Red Flags",
+    count: 14,
+    items: [
+      { name: "Special Assessment Districts", desc: "Properties in areas where future infrastructure upgrades (sewers, roads) will be funded through levies on homeowners." },
+      { name: "Title Defects and Liens", desc: "Unresolved liens, boundary disputes, or unclear title history that can delay or block a sale." },
+      { name: "Insurance Difficulty Zones", desc: "Areas where homeowners struggle to obtain affordable insurance due to flood history, claims history, or building age — an increasingly relevant issue in Ontario." },
+      { name: "Property Tax Reassessment Risk", desc: "Homes in areas where MPAC reassessments are expected to significantly increase property taxes, especially in gentrifying neighborhoods where assessed values lag far behind market values." },
+      { name: "Pending Litigation Against Condo Corporations", desc: "For condo/townhouse buyers — active lawsuits against the condo corp (construction defects, water damage claims) that could result in special assessments or deferred maintenance." },
+      { name: "Non-Conforming or Illegal Additions", desc: "Finished basements, additions, or secondary suites built without permits — these can create insurance, liability, and resale complications if the municipality requires removal or remediation." },
+      { name: "Shared Driveways and Mutual Agreements", desc: "Properties with shared driveways, party walls, or mutual maintenance agreements that can lead to neighbor disputes and complicate resale." },
+      { name: "Outstanding Work Orders or Property Standards Violations", desc: "Municipal orders against the property that the buyer would inherit, requiring potentially expensive remediation." },
+      { name: "Tarion Warranty Gaps (New Builds)", desc: "For pre-construction or recently built homes — understanding what Tarion does and doesn't cover, and the tight timelines for submitting warranty claims before they expire." },
+      { name: "Development Charges on Vacant Land", desc: "Buyers purchasing vacant lots may not realize the significant municipal development charges required before building permits are issued." },
+      { name: "Foreign Buyer / Underused Housing Tax Implications", desc: "Properties that may be subject to federal Underused Housing Tax or provincial Non-Resident Speculation Tax — relevant for buyers who are non-residents or who may leave the property vacant." },
+      { name: "Rental Equipment Contracts", desc: "Many homes in Ontario have rented hot water tanks, furnaces, water softeners, or solar panels. Buyers are often forced to assume these costly, long-term rental contracts or pay exorbitant buyout fees upon closing." },
+      { name: "Existing Tenancies (LTB Risks)", desc: "If purchasing a tenanted property, buyers inherit the existing lease terms. In Ontario, securing \"vacant possession\" for a buyer to move in can take months of delays if the tenant refuses to leave, requiring a hearing with the Landlord and Tenant Board." },
+      { name: "Conservation Authority Jurisdiction", desc: "Properties located near ravines, waterways, or certain green spaces may fall under the jurisdiction of local conservation authorities (e.g., TRCA or CVC in Ontario). This can severely restrict a buyer's ability to build additions, install pools, or even change landscaping without expensive, hard-to-get permits." }
+    ]
+  },
+  {
+    title: "8. Neighborhood and Community Dynamics",
+    count: 10,
+    items: [
+      { name: "High Crime Rates", desc: "Areas with elevated levels of property crime (package theft, break-ins, vehicle theft) or violent crime in the immediate surrounding blocks." },
+      { name: "Problematic Neighbors", desc: "Adjacent properties with severe hoarding, unkempt yards, aggressive pets, or a history of frequent noise complaints." },
+      { name: "Condo Corporations, CECCs, or Cost-Sharing Agreements", desc: "Unreasonably strict rules, aggressively high monthly fees, or depleted financial reserves that could lead to sudden special assessments. In some master-planned freehold communities, mandatory cost-sharing agreements for shared amenities can carry similar risks." },
+      { name: "Proximity to Nightlife or \"Vice\"", desc: "Living too close to late-night bars, clubs, or 24-hour fast-food drive-thrus, which often bring increased litter, late-night noise, and impaired drivers to residential streets." },
+      { name: "Short-Term Rental Saturation", desc: "Neighborhoods with heavy Airbnb/VRBO activity — transient guests, parking issues, noise, and reduced community cohesion." },
+      { name: "Demographic Transition Zones", desc: "Areas experiencing rapid turnover from owner-occupied to investor-owned rentals, which can shift neighborhood character and maintenance standards." },
+      { name: "Declining Commercial Areas", desc: "Properties near shopping plazas or malls with high vacancy rates — signals economic decline and can attract vagrancy and reduce neighborhood desirability." },
+      { name: "Halfway Houses / Group Homes", desc: "Proximity to licensed group homes or halfway houses — while legally protected, these can affect buyer perception and resale demand." },
+      { name: "Affordable Housing or Future Affordable Housing Projects", desc: "Proximity to existing or planned affordable housing developments, including government-subsidized projects and supportive housing initiatives — these can influence neighborhood density, traffic patterns, parking availability, and long-term property values. Buyers should check municipal planning applications and official plans for any proposed projects in the area." },
+      { name: "Nearby Churches or Places of Worship", desc: "Properties adjacent to or very near churches, temples, mosques, or other places of worship can experience significant periodic traffic congestion, parking shortages on surrounding streets, bell or call-to-prayer noise, and large event gatherings — particularly on weekends and holidays. Some worship centers also operate community programs, shelters, or food banks that generate additional foot traffic throughout the week." }
+    ]
+  }
+];
+
+/*
+  PAGE BREAK PLAN for PDF:
+  Page 1: Title + Header + Category 1 (Neighborhood, 10 items)
+  Page 2: Category 2 (Environmental, 9 items) + Category 3 (Stigmas, 4 items)
+  Page 3: Category 4 (Sensory, 7 items) + Category 5 (Hazardous, 7 items)
+  Page 4: Category 6 (Infrastructure, 13 items)
+  Page 5: Category 7 (Financial, 14 items)
+  Page 6: Category 8 (Structural, 10 items) + Footer
+  
+  Page breaks go BEFORE categories: 2, 4, 6, 7, 8
+  i.e. before category indices: 1, 3, 5, 6, 7
+*/
+const pageBreakBeforeIndices = [1, 3, 5, 6, 7];
+
+const content = document.getElementById('checklistContent');
+
+function buildChecklist() {
+  content.innerHTML = '';
+  categories.forEach((cat, ci) => {
+    // Insert page break div before specified categories
+    if (pageBreakBeforeIndices.includes(ci)) {
+      const pb = document.createElement('div');
+      pb.className = 'pdf-page-break';
+      content.appendChild(pb);
+    }
+
+    const catEl = document.createElement('div');
+    catEl.className = 'category';
+    catEl.id = `cat-${ci}`;
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `
+      <div class="category-checkbox-wrap">
+        <input type="checkbox" id="catCheck-${ci}" onchange="toggleCategory(${ci})">
+        <div class="custom-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="category-title">${cat.title} (${cat.count})</div>
+      <div class="category-count" id="catCount-${ci}">0 / ${cat.count}</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    `;
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.category-checkbox-wrap')) return;
+      catEl.classList.toggle('collapsed');
+    });
+    catEl.appendChild(header);
+
+    const itemsWrap = document.createElement('div');
+    itemsWrap.className = 'category-items';
+    cat.items.forEach((item, ii) => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'item';
+      itemEl.id = `item-${ci}-${ii}`;
+      itemEl.innerHTML = `
+        <div class="item-checkbox-wrap">
+          <input type="checkbox" id="itemCheck-${ci}-${ii}" onchange="toggleItem(${ci}, ${ii})">
+          <div class="custom-check">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div class="item-content">
+          <div class="item-title">${item.name}</div>
+          <div class="item-desc">${item.desc}</div>
+        </div>
+      `;
+      itemEl.addEventListener('click', (e) => {
+        if (e.target.closest('.item-checkbox-wrap')) return;
+        const cb = document.getElementById(`itemCheck-${ci}-${ii}`);
+        cb.checked = !cb.checked;
+        toggleItem(ci, ii);
+      });
+      itemsWrap.appendChild(itemEl);
+    });
+    catEl.appendChild(itemsWrap);
+    content.appendChild(catEl);
+  });
+}
+
+function toggleItem(ci, ii) {
+  const cb = document.getElementById(`itemCheck-${ci}-${ii}`);
+  const itemEl = document.getElementById(`item-${ci}-${ii}`);
+  itemEl.classList.toggle('checked', cb.checked);
+  updateCategoryCount(ci);
+  updateGlobalProgress();
+}
+
+function toggleCategory(ci) {
+  const catCb = document.getElementById(`catCheck-${ci}`);
+  categories[ci].items.forEach((_, ii) => {
+    const cb = document.getElementById(`itemCheck-${ci}-${ii}`);
+    const itemEl = document.getElementById(`item-${ci}-${ii}`);
+    cb.checked = catCb.checked;
+    itemEl.classList.toggle('checked', catCb.checked);
+  });
+  updateCategoryCount(ci);
+  updateGlobalProgress();
+}
+
+function updateCategoryCount(ci) {
+  let checked = 0;
+  categories[ci].items.forEach((_, ii) => {
+    if (document.getElementById(`itemCheck-${ci}-${ii}`).checked) checked++;
+  });
+  const countEl = document.getElementById(`catCount-${ci}`);
+  countEl.textContent = `${checked} / ${categories[ci].count}`;
+  countEl.classList.toggle('complete', checked === categories[ci].count);
+  document.getElementById(`catCheck-${ci}`).checked = checked === categories[ci].count;
+}
+
+function updateGlobalProgress() {
+  let total = 0, checked = 0;
+  categories.forEach((cat, ci) => {
+    cat.items.forEach((_, ii) => {
+      total++;
+      if (document.getElementById(`itemCheck-${ci}-${ii}`).checked) checked++;
+    });
+  });
+  document.getElementById('globalProgress').textContent = `${checked} / ${total} checked`;
+}
+
+function savePDF() {
+  function esc(s){ const d=document.createElement('div');d.textContent=s||'';return d.innerHTML; }
+
+  const address = document.getElementById('address').value || 'Address not specified';
+  const checkedTotal = document.querySelectorAll('.item.checked').length;
+
+  let h = `<div class="pdf-content">`;
+  h += `<div class="ph"><h1>The Complete Home Buyer's</h1><h2>Risk &amp; Due Diligence Checklist</h2><div class="pa"><strong>Property:</strong> ${esc(address)}</div></div>`;
+
+  if (checkedTotal === 0) {
+    h += `<div class="pe">No items have been checked. Please select the risk factors you have reviewed before generating the PDF.</div>`;
+  } else {
+    categories.forEach((cat, ci) => {
+      const checkedItems = [];
+      cat.items.forEach((item, ii) => {
+        if (document.getElementById(`itemCheck-${ci}-${ii}`).checked) checkedItems.push(item);
+      });
+      if (checkedItems.length === 0) return;
+      h += `<div class="pc"><div class="pct">${esc(cat.title)}<span class="pcc">${checkedItems.length} of ${cat.items.length} reviewed</span></div>`;
+      checkedItems.forEach(item => {
+        h += `<div class="pi"><span class="pk">✓</span><div><span class="pt">${esc(item.name)}:</span> <span class="pd">${esc(item.desc)}</span></div></div>`;
+      });
+      h += `</div>`;
+    });
+  }
+
+  h += `</div>`;
+
+  const safeName = (address).replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_');
+
+  setTimeout(() => {
+    html2pdf().set({
+      margin: [5, 12, 25, 12],
+      filename: `Buyer_Risk_Checklist_${safeName}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.ph', '.pct', '.pi'] }
+    })
+    .from(h)
+    .toPdf()
+    .get('pdf')
+    .then(function (pdf) {
+      const totalPages = pdf.internal.getNumberOfPages();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const centerX = pageWidth / 2;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setDrawColor(197, 165, 90);
+        pdf.setLineWidth(0.6);
+        pdf.line(centerX - 40, pageHeight - 19, centerX + 40, pageHeight - 19);
+        pdf.setFont('times', 'bold');
+        pdf.setFontSize(10);
+        pdf.setTextColor(27, 54, 93);
+        pdf.text('Prepared by Peter Luo', centerX, pageHeight - 14, { align: 'center' });
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(102, 102, 102);
+        pdf.text('RE/MAX Realtron Realty Inc., Brokerage', centerX, pageHeight - 10, { align: 'center' });
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(197, 165, 90);
+        pdf.text('SRS \u00B7 MCNE \u00B7 FRI', centerX, pageHeight - 6, { align: 'center' });
+      }
+    })
+    .save()
+    .then(() => { showToast('PDF saved successfully!'); })
+    .catch(err => { console.error('PDF error:', err); alert('PDF generation failed. Please try again.'); });
+  }, 300);
+}
+
+function saveJSON() {
+  const data = {
+    version: 2,
+    address: document.getElementById('address').value,
+    savedAt: new Date().toISOString(),
+    categories: categories.map((cat, ci) => ({
+      title: cat.title,
+      items: cat.items.map((item, ii) => ({
+        name: item.name,
+        checked: document.getElementById(`itemCheck-${ci}-${ii}`).checked
+      }))
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const addr = document.getElementById('address').value || 'checklist';
+  const now = new Date();
+  const date = `${now.getFullYear()}_${(now.getMonth()+1).toString().padStart(2,'0')}_${now.getDate().toString().padStart(2,'0')}`;
+  const safe = addr.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g,'_').substring(0,40);
+  a.href = url;
+  a.download = `${safe}_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('JSON saved successfully!');
+}
+
+function loadJSON() { document.getElementById('fileInput').click(); }
+
+function handleFileLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      document.getElementById('address').value = data.address || '';
+      data.categories.forEach((cat, ci) => {
+        if (ci >= categories.length) return;
+        cat.items.forEach((item, ii) => {
+          if (ii >= categories[ci].items.length) return;
+          const cb = document.getElementById(`itemCheck-${ci}-${ii}`);
+          const el = document.getElementById(`item-${ci}-${ii}`);
+          cb.checked = !!item.checked;
+          el.classList.toggle('checked', cb.checked);
+        });
+        updateCategoryCount(ci);
+      });
+      updateGlobalProgress();
+      showToast('Checklist loaded successfully!');
+    } catch {
+      showToast('Error: Invalid JSON file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+buildChecklist();
+</script>
+</body>
+</html>

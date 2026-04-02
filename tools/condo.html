@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condo Property Feature & Value Report — Pinnacle Listing System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #B8960C;
+    --gold-light: #D4AF37;
+    --gold-pale: #F5EFD6;
+    --gold-border: #C9A84C;
+    --cream: #FDFAF3;
+    --dark: #1A1A1A;
+    --mid: #4A4A4A;
+    --light: #7A7A7A;
+    --loc-color: #2C5F6E;
+    --loc-light: #E8F4F7;
+    --bld-color: #4A3728;
+    --bld-light: #F5EDE8;
+    --unit-color: #2D4A35;
+    --unit-light: #E8F2EA;
+    --tag-loc: #2C5F6E;
+    --tag-bld: #7B4F3A;
+    --tag-unit: #3A6B47;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Josefin Sans', sans-serif; background: #EDEAE0; color: var(--dark); min-height: 100vh; }
+
+  /* TOOLBAR */
+  .toolbar {
+    background: var(--dark); padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100;
+  }
+  .toolbar-brand { font-family: 'Cormorant Garamond', serif; color: var(--gold-light); font-size: 17px; font-weight: 600; letter-spacing: 0.08em; }
+  .toolbar-brand span { color: #999; font-size: 13px; font-weight: 400; margin-left: 10px; font-family: 'Josefin Sans', sans-serif; }
+  .toolbar-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { padding: 8px 18px; font-family: 'Josefin Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: none; border-radius: 2px; transition: all 0.2s; }
+  .btn-gold { background: var(--gold-light); color: var(--dark); }
+  .btn-gold:hover { background: var(--gold); color: #fff; }
+  .btn-outline { background: transparent; border: 1px solid #555; color: #ccc; }
+  .btn-outline:hover { border-color: var(--gold-light); color: var(--gold-light); }
+
+  /* CONTAINER */
+  .container { max-width: 960px; margin: 0 auto; padding: 36px 20px 80px; }
+
+  /* HEADER CARD */
+  .report-header { background: var(--dark); padding: 40px 44px 32px; margin-bottom: 4px; position: relative; overflow: hidden; }
+  .report-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold)); }
+  .report-header::after { content: 'CONDO'; position: absolute; right: -10px; top: 18px; font-family: 'Cormorant Garamond', serif; font-size: 80px; font-weight: 600; color: rgba(255,255,255,0.04); letter-spacing: 0.05em; pointer-events: none; }
+  .report-eyebrow { font-size: 10px; letter-spacing: 0.25em; color: var(--gold-light); text-transform: uppercase; margin-bottom: 10px; }
+  .report-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: #fff; line-height: 1.15; margin-bottom: 24px; }
+  .report-title em { color: var(--gold-light); font-style: normal; }
+  .header-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .header-fields .full { grid-column: 1 / -1; }
+  .field-group label { display: block; font-size: 9px; letter-spacing: 0.2em; color: var(--gold-light); text-transform: uppercase; margin-bottom: 5px; }
+  .field-group input, .field-group select, .field-group textarea { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; font-family: 'Josefin Sans', sans-serif; font-size: 13px; padding: 9px 12px; border-radius: 2px; outline: none; transition: border-color 0.2s; }
+  .field-group input::placeholder, .field-group textarea::placeholder { color: rgba(255,255,255,0.25); }
+  .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: var(--gold-light); }
+  .field-group select option { background: #222; color: #fff; }
+
+  /* LEGEND */
+  .legend-bar { display: flex; gap: 0; margin-bottom: 24px; }
+  .legend-item { flex: 1; padding: 10px 16px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-loc { background: var(--loc-light); color: var(--loc-color); }
+  .legend-bld { background: var(--bld-light); color: var(--bld-color); }
+  .legend-unit { background: var(--unit-light); color: var(--unit-color); }
+
+  /* SECTION */
+  .section { background: var(--cream); margin-bottom: 6px; border: 1px solid rgba(0,0,0,0.08); }
+  .section-header { padding: 14px 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  .section-header:hover { filter: brightness(0.97); }
+  .section-loc { background: linear-gradient(135deg, var(--loc-color) 0%, #3A7A8E 100%); }
+  .section-bld { background: linear-gradient(135deg, var(--bld-color) 0%, #6B5040 100%); }
+  .section-unit { background: linear-gradient(135deg, var(--unit-color) 0%, #3D6B4A 100%); }
+  .section-title { font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .section-icon { font-size: 16px; }
+  .section-toggle { color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.3s; }
+  .section-toggle.open { transform: rotate(180deg); }
+  .section-body { padding: 0; display: none; }
+  .section-body.open { display: block; }
+
+  /* CATEGORY */
+  .category { border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .category:last-child { border-bottom: none; }
+  .category-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; padding: 12px 20px 8px; color: var(--light); display: flex; align-items: center; gap: 8px; }
+  .category-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
+
+  /* ITEM ROW — 4 columns: checkbox | label | tag | note */
+  .item-row { display: grid; grid-template-columns: 28px 1fr 110px 1fr; align-items: start; gap: 8px; padding: 7px 20px; border-bottom: 1px solid rgba(0,0,0,0.04); transition: background 0.15s; }
+  .item-row:last-child { border-bottom: none; }
+  .item-row:hover { background: rgba(0,0,0,0.02); }
+  .item-check { width: 18px; height: 18px; cursor: pointer; accent-color: var(--gold); margin-top: 2px; }
+  .item-label { font-size: 13px; color: var(--mid); line-height: 1.4; }
+  .item-label-custom { width: 100%; border: none; border-bottom: 1px dashed #ccc; background: transparent; font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: var(--mid); outline: none; padding: 2px 0; }
+  .item-label-custom:focus { border-bottom-color: var(--gold); }
+  .item-tag { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; display: inline-block; margin-top: 2px; }
+  .tag-loc { background: var(--loc-light); color: var(--tag-loc); }
+  .tag-bld { background: var(--bld-light); color: var(--tag-bld); }
+  .tag-unit { background: var(--unit-light); color: var(--tag-unit); }
+  .item-note-input { width: 100%; border: none; border-bottom: 1px dashed #ddd; background: transparent; font-family: 'Josefin Sans', sans-serif; font-size: 11px; color: var(--light); outline: none; padding: 3px 0; font-style: italic; }
+  .item-note-input:focus { border-bottom-color: var(--gold); }
+  .item-note-input::placeholder { color: #bbb; }
+
+  /* COLUMN HEADERS */
+  .col-headers { display: grid; grid-template-columns: 28px 1fr 110px 1fr; gap: 8px; padding: 6px 20px; background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .col-headers span { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--light); font-weight: 600; }
+
+  /* ADD ROW */
+  .add-row { padding: 8px 20px; display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.015); }
+  .add-row select, .add-row input { font-family: 'Josefin Sans', sans-serif; font-size: 12px; border: 1px dashed #ccc; border-radius: 2px; padding: 5px 8px; background: #fff; outline: none; color: var(--mid); }
+  .add-row select:focus, .add-row input:focus { border-color: var(--gold); }
+  .add-row input { flex: 1; }
+  .add-row .btn-add { padding: 5px 12px; font-size: 11px; font-weight: 600; background: var(--gold-pale); border: 1px solid var(--gold-border); color: var(--gold); border-radius: 2px; cursor: pointer; white-space: nowrap; font-family: 'Josefin Sans', sans-serif; letter-spacing: 0.05em; }
+  .add-row .btn-add:hover { background: var(--gold-light); color: #fff; }
+
+  /* SPACER ROW */
+  .spacer-row { display: flex; align-items: center; gap: 8px; padding: 4px 20px; background: rgba(0,0,0,0.01); border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .spacer-label { font-size: 10px; color: #ccc; font-style: italic; letter-spacing: 0.04em; }
+
+  /* REMARKS */
+  .remarks-section { background: var(--cream); border: 1px solid rgba(0,0,0,0.08); padding: 20px; margin-top: 6px; }
+  .remarks-section label { display: block; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light); margin-bottom: 8px; font-weight: 600; }
+  .remarks-section textarea { width: 100%; border: 1px solid #ddd; border-radius: 2px; padding: 10px; font-family: 'Josefin Sans', sans-serif; font-size: 13px; color: var(--mid); resize: vertical; min-height: 80px; outline: none; }
+  .remarks-section textarea:focus { border-color: var(--gold); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: var(--gold-light); padding: 12px 20px; font-size: 12px; letter-spacing: 0.1em; border-left: 3px solid var(--gold-light); opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 999; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  @media print {
+    .toolbar, .add-row, .btn, .col-headers { display: none !important; }
+    body { background: #fff; }
+    .section-body { display: block !important; }
+    .container { padding: 0; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-brand">Pinnacle Listing System <span>Condo Feature &amp; Value Report</span></div>
+  <div class="toolbar-btns">
+    <button class="btn btn-outline" onclick="saveJSON()">&#128190; Save</button>
+    <button class="btn btn-outline" onclick="loadJSON()">&#128194; Load</button>
+    <button class="btn btn-outline" onclick="resetForm()" style="color:#c0736a;border-color:#e0d0d0;">&#128465; Reset</button>
+    <button class="btn btn-gold" onclick="exportPDF()">&#8595; Export PDF</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFileLoad(event)">
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="report-header">
+    <div class="report-eyebrow">Pinnacle Listing System &middot; Peter Luo &middot; RE/MAX Realtron Realty Inc.</div>
+    <div class="report-title">Condo Property <em>Feature &amp; Value</em> Report</div>
+    <div class="header-fields">
+      <div class="field-group">
+        <label>Property Address</label>
+        <input type="text" id="h_address" placeholder="Unit #, Building Name, Street, City">
+      </div>
+      <div class="field-group">
+        <label>Property Type</label>
+        <select id="h_type">
+          <option value="">Select Type</option>
+          <option>Condo Apartment</option>
+          <option>Condo Townhouse</option>
+          <option>Stacked Townhouse</option>
+          <option>Loft</option>
+          <option>Penthouse</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Floor / Unit Level</label>
+        <input type="text" id="h_floor" placeholder="e.g. 18th Floor, High-Rise">
+      </div>
+      <div class="field-group">
+        <label>Square Footage</label>
+        <input type="text" id="h_sqft" placeholder="0,000 sq ft"
+          oninput="fmtSqft(this)" onblur="fmtSqft(this)">
+      </div>
+      <div class="field-group">
+        <label>List Price</label>
+        <input type="text" id="h_price" placeholder="$0,000,000"
+          oninput="fmtPrice(this)" onblur="fmtPrice(this)">
+      </div>
+      <div class="field-group">
+        <label>Property Tax / Year</label>
+        <input type="text" id="h_tax" placeholder="$0,000.00 / yr"
+          oninput="fmtTax(this)" onblur="fmtTax(this)">
+      </div>
+      <div class="field-group">
+        <label>Maintenance Fee / Month</label>
+        <input type="text" id="h_fee" placeholder="$0,000 / mo"
+          oninput="fmtFee(this)" onblur="fmtFee(this)">
+      </div>
+      <div class="field-group">
+        <label>Bedrooms / Bathrooms</label>
+        <input type="text" id="h_beds" placeholder="e.g. 2 Bed + Den / 2 Bath">
+      </div>
+      <div class="field-group">
+        <label>Parking / Locker</label>
+        <input type="text" id="h_parking" placeholder="1 Parking + 1 Locker included">
+      </div>
+      <div class="field-group">
+        <label>Prepared By / Date</label>
+        <input type="text" id="h_agent" placeholder="Peter Luo &middot; RE/MAX Realtron">
+      </div>
+    </div>
+  </div>
+
+  <div class="legend-bar">
+    <div class="legend-item legend-loc"><div class="legend-dot" style="background:var(--loc-color)"></div>Location</div>
+    <div class="legend-item legend-bld"><div class="legend-dot" style="background:var(--bld-color)"></div>Building</div>
+    <div class="legend-item legend-unit"><div class="legend-dot" style="background:var(--unit-color)"></div>Unit</div>
+  </div>
+
+  <div id="sections-container"></div>
+
+  <div class="remarks-section">
+    <label>Additional Remarks</label>
+    <textarea id="remarks" placeholder="Add any additional notes about the property for the PDF report..."></textarea>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── NUMBER FORMATTING ──────────────────────────
+
+function digitsOnly(v) { return v.replace(/[^\d]/g, ''); }
+
+function fmtPrice(el) {
+  const cur = el.selectionStart;
+  const raw = digitsOnly(el.value);
+  if (!raw) { el.value = ''; return; }
+  el.value = '$' + parseInt(raw, 10).toLocaleString('en-CA');
+}
+
+function fmtFee(el) {
+  const hasMo = el.value.toLowerCase().includes('/');
+  const base = el.value.split('/')[0];
+  // allow digits and one decimal point
+  const cleaned = base.replace(/[^\d.]/g, '');
+  const parts = cleaned.split('.');
+  const intPart = parts[0] ? parseInt(parts[0], 10).toLocaleString('en-CA') : '';
+  const decPart = parts.length > 1 ? '.' + parts[1].slice(0, 2) : '';
+  if (!intPart) { el.value = ''; return; }
+  el.value = '$' + intPart + decPart + (hasMo ? ' / mo' : '');
+}
+
+function fmtTax(el) {
+  const cleaned = el.value.replace(/[^\d.]/g, '');
+  const parts = cleaned.split('.');
+  const intPart = parts[0] ? parseInt(parts[0], 10).toLocaleString('en-CA') : '';
+  const decPart = parts.length > 1 ? '.' + parts[1].slice(0, 2) : '';
+  if (!intPart) { el.value = ''; return; }
+  el.value = '$' + intPart + decPart;
+}
+
+function fmtSqft(el) {
+  const hasSqft = el.value.toLowerCase().includes('sq');
+  const raw = digitsOnly(el.value.replace(/sq.*$/i, ''));
+  if (!raw) { el.value = ''; return; }
+  el.value = parseInt(raw, 10).toLocaleString('en-CA') + (hasSqft ? ' sq ft' : '');
+}
+
+// ── DATA MODEL ─────────────────────────────────
+
+const SECTIONS = [
+  {
+    id: "unit",
+    title: "Unit Features & Finishes",
+    icon: "&#x1F3E0;",
+    pdfLabel: "UNIT FEATURES & FINISHES",
+    color: "unit",
+    categories: [
+      {
+        name: "Layout & Space",
+        items: [
+          { label: "Unit Size - Square Footage (Interior)", tag: "unit" },
+          { label: "Functional Layout - Minimal Wasted Space", tag: "unit" },
+          { label: "Open-Concept Living / Dining Area", tag: "unit" },
+          { label: "Split Bedroom Layout (Privacy Between Bedrooms)", tag: "unit" },
+          { label: "Den / Home Office Space", tag: "unit" },
+          { label: "Storage Room / Walk-In Closet", tag: "unit" },
+          { label: "In-Suite Laundry (Full-Sized)", tag: "unit" },
+          { label: "No Columns / Unobstructed Floor Plan", tag: "unit" },
+          { label: "High Ceilings (9ft / 10ft+)", tag: "unit" },
+        ]
+      },
+      {
+        name: "View & Exposure",
+        items: [
+          { label: "Floor Level - Higher Floor Premium", tag: "unit" },
+          { label: "Unobstructed View (City / Lake / Park / Ravine)", tag: "unit" },
+          { label: "South / Southwest / Southeast Exposure", tag: "unit" },
+          { label: "Corner Unit - Extra Windows & Light", tag: "unit" },
+          { label: "Balcony / Terrace / Juliet Balcony", tag: "unit" },
+          { label: "Balcony Size - Usable Outdoor Space", tag: "unit" },
+        ]
+      },
+      {
+        name: "Kitchen",
+        items: [
+          { label: "Kitchen - Quality of Cabinetry & Finishes", tag: "unit" },
+          { label: "Stone / Quartz / Granite Countertops", tag: "unit" },
+          { label: "Stainless Steel / Integrated Appliances", tag: "unit" },
+          { label: "Kitchen Island / Breakfast Bar", tag: "unit" },
+          { label: "Backsplash - Quality Tile / Stone", tag: "unit" },
+          { label: "Pantry / Kitchen Storage Space", tag: "unit" },
+          { label: "Gas Stove / Induction Range", tag: "unit" },
+        ]
+      },
+      {
+        name: "Bedrooms",
+        items: [
+          { label: "Number of Bedrooms", tag: "unit" },
+          { label: "Primary Bedroom - Size & Proportions", tag: "unit" },
+          { label: "Primary Bedroom - Ensuite Bathroom", tag: "unit" },
+          { label: "Primary Bedroom - Walk-In Closet / Ample Storage", tag: "unit" },
+          { label: "Second Bedroom - Functional Size (Full Bed Fit)", tag: "unit" },
+          { label: "Third Bedroom / Flex Room", tag: "unit" },
+          { label: "Split Bedroom Layout (Bedrooms on Opposite Sides)", tag: "unit" },
+          { label: "Bedrooms With Windows & Natural Light", tag: "unit" },
+          { label: "Bedrooms With Door Closure / Privacy", tag: "unit" },
+        ]
+      },
+      {
+        name: "Bathrooms",
+        items: [
+          { label: "Number of Bathrooms (Ensuite + Second Bath)", tag: "unit" },
+          { label: "Ensuite Bathroom - Spa-Style / Upgraded", tag: "unit" },
+          { label: "Double Vanity / His & Hers", tag: "unit" },
+          { label: "Soaker Tub / Walk-In Shower / Both", tag: "unit" },
+          { label: "Heated Floors in Bathroom", tag: "unit" },
+          { label: "Quality of Tiles - Large Format / Natural Stone", tag: "unit" },
+        ]
+      },
+      {
+        name: "Finishes & Upgrades",
+        items: [
+          { label: "Hardwood / Engineered Wood Flooring Throughout", tag: "unit" },
+          { label: "Floor-to-Ceiling Windows", tag: "unit" },
+          { label: "Upgraded Builder Finishes / Custom Millwork", tag: "unit" },
+          { label: "Smooth / 9ft+ Ceilings With Pot Lights", tag: "unit" },
+          { label: "Freshly Painted / Move-In Ready Condition", tag: "unit" },
+          { label: "Smart Home Features / Automated Systems", tag: "unit" },
+          { label: "Roller Shades / Custom Window Coverings", tag: "unit" },
+          { label: "No Carpet - All Hard Surface Flooring", tag: "unit" },
+        ]
+      },
+      {
+        name: "Parking & Locker",
+        items: [
+          { label: "Owned Parking Spot Included", tag: "unit" },
+          { label: "Parking Location - Convenient / Well-Placed", tag: "unit" },
+          { label: "Tandem / 2 Parking Spots", tag: "unit" },
+          { label: "Owned Locker Included", tag: "unit" },
+          { label: "Locker Size - Full Storage Capacity", tag: "unit" },
+          { label: "EV Charging at Parking Spot", tag: "unit" },
+        ]
+      },
+      {
+        name: "Condo Townhouse Specific",
+        items: [
+          { label: "Multi-Level Layout - House-Like Feel", tag: "unit" },
+          { label: "Private Entrance (No Lobby / Elevator Needed)", tag: "unit" },
+          { label: "Private Backyard / Patio / Fenced Yard", tag: "unit" },
+          { label: "Attached / Built-In Garage", tag: "unit" },
+          { label: "Extra Square Footage vs. Apartment", tag: "unit" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "building",
+    title: "Building Quality & Amenities",
+    icon: "&#x1F3E2;",
+    pdfLabel: "BUILDING QUALITY & AMENITIES",
+    color: "bld",
+    categories: [
+      {
+        name: "Building Profile",
+        items: [
+          { label: "Developer Reputation & Build Quality", tag: "bld" },
+          { label: "Year Built / Age of Building", tag: "bld" },
+          { label: "Total Number of Units (Density Level)", tag: "bld" },
+          { label: "High-Rise / Mid-Rise / Boutique Building", tag: "bld" },
+          { label: "TSCC / MTCC - Well-Managed Corporation", tag: "bld" },
+          { label: "Reserve Fund - Adequately Funded", tag: "bld" },
+          { label: "No Special Assessments on Record", tag: "bld" },
+          { label: "Green / Eco-Certified Building", tag: "bld" },
+        ]
+      },
+      {
+        name: "Security & Concierge",
+        items: [
+          { label: "24-Hour Concierge Service", tag: "bld" },
+          { label: "Secured Entry / Fob / Card Access", tag: "bld" },
+          { label: "Video Surveillance & Intercom System", tag: "bld" },
+          { label: "Parcel / Package Delivery Room", tag: "bld" },
+          { label: "Visitor Parking Available", tag: "bld" },
+        ]
+      },
+      {
+        name: "Indoor Amenities",
+        items: [
+          { label: "Gym / Fitness Centre - Well-Equipped", tag: "bld" },
+          { label: "Indoor Pool / Hot Tub / Sauna", tag: "bld" },
+          { label: "Yoga / Spin / Aerobic Studio", tag: "bld" },
+          { label: "Party Room / Event Space", tag: "bld" },
+          { label: "Theatre / Media Room", tag: "bld" },
+          { label: "Co-Working / Business Centre", tag: "bld" },
+          { label: "Kids Play Room", tag: "bld" },
+          { label: "Pet Spa / Wash Station", tag: "bld" },
+          { label: "Bike Storage Room", tag: "bld" },
+          { label: "Guest Suite Available for Visitors", tag: "bld" },
+        ]
+      },
+      {
+        name: "Outdoor Amenities",
+        items: [
+          { label: "Rooftop Terrace / Sky Lounge", tag: "bld" },
+          { label: "BBQ Stations / Outdoor Dining", tag: "bld" },
+          { label: "Outdoor Pool / Sun Deck", tag: "bld" },
+          { label: "Green Space / Courtyard / Garden", tag: "bld" },
+          { label: "Dog Run / Pet-Friendly Outdoor Area", tag: "bld" },
+        ]
+      },
+      {
+        name: "Building Systems & Utilities",
+        items: [
+          { label: "Maintenance Fees Include Heat & Water", tag: "bld" },
+          { label: "Geothermal / Energy-Efficient HVAC System", tag: "bld" },
+          { label: "Individual Thermostat / Suite-Controlled Temp", tag: "bld" },
+          { label: "EV Charging Available / Roughed-In", tag: "bld" },
+          { label: "Rogers / Bell / Internet Pre-Wired or Included", tag: "bld" },
+          { label: "Garbage / Recycling Chute on Each Floor", tag: "bld" },
+          { label: "Elevators - Number & Wait Time Reasonable", tag: "bld" },
+          { label: "Loading Dock / Moving Elevator Available", tag: "bld" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "location",
+    title: "Location & Neighbourhood",
+    icon: "&#x1F5FA;",
+    pdfLabel: "LOCATION & NEIGHBOURHOOD",
+    color: "loc",
+    categories: [
+      {
+        name: "Transit & Commute",
+        items: [
+          { label: "Walk Score / Walkscore Rating", tag: "loc" },
+          { label: "TTC Subway / GO Train - Walking Distance", tag: "loc" },
+          { label: "Bus / Streetcar Access at Doorstep", tag: "loc" },
+          { label: "Cycling Infrastructure & Bike Lanes", tag: "loc" },
+          { label: "Highway Access (401 / 407 / DVP / Gardiner)", tag: "loc" },
+          { label: "Commute Time to Downtown Core", tag: "loc" },
+        ]
+      },
+      {
+        name: "Lifestyle & Amenities",
+        items: [
+          { label: "Grocery Stores Within Walking Distance", tag: "loc" },
+          { label: "Restaurants, Cafes & Entertainment Nearby", tag: "loc" },
+          { label: "Proximity to Major Shopping (Mall / Retail)", tag: "loc" },
+          { label: "Parks, Trails & Waterfront Access", tag: "loc" },
+          { label: "Community Centre / Recreation Facility", tag: "loc" },
+          { label: "Healthcare - Hospital / Clinic / Pharmacy", tag: "loc" },
+          { label: "Libraries / Cultural Institutions Nearby", tag: "loc" },
+        ]
+      },
+      {
+        name: "Education & Neighbourhood Quality",
+        items: [
+          { label: "Proximity to Schools (Elementary / High School)", tag: "loc" },
+          { label: "Universities / Colleges Nearby", tag: "loc" },
+          { label: "Neighbourhood Safety & Crime Rate", tag: "loc" },
+          { label: "Street / Area Character (Vibrant / Quiet / Mixed)", tag: "loc" },
+          { label: "Future Development & Neighbourhood Growth", tag: "loc" },
+          { label: "Investment Area / High Rental Demand Zone", tag: "loc" },
+        ]
+      }
+    ]
+  }
+];
+
+// ── CUSTOM ITEMS: keyed by sectionId + catName, one blank slot per category ──
+function initCustomItems() {
+  const result = {};
+  SECTIONS.forEach(sec => {
+    result[sec.id] = {};
+    sec.categories.forEach(cat => {
+      // one blank editable slot per category
+      const id = 'preset_' + sec.id + '_' + cat.name.replace(/\s+/g,'_');
+      const defaultTag = sec.id === 'location' ? 'loc' : sec.id === 'building' ? 'bld' : 'unit';
+      result[sec.id][cat.name] = [{ id, label: '', tag: defaultTag }];
+    });
+  });
+  return result;
+}
+
+// ── STATE ──────────────────────────────────────
+let state = {};
+let customItems = initCustomItems();
+
+// ── RENDER ─────────────────────────────────────
+
+function buildUI() {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.id = 'sec-' + section.id;
+
+    const header = document.createElement('div');
+    header.className = 'section-header section-' + section.color;
+    header.innerHTML =
+      '<div class="section-title"><span class="section-icon">' + section.icon + '</span>' + section.title + '</div>' +
+      '<span class="section-toggle open" id="toggle-' + section.id + '">&#9662;</span>';
+    header.onclick = () => toggleSection(section.id);
+    div.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'section-body open';
+    body.id = 'body-' + section.id;
+
+    body.innerHTML =
+      '<div class="col-headers">' +
+      '<span></span><span>Feature</span><span>Category</span><span>Note</span>' +
+      '</div>';
+
+    section.categories.forEach(cat => {
+      const catDiv = document.createElement('div');
+      catDiv.className = 'category';
+      catDiv.innerHTML = '<div class="category-title">' + cat.name + '</div>';
+      // Standard items
+      cat.items.forEach(item => {
+        const itemId = makeId(section.id, cat.name, item.label);
+        catDiv.appendChild(buildItemRow(itemId, item.label, item.tag, false));
+      });
+      // Custom slot(s) for this category
+      const slots = (customItems[section.id] && customItems[section.id][cat.name]) || [];
+      slots.forEach(ci => catDiv.appendChild(buildItemRow(ci.id, ci.label, ci.tag, true)));
+
+      // Two spacer checkboxes at end of each subcategory (PDF blank-line formatting)
+      for (let si = 1; si <= 2; si++) {
+        const sid = 'spacer__' + section.id + '__' + btoa(cat.name).replace(/=/g,'') + '__' + si;
+        if (!state[sid]) state[sid] = { checked: false };
+        const spacerRow = document.createElement('div');
+        spacerRow.className = 'spacer-row';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'item-check';
+        cb.checked = !!state[sid].checked;
+        cb.addEventListener('change', function() { state[sid].checked = this.checked; });
+        const lbl = document.createElement('span');
+        lbl.className = 'spacer-label';
+        lbl.textContent = '\u2015 blank line spacer (PDF formatting) \u2015';
+        spacerRow.appendChild(cb);
+        spacerRow.appendChild(lbl);
+        catDiv.appendChild(spacerRow);
+      }
+
+      body.appendChild(catDiv);
+    });
+
+    // Single add-row at section bottom with subcategory dropdown
+    const catOptions = section.categories.map(cat =>
+      '<option value="' + cat.name.replace(/"/g,'&quot;') + '">' + cat.name + '</option>'
+    ).join('');
+    const defaultTag = section.id === 'location' ? 'loc' : section.id === 'building' ? 'bld' : 'unit';
+    const addRow = document.createElement('div');
+    addRow.className = 'add-row';
+    addRow.innerHTML =
+      '<select id="add-cat-' + section.id + '">' + catOptions + '</select>' +
+      '<input type="text" id="add-label-' + section.id + '" placeholder="Add custom feature to selected category...">' +
+      '<button class="btn-add" onclick="addCustomItem(\'' + section.id + '\',\'' + defaultTag + '\')">+ Add</button>';
+    body.appendChild(addRow);
+
+    div.appendChild(body);
+    container.appendChild(div);
+  });
+}
+
+function buildItemRow(itemId, label, tag, isCustom) {
+  const s = state[itemId] || { checked: false, note: '' };
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = 'row-' + itemId;
+
+  const esc = str => (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  const tagLabel = tag === 'loc' ? 'Location' : tag === 'bld' ? 'Building' : 'Unit';
+  const labelHtml = isCustom
+    ? '<input class="item-label-custom" value="' + esc(label) + '" placeholder="Custom feature..." oninput="updateCustomLabel(\'' + itemId + '\', this.value)">'
+    : '<span class="item-label">' + esc(label) + '</span>';
+
+  row.innerHTML =
+    '<input type="checkbox" class="item-check"' + (s.checked ? ' checked' : '') + ' onchange="updateState(\'' + itemId + '\', \'checked\', this.checked)">' +
+    labelHtml +
+    '<span class="item-tag tag-' + tag + '">' + tagLabel + '</span>' +
+    '<input class="item-note-input" type="text" placeholder="Add a note..." value="' + esc(s.note) + '" oninput="updateState(\'' + itemId + '\', \'note\', this.value)">';
+
+  return row;
+}
+
+function toggleSection(id) {
+  const body = document.getElementById('body-' + id);
+  const toggle = document.getElementById('toggle-' + id);
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// ── STATE MANAGEMENT ───────────────────────────
+
+function makeId(sectionId, catName, label) {
+  return (sectionId + '||' + catName + '||' + label).replace(/\s+/g, '_');
+}
+
+function updateState(itemId, field, value) {
+  if (!state[itemId]) state[itemId] = { checked: false, note: '' };
+  state[itemId][field] = value;
+}
+
+function updateCustomLabel(itemId, value) {
+  SECTIONS.forEach(sec => {
+    if (!customItems[sec.id]) return;
+    Object.values(customItems[sec.id]).forEach(slots => {
+      const ci = slots.find(x => x.id === itemId);
+      if (ci) ci.label = value;
+    });
+  });
+}
+
+function addCustomItem(sectionId, defaultTag) {
+  const labelEl = document.getElementById('add-label-' + sectionId);
+  const catEl   = document.getElementById('add-cat-'   + sectionId);
+  const label   = labelEl.value.trim();
+  const catName = catEl.value;
+  if (!label) return;
+  if (!customItems[sectionId]) customItems[sectionId] = {};
+  if (!customItems[sectionId][catName]) customItems[sectionId][catName] = [];
+  const id = 'custom_' + Date.now();
+  customItems[sectionId][catName].push({ id, label, tag: defaultTag });
+  state[id] = { checked: false, note: '' };
+  labelEl.value = '';
+  buildUI();
+  toast('Feature added to "' + catName + '".');
+}
+
+// ── SAVE / LOAD ────────────────────────────────
+
+function gatherHeaderData() {
+  return {
+    address: document.getElementById('h_address').value,
+    type:    document.getElementById('h_type').value,
+    floor:   document.getElementById('h_floor').value,
+    price:   document.getElementById('h_price').value,
+    tax:     document.getElementById('h_tax').value,
+    fee:     document.getElementById('h_fee').value,
+    sqft:    document.getElementById('h_sqft').value,
+    beds:    document.getElementById('h_beds').value,
+    parking: document.getElementById('h_parking').value,
+    agent:   document.getElementById('h_agent').value,
+    remarks: document.getElementById('remarks').value,
+  };
+}
+
+function setHeaderData(d) {
+  if (!d) return;
+  const map = { address:'h_address', type:'h_type', floor:'h_floor', price:'h_price',
+                tax:'h_tax', fee:'h_fee', sqft:'h_sqft', beds:'h_beds', parking:'h_parking', agent:'h_agent' };
+  Object.entries(map).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (el && d[k] !== undefined) el.value = d[k];
+  });
+  const rem = document.getElementById('remarks');
+  if (rem && d.remarks !== undefined) rem.value = d.remarks;
+}
+
+function saveJSON() {
+  const data = { version: 3, header: gatherHeaderData(), state, customItems };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('h_address').value || 'condo-report').replace(/[^a-zA-Z0-9]/g, '-') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Report saved.');
+}
+
+function loadJSON() { document.getElementById('fileInput').click(); }
+
+function handleFileLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      state = data.state || {};
+      customItems = data.customItems || initCustomItems();
+      buildUI();
+      setHeaderData(data.header);
+      autoSave();
+      toast('Report loaded.');
+    } catch { alert('Invalid file.'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function resetForm() {
+  if (!confirm('Reset all fields and clear saved data?\nThis cannot be undone.')) return;
+  state = {};
+  customItems = initCustomItems();
+  buildUI();
+  ['h_address','h_type','h_floor','h_price','h_tax','h_fee','h_sqft','h_beds','h_parking','h_agent','remarks'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = ''; }
+  });
+  if (_db) { dbClearStore().catch(e => console.error('Clear error:', e)); }
+  toast('Form reset.');
+}
+
+// ── PDF EXPORT ─────────────────────────────────
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+  const pageW = 215.9, pageH = 279.4;
+  const margin = 14, contentW = pageW - margin * 2;
+  let y = 0;
+
+  const C = {
+    dark:      [26,  26,  26],
+    gold:      [184, 150, 12],
+    goldLight: [212, 175, 55],
+    cream:     [253, 250, 243],
+    loc:       [44,  95,  110],
+    bld:       [74,  55,  40],
+    unit:      [45,  74,  53],
+    mid:       [74,  74,  74],
+    light:     [122, 122, 122],
+    white:     [255, 255, 255],
+  };
+
+  function checkPage(needed) {
+    if (y + (needed || 10) > pageH - 16) { doc.addPage(); y = 14; }
+  }
+
+  // ── PDF HEADER — mirrors HTML 2-column grid layout ──
+  function drawHeader() {
+    const hd = gatherHeaderData();
+
+    // Count rows (2-column grid, same as HTML)
+    let rows = 0;
+    if (hd.address  || hd.type)    rows++;  // Row 1: Address | Type
+    if (hd.floor    || hd.sqft)    rows++;  // Row 2: Floor   | Sqft
+    if (hd.price    || hd.tax)     rows++;  // Row 3: Price   | Tax
+    if (hd.fee      || hd.beds)    rows++;  // Row 4: Fee     | Beds
+    if (hd.parking  || hd.agent)   rows++;  // Row 5: Parking | Agent
+    const headerH = 30 + rows * 14;
+
+    doc.setFillColor(...C.dark);
+    doc.rect(0, 0, pageW, headerH, 'F');
+    doc.setFillColor(...C.gold);
+    doc.rect(0, 0, pageW, 1.5, 'F');
+    let hy = 12;
+
+    // Eyebrow
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.goldLight);
+    doc.text('PINNACLE LISTING SYSTEM  |  PETER LUO  |  RE/MAX REALTRON REALTY INC.', margin + 4, hy);
+    hy += 7;
+
+    // Main title
+    doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.white);
+    doc.text('Condo Property Feature & Value Report', margin + 4, hy);
+    hy += 3;
+
+    // Gold rule
+    doc.setDrawColor(...C.goldLight); doc.setLineWidth(0.35);
+    doc.line(margin + 4, hy, margin + contentW, hy);
+    hy += 6;
+
+    // 2-column layout — left col | right col
+    const colW = (contentW / 2) - 6;
+    const xL = margin + 4;
+    const xR = margin + 4 + contentW / 2;
+
+    function drawField(lbl, val, x) {
+      if (!val) return;
+      doc.setFontSize(5.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.goldLight);
+      doc.text(lbl, x, hy);
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.white);
+      doc.text(val, x, hy + 5, { maxWidth: colW });
+    }
+
+    // Row 1: Property Address | Property Type
+    if (hd.address || hd.type) {
+      drawField('PROPERTY ADDRESS', hd.address, xL);
+      drawField('PROPERTY TYPE',    hd.type,    xR);
+      hy += 14;
+    }
+    // Row 2: Floor / Unit Level | Square Footage
+    if (hd.floor || hd.sqft) {
+      drawField('FLOOR / UNIT LEVEL', hd.floor, xL);
+      drawField('SQUARE FOOTAGE',     hd.sqft,  xR);
+      hy += 14;
+    }
+    // Row 3: List Price | Property Tax / Year
+    if (hd.price || hd.tax) {
+      drawField('LIST PRICE',          hd.price, xL);
+      drawField('PROPERTY TAX / YEAR', hd.tax,   xR);
+      hy += 14;
+    }
+    // Row 4: Maintenance Fee / Month | Bedrooms / Bathrooms
+    if (hd.fee || hd.beds) {
+      drawField('MAINTENANCE FEE / MONTH', hd.fee,  xL);
+      drawField('BEDROOMS / BATHROOMS',    hd.beds, xR);
+      hy += 14;
+    }
+    // Row 5: Parking / Locker | Prepared By / Date
+    if (hd.parking || hd.agent) {
+      const dateStr = hd.agent ? hd.agent + '  |  ' + new Date().toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA');
+      drawField('PARKING / LOCKER',   hd.parking, xL);
+      drawField('PREPARED BY / DATE', dateStr,    xR);
+      hy += 14;
+    }
+
+    y = hy + 4;
+  }
+
+  // ── SECTION HEADER (pure text — no emoji so no encoding issues) ──
+  function drawSectionHeader(section) {
+    checkPage(12);
+    const col = section.color === 'loc' ? C.loc : section.color === 'bld' ? C.bld : C.unit;
+    doc.setFillColor(...col);
+    doc.rect(margin, y, contentW, 8, 'F');
+    doc.setTextColor(...C.white);
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
+    doc.text(section.pdfLabel, margin + 4, y + 5.5);
+    y += 10;
+  }
+
+  function drawCategoryLabel(name) {
+    checkPage(8);
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.light);
+    doc.text(name.toUpperCase(), margin + 2, y + 4.5);
+    doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.3);
+    doc.line(margin + 2 + doc.getTextWidth(name.toUpperCase()) + 3, y + 3.5, margin + contentW, y + 3.5);
+    y += 7;
+  }
+
+  function drawItem(itemId, label, tag) {
+    const s = state[itemId];
+    if (!s || !s.checked) return;
+
+    const note = (s.note || '').trim();
+    const noteW  = note ? 60 : 0;
+    const labelW = contentW - 8 - noteW - 6;
+
+    const labelLines = doc.splitTextToSize(label, labelW);
+    const noteLines  = note ? doc.splitTextToSize(note, noteW - 2) : [];
+    const nLines = Math.max(labelLines.length, noteLines.length, 1);
+    const rowH = 5 + nLines * 4.5 + 2;
+
+    checkPage(rowH + 2);
+
+    // Row background
+    doc.setFillColor(248, 248, 248);
+    doc.rect(margin, y, contentW, rowH, 'F');
+
+    // Gold checkbox square
+    doc.setFillColor(...C.gold);
+    doc.rect(margin + 1, y + 1.5, 3.5, 3.5, 'F');
+
+    // Feature label — starts right after checkbox, no tag badge
+    const labelX = margin + 7;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...C.mid);
+    labelLines.forEach((line, i) => doc.text(line, labelX, y + 4.5 + i * 4.5));
+
+    // Note (italic, right side)
+    if (note) {
+      const noteX = margin + contentW - noteW + 2;
+      doc.setFont('helvetica', 'italic'); doc.setFontSize(6.5); doc.setTextColor(...C.light);
+      noteLines.forEach((line, i) => doc.text(line, noteX, y + 4.5 + i * 4.5));
+    }
+
+    y += rowH + 1;
+  }
+
+  // ── RENDER ──
+  drawHeader();
+
+  SECTIONS.forEach(section => {
+    const hasAny =
+      section.categories.some(cat => {
+        const stdChecked = cat.items.some(item => {
+          const id = makeId(section.id, cat.name, item.label);
+          return state[id] && state[id].checked;
+        });
+        const custChecked = ((customItems[section.id] || {})[cat.name] || [])
+          .some(ci => ci.label && state[ci.id] && state[ci.id].checked);
+        return stdChecked || custChecked;
+      });
+
+    if (!hasAny) return;
+    drawSectionHeader(section);
+
+    section.categories.forEach(cat => {
+      const stdChecked = cat.items.some(item => {
+        const id = makeId(section.id, cat.name, item.label);
+        return state[id] && state[id].checked;
+      });
+      const catCustom = ((customItems[section.id] || {})[cat.name] || [])
+        .filter(ci => ci.label && state[ci.id] && state[ci.id].checked);
+      if (!stdChecked && !catCustom.length) return;
+
+      drawCategoryLabel(cat.name);
+      cat.items.forEach(item => drawItem(makeId(section.id, cat.name, item.label), item.label, item.tag));
+      catCustom.forEach(ci => drawItem(ci.id, ci.label, ci.tag));
+
+      // Spacer blank lines for this subcategory
+      for (let si = 1; si <= 2; si++) {
+        const sid = 'spacer__' + section.id + '__' + btoa(cat.name).replace(/=/g,'') + '__' + si;
+        if (state[sid] && state[sid].checked) { checkPage(5); y += 5; }
+      }
+    });
+  });
+
+  // Remarks
+  const remarks = document.getElementById('remarks').value.trim();
+  if (remarks) {
+    checkPage(20);
+    doc.setFillColor(...C.dark);
+    doc.rect(margin, y, contentW, 7, 'F');
+    doc.setTextColor(...C.goldLight); doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
+    doc.text('ADDITIONAL REMARKS', margin + 3, y + 4.8);
+    y += 9;
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...C.mid);
+    doc.splitTextToSize(remarks, contentW - 6).forEach(line => {
+      checkPage(6); doc.text(line, margin + 3, y + 5); y += 5;
+    });
+  }
+
+  // Footers
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFillColor(...C.dark);
+    doc.rect(0, pageH - 10, pageW, 10, 'F');
+    doc.setFillColor(...C.gold);
+    doc.rect(0, pageH - 10, pageW, 0.8, 'F');
+    doc.setTextColor(...C.goldLight); doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+    doc.text('Pinnacle Listing System  |  Peter Luo  |  RE/MAX Realtron Realty Inc., Brokerage', margin, pageH - 4);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Page ' + i + ' of ' + totalPages, pageW - margin, pageH - 4, { align: 'right' });
+  }
+
+  const addr = document.getElementById('h_address').value || 'condo-report';
+  doc.save(addr.replace(/[^a-zA-Z0-9]/g, '-') + '-feature-report.pdf');
+  toast('PDF exported.');
+}
+
+// ── TOAST ──────────────────────────────────────
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── IndexedDB STORAGE LAYER ───────────────────
+const DB_NAME = 'plCondoReportDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'condoreport';
+const DB_KEY = 'condoState';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME); };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+function dbGet(key) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbPut(key, val) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    const req = tx.objectStore(STORE_NAME).put(val, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbClearStore() {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ── Auto-save (debounced) ─────────────────────
+let _saveTimer = null;
+function autoSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (_db) {
+      const data = { version: 3, header: gatherHeaderData(), state, customItems };
+      dbPut(DB_KEY, data).catch(e => console.error('IndexedDB save error:', e));
+    }
+  }, 500);
+}
+
+// ── Attach auto-save to header fields ─────────
+['h_address','h_type','h_floor','h_price','h_tax','h_fee','h_sqft','h_beds','h_parking','h_agent'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.addEventListener('input', autoSave); el.addEventListener('change', autoSave); }
+});
+const remarksEl = document.getElementById('remarks');
+if (remarksEl) remarksEl.addEventListener('input', autoSave);
+
+// ── Attach auto-save to sections container (delegation covers all dynamic items) ──
+document.getElementById('sections-container').addEventListener('input', autoSave);
+document.getElementById('sections-container').addEventListener('change', autoSave);
+document.getElementById('sections-container').addEventListener('click', e => {
+  // Catch checkbox toggles that don't fire input/change on the container
+  if (e.target.closest('.item-row') || e.target.closest('.opt')) {
+    setTimeout(autoSave, 50);
+  }
+});
+
+// ── INIT ──────────────────────────────────────
+buildUI();
+
+openDB().then(() => dbGet(DB_KEY)).then(saved => {
+  if (saved && typeof saved === 'object' && (saved.header || saved.state)) {
+    state = saved.state || {};
+    customItems = saved.customItems || initCustomItems();
+    buildUI();
+    setHeaderData(saved.header);
+  }
+}).catch(err => {
+  console.error('IndexedDB init failed:', err);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Pyramid – Peter Luo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: #fff;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 20px 36px; min-height: 100vh;
+}
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 3vw, 30px);
+  color: #1a2f5e; text-align: center; margin-bottom: 32px;
+}
+.layout {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; max-width: 1600px;
+}
+.side-label { width: 130px; flex-shrink: 0; }
+.side-label.left  { text-align: right; padding-right: 8px; }
+.side-label.right { text-align: left;  padding-left: 20px; }
+.side-label .title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(13px, 1.6vw, 18px);
+  color: #e87722; font-weight: 700; line-height: 1.4;
+}
+.pyramid-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; }
+svg#pyramid { width: 100%; max-width: 1170px; height: auto; overflow: visible; }
+
+.layer-group { cursor: pointer; transition: filter .2s; }
+.layer-group:hover { filter: brightness(1.08); }
+
+.band-label {
+  font-family: 'Lato', sans-serif; font-size: 11px; font-weight: 700;
+  fill: rgba(255,255,255,.92); text-anchor: middle; dominant-baseline: middle;
+  pointer-events: none;
+}
+.pct-label {
+  font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 900;
+  fill: #fff; text-anchor: end; dominant-baseline: middle; pointer-events: none;
+}
+.response-label { font-family: 'Lato', sans-serif; font-size: 12.5px; fill: #333; dominant-baseline: middle; }
+.response-label.bold { font-weight: 700; }
+.connector { stroke: #bbb; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+
+.insight-box {
+  width: 100%;
+  max-width: 1400px;
+  margin-top: 24px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #1a2f5e;
+  line-height: 1.7;
+}
+.insight-box strong { display: block; font-size: 14px; margin-bottom: 4px; }
+.insight-line { display: block; }
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(14px, 1.8vw, 20px);
+  color: #1a2f5e; font-weight: 700; text-align: center; margin-top: 18px;
+}
+.branding {
+  margin-top: 40px; font-size: 11px; color: #aaa;
+  letter-spacing: 1px; text-transform: uppercase;
+  width: 100%; line-height: 1.8;
+}
+.branding div { text-align: center; width: 100%; }
+.brand-item { white-space: nowrap; }
+.brand-sep { white-space: nowrap; }
+.branding span { color: #e87722; font-weight: 700; }
+#tooltip {
+  position: fixed; background: rgba(20,20,40,.92); color: #fff;
+  padding: 10px 15px; border-radius: 8px; font-size: 12px; line-height: 1.6;
+  pointer-events: none; opacity: 0; transition: opacity .18s;
+  max-width: 220px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,.3);
+}
+#tooltip.show { opacity: 1; }
+#tooltip strong { color: #f5b942; display: block; margin-bottom: 3px; }
+@media (max-width: 560px) {
+  .side-label { width: 80px; }
+  .side-label .title { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-title">Price Pyramid</div>
+
+<div class="layout">
+  <div class="side-label left" style="padding-right:2px; margin-left:40px;">
+    <div class="title">Asking Price<br>Vs<br>Market Value</div>
+  </div>
+
+  <div class="pyramid-wrap">
+    <!--
+      Design: 5 equal-height trapezoid layers stacked.
+      Each layer height = 80px.  Total front face height = 400px.
+      3D depth = 18px offset to the right and down.
+
+      The pyramid front face is a proper isosceles triangle sliced into
+      5 equal horizontal bands.  At each y level:
+        half-width = (y / totalH) * maxHalfW
+        where totalH = 400, maxHalfW = 220, apex at cx=260
+
+      Layer boundaries (y from top of front face, origin at apex y=20):
+        y0 =   0  (apex)
+        y1 =  80
+        y2 = 160
+        y3 = 240
+        y4 = 320
+        y5 = 400  (base)
+
+      Half-widths:
+        hw0 =   0
+        hw1 =  44   (80/400*220)
+        hw2 =  88
+        hw3 = 132
+        hw4 = 176
+        hw5 = 220
+
+      Absolute x (cx=260):
+        y0: L=260,    R=260
+        y1: L=216,    R=304
+        y2: L=172,    R=348
+        y3: L=128,    R=392
+        y4: L= 84,    R=436
+        y5: L= 40,    R=480
+
+      SVG viewBox top padding = 20, so add 20 to all y:
+        y0=20, y1=100, y2=180, y3=260, y4=340, y5=420
+
+      3D side offset: dx=18, dy=10
+      Right side face of each layer = quadrilateral:
+        top-front-right, top-3d-right, bottom-3d-right, bottom-front-right
+      Bottom face = bottom edge + offset version
+    -->
+
+    <svg id="pyramid" viewBox="0 0 660 500" xmlns="http://www.w3.org/2000/svg">
+
+      <defs>
+        <!-- Subtle inner shadow on top edge of each layer -->
+        <filter id="layerShadow" x="-5%" y="-20%" width="120%" height="140%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.25)"/>
+        </filter>
+      </defs>
+
+      <!-- ═══════════════════════════════════════
+           L1: 15% Above – dark navy blue
+           Front: (260,20)→(304,100)→(216,100)
+           ═══════════════════════════════════════ -->
+      <g class="layer-group"
+         data-band="15% Above Market" data-pct="10%"
+         data-response="Stale Listing – very few buyers"
+         onmouseenter="showTip(event,this)" onmouseleave="hideTip()">
+        <!-- Front face -->
+        <polygon fill="#1e3a8a" points="260,20 304,100 216,100"/>
+        <!-- Right 3D side face -->
+        <polygon fill="#162d6e" points="304,100 322,110 278,30 260,20"/>
+        <!-- Bottom 3D face -->
+        <polygon fill="#0f1e4a" points="216,100 304,100 322,110 234,110"/>
+      </g>
+
+      <!-- ═══════════════════════════════════════
+           L2: 10% Above – medium blue
+           Front: (216,100)→(348,180)→(172,180)→back to (304,100) wait —
+           trapezoid: TL=216,100  TR=304,100  BR=348,180  BL=172,180
+           ═══════════════════════════════════════ -->
+      <g class="layer-group"
+         data-band="10% Above Market" data-pct="30%"
+         data-response="Buyers wait – limited showings"
+         onmouseenter="showTip(event,this)" onmouseleave="hideTip()">
+        <!-- Front face -->
+        <polygon fill="#4a6fb5" points="216,100 304,100 348,180 172,180"/>
+        <!-- Right 3D side -->
+        <polygon fill="#3a5898" points="304,100 322,110 366,190 348,180"/>
+        <!-- Bottom 3D face -->
+        <polygon fill="#2a4278" points="172,180 348,180 366,190 190,190"/>
+      </g>
+
+      <!-- ═══════════════════════════════════════
+           L3: Market Align – teal
+           Trapezoid: TL=172,180  TR=348,180  BR=392,260  BL=128,260
+           ═══════════════════════════════════════ -->
+      <g class="layer-group"
+         data-band="Market Aligned" data-pct="60%"
+         data-response="Fair market interest – steady showings"
+         onmouseenter="showTip(event,this)" onmouseleave="hideTip()">
+        <!-- Front face -->
+        <polygon fill="#2eaa9a" points="172,180 348,180 392,260 128,260"/>
+        <!-- Right 3D side -->
+        <polygon fill="#228878" points="348,180 366,190 410,270 392,260"/>
+        <!-- Bottom 3D face -->
+        <polygon fill="#187060" points="128,260 392,260 410,270 146,270"/>
+      </g>
+
+      <!-- ═══════════════════════════════════════
+           L4: 10% Below – amber/gold
+           Trapezoid: TL=128,260  TR=392,260  BR=436,340  BL=84,340
+           ═══════════════════════════════════════ -->
+      <g class="layer-group"
+         data-band="10% Below Market" data-pct="75%"
+         data-response="High showing volume – multiple offers"
+         onmouseenter="showTip(event,this)" onmouseleave="hideTip()">
+        <!-- Front face -->
+        <polygon fill="#e8a820" points="128,260 392,260 436,340 84,340"/>
+        <!-- Right 3D side -->
+        <polygon fill="#c48810" points="392,260 410,270 454,350 436,340"/>
+        <!-- Bottom 3D face -->
+        <polygon fill="#a87000" points="84,340 436,340 454,350 102,350"/>
+      </g>
+
+      <!-- ═══════════════════════════════════════
+           L5: 15% Below – red
+           Trapezoid: TL=84,340  TR=436,340  BR=480,420  BL=40,420
+           ═══════════════════════════════════════ -->
+      <g class="layer-group"
+         data-band="15% Below Market" data-pct="90%"
+         data-response="Bidding War – maximum competition"
+         onmouseenter="showTip(event,this)" onmouseleave="hideTip()">
+        <!-- Front face -->
+        <polygon fill="#d63020" points="84,340 436,340 480,420 40,420"/>
+        <!-- Right 3D side -->
+        <polygon fill="#b02010" points="436,340 454,350 498,430 480,420"/>
+        <!-- Bottom 3D face — this is the base, make it visible but not brown -->
+        <polygon fill="#901808" points="40,420 480,420 498,430 58,430"/>
+      </g>
+
+      <!-- White divider lines between layers for clean separation -->
+      <line x1="216" y1="100" x2="304" y2="100" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+      <line x1="172" y1="180" x2="348" y2="180" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+      <line x1="128" y1="260" x2="392" y2="260" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+      <line x1="84"  y1="340" x2="436" y2="340" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+
+      <!-- ══ Band labels (left side of each layer, on front face) ══ -->
+      <!-- L1 midpoint y = (20+100)/2 = 60, left area x~248 -->
+      <text class="band-label" x="252" y="55">15%</text>
+      <text class="band-label" x="252" y="68">Above</text>
+
+      <!-- L2 midpoint y = (100+180)/2 = 140 -->
+      <text class="band-label" x="218" y="135">10%</text>
+      <text class="band-label" x="218" y="148">Above</text>
+
+      <!-- L3 midpoint y = (180+260)/2 = 220 -->
+      <text class="band-label" x="178" y="215">Market</text>
+      <text class="band-label" x="178" y="228">Align</text>
+
+      <!-- L4 midpoint y = (260+340)/2 = 300 -->
+      <text class="band-label" x="136" y="295">10%</text>
+      <text class="band-label" x="136" y="308">Below</text>
+
+      <!-- L5 midpoint y = (340+420)/2 = 380 -->
+      <text class="band-label" x="88"  y="372">15%</text>
+      <text class="band-label" x="88"  y="385">Below</text>
+
+      <!-- ══ Percentage labels – bottom-right corner, 12px above bottom line ══ -->
+      <text class="pct-label" x="291" y="88"  font-size="13">10%</text>
+      <text class="pct-label" x="335" y="168">30%</text>
+      <text class="pct-label" x="379" y="248">60%</text>
+      <text class="pct-label" x="423" y="328">75%</text>
+      <text class="pct-label" x="467" y="408">90%</text>
+
+      <!-- ══ Right connectors + response labels – 24px from each layer's right edge ══ -->
+      <!-- Connectors from right edge at mid-y; labels 24px beyond right edge -->
+      <!-- connectors end 6px before label text -->
+      <line class="connector" x1="282" y1="60"  x2="300" y2="60"/>
+      <text class="response-label bold" x="306" y="60">Stale Listing</text>
+
+      <line class="connector" x1="326" y1="140" x2="344" y2="140"/>
+      <text class="response-label" x="350" y="140">Buyers wait</text>
+
+      <line class="connector" x1="370" y1="220" x2="388" y2="220"/>
+      <text class="response-label" x="394" y="215">Fair market</text>
+      <text class="response-label" x="394" y="230">interest</text>
+
+      <line class="connector" x1="414" y1="300" x2="432" y2="300"/>
+      <text class="response-label" x="438" y="295">High showing</text>
+      <text class="response-label" x="438" y="310">volume</text>
+
+      <line class="connector" x1="458" y1="380" x2="476" y2="380"/>
+      <text class="response-label bold" x="482" y="380">Bidding War</text>
+
+    </svg>
+    <div class="bottom-label">Percentage of Interest Buyers</div>
+  </div>
+
+  <div class="side-label right" style="margin-left:-60px;">
+    <div class="title">Market<br>Response</div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<div class="insight-box">
+  <strong>📊 Key Insight</strong>
+  <div class="insight-line">Overpricing repels buyers fast. 15% above market attracts only <span style="font-weight:700;">10% of buyers</span>. Price at market or below and <span style="font-weight:700;">60–90% show up</span>. More buyers means more competition — and a higher final sale price.</div>
+</div>
+
+<div class="branding">
+  <div><span>Peter Luo</span> &nbsp;·&nbsp; RE/MAX Realtron Realty Inc.</div>
+  <div>&nbsp;·&nbsp; Pinnacle Listing System</div>
+</div>
+
+<script>
+const tip = document.getElementById('tooltip');
+function showTip(e, el) {
+  tip.innerHTML = `<strong>${el.dataset.band}</strong>Buyer Interest: ${el.dataset.pct}<br>${el.dataset.response}`;
+  tip.classList.add('show'); moveTip(e);
+}
+function hideTip() { tip.classList.remove('show'); }
+document.addEventListener('mousemove', moveTip);
+function moveTip(e) {
+  const x = e.clientX + 14, y = e.clientY - 10;
+  tip.style.left = (x + tip.offsetWidth  > window.innerWidth  ? x - tip.offsetWidth  - 28 : x) + 'px';
+  tip.style.top  = (y + tip.offsetHeight > window.innerHeight ? y - tip.offsetHeight - 10 : y) + 'px';
+}
+</script>
+</body>
+</html>

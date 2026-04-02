@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>过期房源工具包 — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --navy: #1b3a6b;
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+.tab-row { display: flex; gap: 6px; }
+.tab-btn { flex: 1; padding: 8px 6px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 12px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.tab-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+main { padding: 10px 14px; max-width: 500px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.cat-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .05em; margin: 16px 0 8px 2px; display: flex; align-items: center; gap: 8px; }
+.cat-pill { background: var(--step-active); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.approach-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.approach-card.open { border-color: var(--step-active); border-width: 2px; }
+.approach-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.approach-card.open .approach-head { background: var(--step-active); }
+.approach-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.approach-card.open .approach-num { background: rgba(255,255,255,.2); color: #fff; }
+.approach-label { flex: 1; }
+.approach-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.4; }
+.approach-card.open .approach-title { color: #fff; }
+.approach-sub { font-size: 11px; color: var(--light); margin-top: 2px; }
+.approach-card.open .approach-sub { color: rgba(255,255,255,.55); }
+.approach-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.approach-card.open .approach-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.approach-body { display: none; border-top: 1px solid var(--border); }
+.approach-card.open .approach-body { display: block; }
+.when-box { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); line-height: 1.6; }
+.when-box strong { color: var(--dark); }
+.script-block { background: var(--gold-bg); border-left: 4px solid var(--gold-tag); padding: 12px 14px; margin: 0; }
+.script-block + .script-block { border-top: 1px solid var(--gold-border); }
+.script-text { font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.8; }
+.script-text strong { color: var(--gold-strong); font-style: normal; }
+.script-note { padding: 9px 14px; background: var(--bg); border-top: 1px solid var(--border); font-size: 13px; color: var(--mid); line-height: 1.6; }
+.approach-fields { padding: 12px 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--mid); font-weight: 600; }
+.field input, .field select, .field textarea {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 15px; font-family: inherit;
+  color: var(--black); -webkit-appearance: none; width: 100%; min-height: 44px;
+}
+.field textarea { resize: vertical; min-height: 72px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+.frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.obj-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.obj-card.open { border-color: var(--step-active); border-width: 2px; }
+.obj-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.obj-card.open .obj-head { background: var(--step-active); }
+.obj-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.obj-card.open .obj-num { background: rgba(255,255,255,.2); color: #fff; }
+.obj-lbl { flex: 1; }
+.obj-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.4; }
+.obj-card.open .obj-title { color: #fff; }
+.obj-tag { font-size: 11px; color: var(--light); margin-top: 2px; }
+.obj-card.open .obj-tag { color: rgba(255,255,255,.55); }
+.obj-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.obj-card.open .obj-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.obj-body { display: none; border-top: 1px solid var(--border); }
+.obj-card.open .obj-body { display: block; }
+.situation-box { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); font-style: italic; line-height: 1.6; }
+.reasons-wrap { padding: 10px 14px; background: var(--white); border-bottom: 1px solid var(--border); }
+.reasons-title { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.reason-item { display: flex; gap: 8px; font-size: 13px; color: var(--dark); line-height: 1.6; padding: 4px 0; border-bottom: 1px solid var(--bg2); }
+.reason-item:last-child { border-bottom: none; }
+.reason-num { color: var(--gold-tag); font-weight: 700; flex-shrink: 0; min-width: 18px; }
+.phase-header { padding: 9px 14px; font-size: 12px; font-weight: 700; letter-spacing: .05em; }
+.phase-empathy { background: #1b3a6b; color: #fff; }
+.phase-explore { background: #a07820; color: #fff; }
+.phase-respond { background: #5a4a2a; color: #fff; }
+.eer-step { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); }
+.eer-step:last-child { border-bottom: none; }
+.eer-step-label { width: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; text-align: center; padding: 10px 6px; line-height: 1.4; }
+.eer-step-content { flex: 1; padding: 10px 12px; background: var(--gold-bg); }
+.eer-step-purpose { font-size: 11px; color: var(--gold-tag); font-weight: 700; letter-spacing: .03em; margin-bottom: 5px; }
+.eer-step-script { font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.8; }
+.eer-step-script strong { color: var(--gold-strong); font-style: normal; }
+.eer-note { padding: 9px 14px; background: var(--bg); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--mid); font-style: italic; line-height: 1.6; }
+.de-escalation-box { padding: 10px 14px; background: #fff8e8; border-bottom: 1px solid var(--gold-border); border-left: 4px solid var(--gold-tag); font-size: 13px; color: var(--gold-text); line-height: 1.65; }
+.de-escalation-box .de-title { font-size: 11px; font-weight: 700; color: var(--gold-tag); margin-bottom: 5px; }
+.obj-notes-wrap { padding: 12px 14px; border-top: 1px solid var(--border); }
+.obj-notes-label { font-size: 11px; font-weight: 700; color: var(--light); margin-bottom: 6px; }
+.obj-notes-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--black); resize: vertical; min-height: 68px; }
+.obj-notes-input:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+.session-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+.session-card .card-inner { padding: 14px; }
+.card-title { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+.rec-strip { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.rec-label { font-size: 11px; color: var(--light); }
+.rbtn { padding: 9px 16px; border-radius: 20px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; -webkit-appearance: none; }
+.rbtn:active { opacity: .7; }
+#btnRecord { background: var(--red); color: #fff; }
+#btnRecord.recording { animation: rpulse 1.2s infinite; }
+#btnPause { background: var(--bg2); color: var(--dark); border: 1px solid var(--border); display: none; }
+#recTimer { font-size: 13px; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; display: none; min-width: 38px; }
+#recStatus { font-size: 11px; color: var(--light); flex: 1; }
+@keyframes rpulse { 0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)} 50%{box-shadow:0 0 0 7px rgba(192,57,43,0)} }
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; pointer-events: none; }
+.toast.show { opacity: 1; }
+.save-area { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.save-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; }
+.save-btn.warm { background: #7a5c00; color: #fff; }
+.save-btn.rec-save { background: var(--gold-bg); color: var(--gold-strong); border: 2px solid var(--gold-border); }
+.save-btn.grey { background: var(--bg2); color: var(--mid); border: 1px solid var(--border); }
+.save-btn:disabled { opacity: .5; cursor: not-allowed; }
+.rec-note { font-size: 12px; color: var(--light); text-align: center; margin-top: -4px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: flex-end; }
+.modal-overlay.open { display: flex; }
+.modal-sheet { background: var(--white); width: 100%; border-radius: 18px 18px 0 0; padding: 20px 16px calc(20px + var(--safe-bottom)); max-height: 72vh; overflow-y: auto; }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.saved-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.saved-item:last-child { border-bottom: none; }
+.saved-item:active { opacity: .6; }
+.saved-name { font-size: 15px; font-weight: 600; }
+.saved-meta { font-size: 12px; color: var(--light); margin-top: 2px; }
+.del-btn { color: var(--red); font-size: 13px; font-weight: 700; padding: 8px 12px; background: none; border: none; cursor: pointer; }
+.modal-close { width: 100%; padding: 14px; background: var(--bg2); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; color: var(--dark); cursor: pointer; margin-top: 14px; }
+.empty-state { text-align: center; color: var(--light); font-size: 14px; padding: 32px 0; }
+</style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title">过期房源工具包</div>
+      <div class="app-sub">Pinnacle Listing System · Peter Luo · RE/MAX Realtron</div>
+    </div>
+    <button class="rbtn" style="background:var(--bg2);color:var(--dark);border:1px solid var(--border);padding:9px 14px;font-size:13px;" onclick="openLoadModal()">📂 加载</button>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabApproach" onclick="switchTab('approach')">接触方式</button>
+    <button class="tab-btn" id="tabObj" onclick="switchTab('obj')">异议处理</button>
+    <button class="tab-btn" id="tabNotes" onclick="switchTab('notes')">备注保存</button>
+  </div>
+</div>
+
+<!-- 录音条 -->
+<div class="rec-strip">
+  <span class="rec-label">录音</span>
+  <button class="rbtn" id="btnRecord" onclick="toggleRecord()"><span>⏺</span><span id="recLabel">开始</span></button>
+  <button class="rbtn" id="btnPause" onclick="togglePause()">⏸ 暂停</button>
+  <span id="recTimer">0:00</span>
+  <span id="recStatus">就绪</span>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 标签一：接触方式 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel active" id="panelApproach">
+
+<div class="session-card">
+  <div class="card-inner">
+    <div class="card-title">本次拜访信息</div>
+    <div class="frow2">
+      <div class="field"><label>日期</label><input type="date" id="sessDate"></div>
+      <div class="field"><label>街道 / 区域</label><input type="text" id="sessArea" placeholder="例如：万锦市Elmwood大道"></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="field"><label>物业地址</label><input type="text" id="sessAddress" placeholder="例如：123 Elmwood Ave, Markham"></div>
+    </div>
+    <div style="margin-top:10px;" class="frow2">
+      <div class="field"><label>屋主姓名</label><input type="text" id="sessName" placeholder="例如：陈先生"></div>
+      <div class="field"><label>接触来源</label>
+        <select id="sessSource">
+          <option value="">— 请选择 —</option>
+          <option>社区挨家拜访</option>
+          <option>曾见到房屋挂牌标识</option>
+          <option>邻居或熟人转介</option>
+          <option>跟进市场报告邮件</option>
+          <option>社区或社交认识</option>
+          <option>电话区域陌拜</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cat-label"><span class="cat-pill">6种方式</span> 根据接触来源选择合适的开场</div>
+
+<!-- 方式1 -->
+<div class="approach-card" id="ap1">
+  <div class="approach-head" onclick="toggleApproach('ap1')">
+    <div class="approach-num">1</div>
+    <div class="approach-label">
+      <div class="approach-title">社区挨家拜访（敲门）</div>
+      <div class="approach-sub">区域有买家 · 系统性街道拜访</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>您正在系统地拜访某条街道或社区，对该房产没有任何事先了解。</div>
+    <div class="script-block">
+      <div class="script-text">"您好！我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的地产经纪。我经常在这一带工作，一直希望能认识附近的屋主。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我手上有一位买家，<strong>专门在找这条街的房子</strong>——他们非常喜欢这个区域，所以我挨家拜访，看看有没有屋主愿意聊聊。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我不是来推销什么的——只是想随口问一句：<strong>您有没有考虑过卖房</strong>，哪怕是随便想想过？"</div>
+    </div>
+    <div class="script-note">〔 如果有意向 → 进入EER异议处理。如果没有 → 请求转介并留名片。〕</div>
+    <div class="script-block">
+      <div class="script-text">"如果没有，完全没关系——感谢您开门。请问您有没有听说附近哪位邻居最近在考虑搬家？"</div>
+    </div>
+    <div class="approach-fields">
+      <div class="field"><label>回应 / 备注</label><textarea id="apNote1" placeholder="对方反应、开放程度、提到的转介……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- 方式2 -->
+<div class="approach-card" id="ap2">
+  <div class="approach-head" onclick="toggleApproach('ap2')">
+    <div class="approach-num">2</div>
+    <div class="approach-label">
+      <div class="approach-title">曾见到房屋挂牌标识（已撤下）</div>
+      <div class="approach-sub">您之前看到了挂牌标志，现已不再悬挂</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>您之前注意到该房屋门前曾有挂牌标识，现已撤下，您以此为依据进行跟进。</div>
+    <div class="script-block">
+      <div class="script-text">"您好——我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的经纪。之前我路过这里，注意到您家门口好像曾经有过挂牌标识。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我想来打个招呼，因为我手上有一些买家正在这个区域积极找房——想问问您，卖房这件事，现在是否还在您的考虑范围内。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我不是来给您施压的，只是在这一带做经纪，喜欢直接和屋主沟通。<strong>您愿意简单聊几句吗？</strong>"</div>
+    </div>
+    <div class="script-note">〔 接触依据是公开可见的挂牌标识——不要提及任何系统数据，保持低压力。〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>回应 / 备注</label><textarea id="apNote2" placeholder="对方反应、开放程度……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- 方式3 -->
+<div class="approach-card" id="ap3">
+  <div class="approach-head" onclick="toggleApproach('ap3')">
+    <div class="approach-num">3</div>
+    <div class="approach-label">
+      <div class="approach-title">邻居或熟人转介</div>
+      <div class="approach-sub">有人告诉您这位屋主可能在考虑卖房</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>一位邻居、共同认识的朋友或以前的客户提到这位屋主可能在考虑卖房。</div>
+    <div class="script-block">
+      <div class="script-text">"您好，[姓名]——我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的地产经纪。不好意思这样联系您——[介绍人姓名] 提到您最近可能有一些生活上的变动，也在考虑房子的事。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我没有任何前提假设，也没有什么特别的目的。只是想到——如果您将来有卖房的念头，<strong>我希望您能有一个真正了解这一带的人可以联系</strong>，而不是临时找个陌生经纪。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"现在方便聊五分钟吗，还是换个时间更合适？"</div>
+    </div>
+    <div class="script-note">〔 使用介绍人姓名前，请确认对方同意被提及。语气保持温和，不要着急。〕</div>
+    <div class="approach-fields">
+      <div class="frow2">
+        <div class="field"><label>介绍人姓名</label><input type="text" id="apRef3" placeholder="谁介绍的"></div>
+        <div class="field"><label>对方反应</label>
+          <select id="apResp3">
+            <option value="">— 请选择 —</option>
+            <option>愿意聊</option>
+            <option>之后回电</option>
+            <option>没有兴趣</option>
+            <option>需要时间考虑</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>备注</label><textarea id="apNote3" placeholder="说了什么、下一步……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- 方式4 -->
+<div class="approach-card" id="ap4">
+  <div class="approach-head" onclick="toggleApproach('ap4')">
+    <div class="approach-num">4</div>
+    <div class="approach-label">
+      <div class="approach-title">跟进市场报告或邮件</div>
+      <div class="approach-sub">您之前发了市场报告，现在跟进</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>您曾向该区域的屋主发送过市场动态报告、房产估值邮件，现在进行跟进。</div>
+    <div class="script-block">
+      <div class="script-text">"您好——我是 <strong>RE/MAX Realtron</strong> 的 <strong>Peter Luo</strong>。前一段时间我给您所在街道的几户屋主发了一份市场动态报告，想跟进一下，看看您有没有机会看到。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我不知道您是否在考虑卖房——但我发这份报告，是因为<strong>这一带很多屋主其实并不清楚市场现在的走势</strong>，我希望在您做任何重大决定之前，能先有准确的信息。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"就算您现在不打算卖，这个对话也是值得的——<strong>至少让您清楚自己的房子目前值多少钱。</strong>您觉得值得聊聊吗？"</div>
+    </div>
+    <div class="script-note">〔 这种方式很适合电话联系。提到具体的报告，能建立可信度和联系背景。〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>备注</label><textarea id="apNote4" placeholder="对方是否记得邮件？反应如何……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- 方式5 -->
+<div class="approach-card" id="ap5">
+  <div class="approach-head" onclick="toggleApproach('ap5')">
+    <div class="approach-num">5</div>
+    <div class="approach-label">
+      <div class="approach-title">社区或社交认识</div>
+      <div class="approach-sub">学校、健身房、社区活动——对方认识你</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>您通过社区活动、学校、健身房等场合认识对方，对方可能记得您的名字或面孔。</div>
+    <div class="script-block">
+      <div class="script-text">"[姓名]，你好——我是 <strong>Peter Luo</strong>，我们在[场合——学校、健身房、社区活动]见过几次。这样联系你，希望没有打扰。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"其实我早就想联系你了——只是一直不想把工作带进来。但有人提到你可能在考虑房子的事，我就想着，<strong>与其让你接到一个陌生经纪的电话，不如从认识的人这里先了解一下情况</strong>。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我真的没有什么推销目的，只是想让你知道——如果将来有需要，我就在这里。<strong>这样可以吗？</strong>"</div>
+    </div>
+    <div class="script-note">〔 语气要亲切自然。不要先讲市场——先建立在关系上。〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>认识场合</label><input type="text" id="apCtx5" placeholder="学校 / 健身房 / 社区活动……"></div>
+      <div class="field"><label>备注</label><textarea id="apNote5" placeholder="对方反应……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- 方式6 -->
+<div class="approach-card" id="ap6">
+  <div class="approach-head" onclick="toggleApproach('ap6')">
+    <div class="approach-num">6</div>
+    <div class="approach-label">
+      <div class="approach-title">电话陌拜——区域主动联系</div>
+      <div class="approach-sub">公开目录 · 对房产历史无任何了解</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>适用情况：</strong>通过公开目录致电某区域的屋主，对该房产没有任何事先了解。</div>
+    <div class="script-block">
+      <div class="script-text">"您好——我叫 <strong>Peter Luo</strong>，是 <strong>RE/MAX Realtron</strong> 的地产经纪。我知道这个电话有点突然，我长话短说。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我手上有几位买家，<strong>专门在[社区名称]找房</strong>，所以我直接联系这一带的屋主——因为有时候合适的房子根本还没上市，就已经成交了。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"我不是来卖什么东西的，也不是来让您签什么东西的。只是想问一个问题：<strong>卖房这件事，您有没有想过</strong>，哪怕是长远打算？"</div>
+    </div>
+    <div class="script-note">〔 30秒之内问出这个问题。如果说没有，致谢并请求转介。如果说有，进入EER。〕</div>
+    <div class="script-block">
+      <div class="script-text">"如果没有，我完全理解——打扰了，非常抱歉。请问您认识附近有没有在考虑搬家的邻居？这才是我最想知道的。"</div>
+    </div>
+    <div class="approach-fields">
+      <div class="field"><label>备注</label><textarea id="apNote6" placeholder="对方反应、下一步……"></textarea></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- 接触方式标签结束 -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 标签二：异议处理 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panelObj">
+
+<div style="background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+  <div style="font-size:12px;font-weight:700;color:var(--gold-tag);margin-bottom:5px;">📌 使用说明</div>
+  <div style="font-size:13px;color:var(--gold-text);line-height:1.6;">每次都必须先完成同理心阶段，再进入探索，最后才回应。回应内容必须基于对方在探索阶段说的话——不要用千篇一律的推销话术。</div>
+</div>
+
+<div class="cat-label"><span class="cat-pill">EER框架</span> 同理心 → 探索 → 回应</div>
+
+<!-- 异议1 -->
+<div class="obj-card" id="obj1">
+  <div class="obj-head" onclick="toggleObj('obj1')">
+    <div class="obj-num">1</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我们不打算卖了。"</div>
+      <div class="obj-tag">保护性反应——通常并非最终决定</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">卖家已退出卖房计划。通常是疲惫或受挫后的保护反应，不一定是永久决定。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>对上次挂牌过程感到疲惫和心灰意冷</div>
+      <div class="reason-item"><span class="reason-num">2</span>结果令人失望——看房稀少、没有出价，或出价远低于期望</div>
+      <div class="reason-item"><span class="reason-num">3</span>对上一位经纪的努力或沟通不满意</div>
+      <div class="reason-item"><span class="reason-num">4</span>对市场感到担忧——认为现在的条件更差了，看不到希望</div>
+      <div class="reason-item"><span class="reason-num">5</span>个人情况改变——卖房的动力已消散</div>
+      <div class="reason-item"><span class="reason-num">6</span>担心换了新经纪也是同样的结果</div>
+      <div class="reason-item"><span class="reason-num">7</span>在考虑其他选择——出租、继续住，或等待更好的市场</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">回应对方的立场，不要反驳</div><div class="eer-step-script">"我明白——您现在决定暂时不卖了。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">让对方感到决定合理，不产生防御</div><div class="eer-step-script">"经历了上次的挂牌过程，却没有得到想要的结果——有这样的感受完全可以理解。很多人都有类似的反应。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">传递好奇心，而非推销意图</div><div class="eer-step-script">"我不是来劝您的。只是……如果方便的话，<strong>是什么原因让您做出这个决定的呢？</strong>"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">开放式问题，找出真正原因</div><div class="eer-step-script">"是过程本身让您觉得难以承受，还是收到的出价不理想，还是对经纪的配合有些失望——或者是别的原因？"</div></div></div>
+    <div class="eer-note">〔 完整倾听。真正的原因通常在对方第二、三句话才说出来。不要急着回应。〕</div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">针对性地感谢对方分享</div><div class="eer-step-script">"谢谢您直接告诉我——这对我很有帮助。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">确认这是主要问题</div><div class="eer-step-script">"这个原因是主要的顾虑，还是说背后还有其他因素？"</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">⚠️ 降温处理——如果对方不愿回答问题</div>"完全没关系——我不是来翻旧账的。能不能让我留一份这一带的市场资料给您？您可以随便处置，没有任何义务。"</div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">从"挂牌失败"转向"信息缺口"</div><div class="eer-step-script">"我接触过不少在挂牌到期后退出的卖家，他们后来告诉我：问题不在于房子本身——而在于策略或时机。<strong>房子没有变，是周围的安排出了问题。</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">根据探索阶段听到的内容，量身定制</div><div class="eer-step-script"><strong>如果对方说出价太低：</strong>"如果出价一直低于您的预期，通常意味着定价或推广方式没有吸引到合适的买家——不是说这个价格达不到，而是方法需要调整。我想具体分析一下，当时发生了什么，以及我会怎么做不同的事。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查是否说到点上</div><div class="eer-step-script">"这样说对您的情况有没有一些参考，还是我漏掉了什么？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">低门槛的下一步</div><div class="eer-step-script">"我不是请您现在做任何决定。只是想问：<strong>花30分钟让我上门看一下</strong>，告诉您我认为发生了什么、我会怎么处理不同——您觉得值得吗？完全没有义务。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote1" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议2 -->
+<div class="obj-card" id="obj2">
+  <div class="obj-head" onclick="toggleObj('obj2')">
+    <div class="obj-num">2</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"上一个经纪没把房子卖出去。"</div>
+      <div class="obj-tag">仍想卖——对经纪不满</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">这是一个入口——对方仍想卖，只是受挫。不要为整个行业辩护。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>定价过高——通常是经纪为了拿委托而迎合卖家</div>
+      <div class="reason-item"><span class="reason-num">2</span>推广不到位——照片差、网络曝光不足、缺乏精准投放</div>
+      <div class="reason-item"><span class="reason-num">3</span>沟通薄弱——更新太少，让卖家感到被忽视</div>
+      <div class="reason-item"><span class="reason-num">4</span>缺乏买家反馈——卖家从不知道买家真正的看法</div>
+      <div class="reason-item"><span class="reason-num">5</span>市场发出信号时，没有调整定价策略</div>
+      <div class="reason-item"><span class="reason-num">6</span>经纪的专长与房产类型或价格段不匹配</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受——不要为行业辩护</div><div class="eer-step-script">"我听到了——房子挂牌了，但没有卖出去。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">说出挫败感</div><div class="eer-step-script">"这真的很令人沮丧——经历了整个过程，结果又回到了原点。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">表达好奇，而非评判</div><div class="eer-step-script">"如果您愿意说说，我很想了解当时发生了什么——不是为了评价任何人，只是希望来的时候不是两眼一抹黑。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">邀请对方讲述经过</div><div class="eer-step-script">"当时的经历是什么样的？<strong>您觉得主要是哪里出了问题</strong>——或者最让您受挫的是什么？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">用对方的原话反映回去</div><div class="eer-step-script">"非常有帮助——谢谢您。听起来是[对方说的具体内容]。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">是否还有其他顾虑？</div><div class="eer-step-script">"经纪的表现是主要问题，还是说定价、市场、时机这些方面也有影响？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">将房子与上次经历分开</div><div class="eer-step-script">"房子本身通常不是问题。大多数过期委托归结为三件事——定价、曝光、策略。<strong>而这三件事都是可以解决的。</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">根据对方说的，具体回应</div><div class="eer-step-script"><strong>如果沟通是问题：</strong>"我的工作方式是围绕沟通来设计的——每周无论有没有进展，我都会发一份书面更新，让您从来不用猜测情况。您随时都有文字记录。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">验证是否说到点上</div><div class="eer-step-script">"这样说有没有回应到您最关心的地方，还是还有什么我没提到？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">提议上门</div><div class="eer-step-script">"我建议<strong>上门大约30到45分钟</strong>——带上完整的分析，告诉您我认为发生了什么、我会怎么做不同的事。没有别的目的，就是让您离开时比来之前了解得更多。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote2" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议3 -->
+<div class="obj-card" id="obj3">
+  <div class="obj-head" onclick="toggleObj('obj3')">
+    <div class="obj-num">3</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我们准备再找同一个经纪挂牌。"</div>
+      <div class="obj-tag">忠诚感——通常是情感而非理性</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">不要挑战这种忠诚。尊重它——然后请求在对方签约前进行一次比较性对话。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>真实的忠诚和个人关系——他们喜欢那位经纪</div>
+      <div class="reason-item"><span class="reason-num">2</span>经纪承诺会更努力、调整价格或改变策略</div>
+      <div class="reason-item"><span class="reason-num">3</span>害怕改变——换经纪感觉像是重新开始</div>
+      <div class="reason-item"><span class="reason-num">4</span>不忍心"解雇"一个认识的人</div>
+      <div class="reason-item"><span class="reason-num">5</span>认为是市场的问题，不是经纪的问题</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">尊重忠诚，不要挑战</div><div class="eer-step-script">"我明白——您打算继续找同一位经纪挂牌。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">认同这背后的逻辑</div><div class="eer-step-script">"这是合理的——你们之间有关系，从头找一个不认识的人确实会有很多不确定性。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">保留一扇门，不施压</div><div class="eer-step-script">"我不是来改变您想法的。我只有一个请求——<strong>在您签约之前</strong>，能不能先和我聊一次，至少有个比较的参考？"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">了解忠诚背后的原因</div><div class="eer-step-script">"回去找他们，主要是因为关系，还是他们提出了新的具体方案，还是单纯熟悉这个过程比较省心？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">表示理解</div><div class="eer-step-script">"谢谢您告诉我——这帮助我更了解您的考量。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">找出心里的疑虑</div><div class="eer-step-script">"除了关系本身——您内心深处，有没有对这次结果是否会不同感到有些不确定？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">不评价对方——提一个关键问题</div><div class="eer-step-script">"我不打算说任何关于其他经纪的负面话。我只是想说——挂牌没卖出去，就说明有些东西需要改变。值得问的问题是：<strong>这次会有什么具体的不同？</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">请求一次比较性会面</div><div class="eer-step-script">"我只请求三十分钟。让我展示一下我会带什么分析，我会推荐什么策略。然后您就有了一个真正的参考。如果您仍然觉得对方是更好的选择，这完全合理。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查对方的开放程度</div><div class="eer-step-script">"这样的比较对您有参考价值，还是觉得是浪费时间？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">让对方容易说是</div><div class="eer-step-script">"这周我有空——不超过半小时，我会带好所有准备。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote3" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议4 -->
+<div class="obj-card" id="obj4">
+  <div class="obj-head" onclick="toggleObj('obj4')">
+    <div class="obj-num">4</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"你会做什么不一样的事？"</div>
+      <div class="obj-tag">真诚的问题——要证据，不要承诺</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">这是一扇打开的门——对方在测试您的专业能力。不要给出通用话术。先搞清楚哪里出了问题，再具体回答。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>上次失败带来的怀疑——他们听过太多承诺</div>
+      <div class="reason-item"><span class="reason-num">2</span>需要看到真正的差异——不是"我更努力"这种话</div>
+      <div class="reason-item"><span class="reason-num">3</span>希望被教育，不是被推销</div>
+      <div class="reason-item"><span class="reason-num">4</span>在测试您是否真的懂业务、有没有认真思考过</div>
+      <div class="reason-item"><span class="reason-num">5</span>害怕把时间和钱又浪费在同样的结果上</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">正面接受，不要防御</div><div class="eer-step-script">"这正是应该问的问题。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">展示您理解为什么对方要问</div><div class="eer-step-script">"如果有人承诺了结果却没兑现，下一个来敲门的人凭什么让您相信会不一样？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">把问题变成对话</div><div class="eer-step-script">"在我回答之前，能不能先问您几个问题——这样我的答案才真的跟您的情况有关？"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">找出上次哪里出了问题</div><div class="eer-step-script">"您觉得上次主要是哪里出了问题？是价格、展示方式、看房数量、出价情况——还是别的？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">用对方的原话确认</div><div class="eer-step-script">"谢谢您——这很有用。所以主要问题是[对方说的内容]。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">确认是否完整</div><div class="eer-step-script">"这是全部吗，还是在我告诉您我会做什么不同之前，还有什么我应该了解的？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">把他们的问题和具体的解决方案对应上</div><div class="eer-step-script">"现在我可以真正回答您的问题了——因为我知道哪里出了问题。我可以具体告诉您，<strong>针对这些具体的情况</strong>，我会怎么做不同的事。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">具体回应——用对方的语言</div><div class="eer-step-script"><strong>如果照片差、没有看房：</strong>"在推广方面——每一套我代理的房子，我都会聘请专业摄影师和摄影师，没有例外。同时投放精准数字广告，锁定正在这个价格段主动找房的买家群体。目标是第一周的网络流量比普通挂牌多三到四倍。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查是否回答了对方真正想知道的</div><div class="eer-step-script">"这回答了您的问题吗，还是有哪个具体方面您想更深入了解？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">移到看房</div><div class="eer-step-script">"最好的方式是上门看看房子，针对您的情况做一个真正的方案——不是泛泛的，是针对您家具体的。<strong>这周有30到45分钟吗？</strong>"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote4" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议5 -->
+<div class="obj-card" id="obj5">
+  <div class="obj-head" onclick="toggleObj('obj5')">
+    <div class="obj-num">5</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我们想等到春天 / 市场好转再说。"</div>
+      <div class="obj-tag">时机犹豫——先搞清楚他们在等什么</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">可能有道理，也可能只是回避。先探索再判断——用本地数据，不要用全国新闻。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>传统观念认为春天卖房更好</div>
+      <div class="reason-item"><span class="reason-num">2</span>对目前买家需求或市场条件有真实的担忧</div>
+      <div class="reason-item"><span class="reason-num">3</span>用"等待"来回避真正做决定</div>
+      <div class="reason-item"><span class="reason-num">4</span>在等一个具体的事件：换工作、孩子毕业、家庭安排</div>
+      <div class="reason-item"><span class="reason-num">5</span>希望利率下降，吸引更多买家</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受，不要争辩</div><div class="eer-step-script">"我明白——您在考虑等到春天，或者市场条件改善了再动。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">承认这个逻辑有一定道理</div><div class="eer-step-script">"这是一个合理的直觉——大多数人确实觉得春天买家更活跃，这也有一定的依据。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">打开了解背后原因的门</div><div class="eer-step-script">"我想更了解一下这个时机背后的考量——是关于市场、个人情况，还是两者都有？可以问问吗？"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">"好转"对对方来说具体是什么意思？</div><div class="eer-step-script">"说到春天、或市场好转——您心目中的'好转'具体是指什么？是买家更多、价格更高、利率更低，还是别的什么？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">反映对方说的具体内容</div><div class="eer-step-script">"这很有帮助——所以主要是[对方具体的回答]。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">时机是唯一的障碍吗？</div><div class="eer-step-script">"如果市场条件是您希望的样子——您会准备好动了吗？还是说还有其他什么需要到位？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">春天有道理——但也有另一面</div><div class="eer-step-script">"春天的市场确实有更多买家活跃——但同样，那段时间竞争性挂牌也会大量涌现。春天对您来说是否有利，取决于您这个社区、您的价格段、以及当时的竞争情况。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">用本地数据，不用全国新闻</div><div class="eer-step-script"><strong>如果在等利率下降：</strong>"利率真的大幅下降时，通常会同时带来大量买家和大量卖家。已经在市场上的那批卖家往往能抓住第一波——在竞争最少的时候。有一个论点是：现在做好准备，比到时候和大家一起竞争更占优势。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查这个角度是否有影响</div><div class="eer-step-script">"这样看待这件事，有没有让您换一个角度，还是您还是觉得等更合适？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">提供数据，不是要求决定</div><div class="eer-step-script">"让我整理一份针对您那条街的本地市场分析——不是全国新闻，就是您附近实际发生的事。您自己看一看，决定现在是不是合适的时机。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote5" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议6 -->
+<div class="obj-card" id="obj6">
+  <div class="obj-head" onclick="toggleObj('obj6')">
+    <div class="obj-num">6</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我会给你打电话的。"</div>
+      <div class="obj-tag">礼貌性回避——通常不是彻底拒绝</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">顺势接受，不要抵触——然后在挂断之前问一个澄清性问题。约定一个具体的跟进时间，而不是含糊地说"到时候再联系"。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>上次经历后，情绪上还没准备好重新面对这件事</div>
+      <div class="reason-item"><span class="reason-num">2</span>在货比三家——比较几个经纪再做决定</div>
+      <div class="reason-item"><span class="reason-num">3</span>礼貌性拒绝，不想直接冲突</div>
+      <div class="reason-item"><span class="reason-num">4</span>在测试您的坚持度——想看看您会不会跟进</div>
+      <div class="reason-item"><span class="reason-num">5</span>还没看到足够的差异来说是</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">顺势接受，不要抵触</div><div class="eer-step-script">"当然——我理解，谢谢您。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">消除压力</div><div class="eer-step-script">"我不想占用您不愿意给的时间，这完全没问题。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">在挂断前问一个问题</div><div class="eer-step-script">"在您挂电话前——能不能问您一个小问题？就是想确保万一您真的打来，我能真正帮到您。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">一个聚焦、低压力的问题</div><div class="eer-step-script">"请问是有什么具体的事需要先发生——一个时间节点、一个决定，或者在等什么——才会让和我对话变得有意义？还是说现在单纯只是时机不对？"</div></div></div>
+    <div class="eer-note">〔 不管对方说什么——都接受，不要推。这是信息收集，不是谈判。〕</div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">感谢对方的回答</div><div class="eer-step-script">"谢谢您告诉我——这很有帮助。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">是否还有一个入口？</div><div class="eer-step-script">"卖房这件事，您现在还在脑子里转着，哪怕只是随便想想——还是说真的已经暂时搁置了？"</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">⚠️ 降温处理——如果对方明显在应付您</div>"完全没问题——我不会再占用您的时间了。我给您留一份这一带的市场快报，如果将来有什么变化，您知道怎么联系我。" 然后停止。不要继续推。</div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">给对方一个未来来电的理由</div><div class="eer-step-script">"大多数卖家真正打电话来的时候，已经错过了最好的窗口期。我请求的那30分钟对您没有任何成本，它可能会改变您对时机和定价的看法。这就是我的全部目的。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">让下一步变得具体</div><div class="eer-step-script">"我来做这样一件事：发给您一份关于您那条街的简短市场快报——不是推销，只是数据。如果您真的来电，您会有背景信息。如果没有来电，您也至少了解了一些情况。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">一个小小的请求</div><div class="eer-step-script">"这样可以吗——就是一封邮件，里面是附近的市场数据，没有别的。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">约定一个具体的跟进时间</div><div class="eer-step-script">"我今天就发过去。大概一周后我会给您一个简短的电话——不是来催您，就是看看那份资料有没有用。这样可以吗？"</div></div></div>
+    <div class="eer-note">〔 不要说"到时候再联系您"。必须约定一个具体的时间。含糊会让跟进消失。〕</div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote6" placeholder="对方反应、约定的跟进时间……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议7 -->
+<div class="obj-card" id="obj7">
+  <div class="obj-head" onclick="toggleObj('obj7')">
+    <div class="obj-num">7</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我们没看到任何结果——没有看房，没有出价。"</div>
+      <div class="obj-tag">士气低落——通常是定价或曝光问题</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">完全没有活动，其实是最清晰的信号之一。先探索，再诊断——不要提前假设原因。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>定价过高——零活动最常见的单一原因</div>
+      <div class="reason-item"><span class="reason-num">2</span>摄影或视觉呈现太差，让网络浏览者直接跳过</div>
+      <div class="reason-item"><span class="reason-num">3</span>推广覆盖不足——根本没有足够的买家看到这套房</div>
+      <div class="reason-item"><span class="reason-num">4</span>看房安排的限制减少了实际看房机会</div>
+      <div class="reason-item"><span class="reason-num">5</span>买家反馈中出现了房子状况的问题</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">直接接受这个结果</div><div class="eer-step-script">"没有看房，没有出价——这是一段艰难的经历。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">说出那种感受</div><div class="eer-step-script">"你们花了心思准备，挂牌了，然后什么都没有发生——这真的很让人心灰意冷。想到要不要再试一次，有疑虑是完全正常的。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">诊断的姿态，不是推销</div><div class="eer-step-script">"在我说什么之前——能不能问您几个问题？'没有结果'通常有一个具体的原因，我想先了解您的情况，再说我会怎么做。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">挖掘具体信息</div><div class="eer-step-script">"整个过程里总共有多少次看房？有没有收到任何买家反馈，哪怕是非正式的？您自己感觉主要问题在哪里？"</div></div></div>
+    <div class="eer-note">〔 认真倾听。不要在对方说完之前下结论。答案通常指向定价、曝光或看房安排。〕</div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">反映对方说的内容</div><div class="eer-step-script">"这非常有帮助——谢谢您。根据您描述的情况，听起来是[对方说的具体内容]。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">确认根本原因</div><div class="eer-step-script">"如果您来猜一猜——您觉得最主要的单一原因是什么？是价格、推广方式、房子状况，还是其他的？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">没有活动 = 清晰的信号，不是死局</div><div class="eer-step-script">"零活动其实是您能收到的最清晰的信号之一。如果是房子状况的问题，通常会有看房但没有出价。<strong>如果连看房都没有——几乎一定是定价或曝光的问题。这两个都是可以解决的。</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">对应对方说的具体情况</div><div class="eer-step-script"><strong>如果零看房：</strong>"挂牌头两周零看房，意味着买家在看到房子之前就已经过滤掉了。这发生在两种情况下：价格高于买家搜索区间，或者网络呈现不够吸引人让人点进来。这两点我从第一天就会着手处理。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查是否说到点</div><div class="eer-step-script">"这样说和您经历的情况吻合吗，还是我哪里理解不对？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">上门看房</div><div class="eer-step-script">"我想到您家走一遍——不是为了挂牌，只是用全新的眼光看一看，然后诚实地告诉您我认为发生了什么、我会改变什么。这30分钟是值得的，我保证。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote7" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议8 -->
+<div class="obj-card" id="obj8">
+  <div class="obj-head" onclick="toggleObj('obj8')">
+    <div class="obj-num">8</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"现在市场不好。"</div>
+      <div class="obj-tag">认知问题——先探索具体顾虑</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">通常是受新闻标题影响的印象。用本地数据回应，不要用全国性的论点。对他们来说，重要的是他们那条街上发生的事。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>接受了负面新闻标题，却缺乏本地背景</div>
+      <div class="reason-item"><span class="reason-num">2</span>从自身上次挂牌的经历，泛化到整个市场</div>
+      <div class="reason-item"><span class="reason-num">3</span>担心卖价太低——想等价格回升</div>
+      <div class="reason-item"><span class="reason-num">4</span>锁定效应——不愿卖了之后再背一个更高的利率买下一套</div>
+      <div class="reason-item"><span class="reason-num">5</span>把买方市场和卖不出去的市场混为一谈</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受，不要争辩</div><div class="eer-step-script">"我听到了——您觉得现在市场比较不确定。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">承认顾虑有其道理</div><div class="eer-step-script">"这不是一个不合理的判断——利率确实有压力，市场和几年前相比也有了变化。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">移向具体问题</div><div class="eer-step-script">"可以问一下，您具体担心的是市场的哪个方面？我想确保我回应的是您真正的顾虑，而不是一个泛泛的版本。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">了解他们具体担心什么</div><div class="eer-step-script">"是价格方面的顾虑——担心卖不到需要的数字？还是需求方面——担心没有人来买？还是更多是关于您下一套房要怎么买？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">确认您听到的内容</div><div class="eer-step-script">"谢谢您——这帮助我更清楚顾虑真正在哪里。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">市场是唯一的障碍吗？</div><div class="eer-step-script">"如果市场条件更符合您的期望——您会准备好动了吗？还是还有其他什么需要到位？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">全国市场 ≠ 本地市场</div><div class="eer-step-script">"全国的市场新闻和您那条街上的市场，是两回事。对您来说重要的，是您的房型、您的社区、过去90天真实发生了什么。<strong>新闻讲的是平均数——您的决定不是。</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">用本地数据，引用具体成交案例</div><div class="eer-step-script"><strong>举例：</strong>"根据我最近在这个区域看到的情况——价格合适的同类房产仍然在成交。停在市场上的，要么是定价太高，要么是推广不到位。这是策略的问题，不是市场的问题。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">这个本地视角有没有改变他们的看法？</div><div class="eer-step-script">"这样看待这件事，有没有让您换一个角度，还是顾虑还在？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">提供数据，不是要求决定</div><div class="eer-step-script">"让我整理一份针对您那个区域的本地市场摘要——不是全国新闻，是您家附近实际发生的事。您自己来判断现在是否合适。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote8" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议9 -->
+<div class="obj-card" id="obj9">
+  <div class="obj-head" onclick="toggleObj('obj9')">
+    <div class="obj-num">9</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我们需要再想想 / 先跟家人商量。"</div>
+      <div class="obj-tag">通常是真实情况——确保决策者都在场</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">尊重这个过程，并利用它。目标是确保您见面的时候，所有需要参与决定的人都在场。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>有多个决策者，彼此还没有统一意见</div>
+      <div class="reason-item"><span class="reason-num">2</span>财务上还不确定——想先把数字算清楚再承诺</div>
+      <div class="reason-item"><span class="reason-num">3</span>情绪上还没准备好——卖房这个决定还没彻底想通</div>
+      <div class="reason-item"><span class="reason-num">4</span>有家庭成员还没参与这个对话，需要先沟通</div>
+      <div class="reason-item"><span class="reason-num">5</span>用"家人"来礼貌地缓冲，避免当场承诺</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">尊重这个过程</div><div class="eer-step-script">"当然——这是一个大决定。先想清楚、确保大家意见一致，这正是正确的做法。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">认同家庭决策的现实</div><div class="eer-step-script">"卖房很少是一个人能决定的事——没有让所有人都在同一个信息基础上，之后往往会出问题。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">确保决策者都到场</div><div class="eer-step-script">"能问一下，这个决定还涉及到哪些人？我希望等我们见面的时候，不是只跟一部分人在聊。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">了解家庭对话会涵盖什么</div><div class="eer-step-script">"说到需要再想想——主要是时机、价格预期，还是有某个人需要先沟通？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">承认这个背景</div><div class="eer-step-script">"这说得很直接——谢谢您告诉我。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">确认下一步会是什么</div><div class="eer-step-script">"等您跟家人聊完了——假设聊下来方向符合预期——您会准备好和我坐下来谈吗？还是还有别的事情需要先到位？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">给他们带进家庭对话的东西</div><div class="eer-step-script">"有一件事可以让那次家庭对话更顺畅——就是手里有一些真实数据：您的房子实际在以什么价格成交，多久能卖出，现在市场是什么走势。这样讨论就不是基于估计和假设了。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">主动提供帮助，让家庭对话更有依据</div><div class="eer-step-script">"我可以整理一份简短的市场摘要，您可以带去分享——没有义务，没有意图。就是让对话有具体的参考。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">确定下一步</div><div class="eer-step-script">"这对您有帮助吗？您大概什么时候会有一个方向？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">约定具体的跟进时间</div><div class="eer-step-script">"大概一周后我给您一个电话——给您时间跟家人聊完。如果方向合适，我们可以约个时间见一见。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote9" placeholder="涉及哪些人？约定的跟进时间……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议10 -->
+<div class="obj-card" id="obj10">
+  <div class="obj-head" onclick="toggleObj('obj10')">
+    <div class="obj-num">10</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"你能不能减一点佣金？"</div>
+      <div class="obj-tag">通常是价值感问题——探索之后再回应</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">不要在了解原因之前就打折。把对话从成本引向净收益。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>上次挂牌付了费用却没有结果——感觉这次又在为同样的事付钱</div>
+      <div class="reason-item"><span class="reason-num">2</span>还没理解佣金的合理之处在哪</div>
+      <div class="reason-item"><span class="reason-num">3</span>在和低佣金或固定收费经纪比较</div>
+      <div class="reason-item"><span class="reason-num">4</span>财务压力——需要一个特定的净收入才能这笔交易走得通</div>
+      <div class="reason-item"><span class="reason-num">5</span>觉得所有经纪都一样，不理解为什么要多付</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受，不要辩护</div><div class="eer-step-script">"这个问题问得合理。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">展示您理解为什么他们会问</div><div class="eer-step-script">"尤其是经历了一次挂牌却没卖出去——我理解为什么佣金这个话题会让人觉得有些复杂。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">先讨论价值，再谈数字</div><div class="eer-step-script">"在我回答这个问题之前——能不能先问您一个问题？因为答案取决于您想达到什么目的。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">了解这个问题背后的真实原因</div><div class="eer-step-script">"是觉得这个金额本身太高，还是更多是因为上次的经历让您不确定这笔钱能得到什么不同的服务？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">确认哪个才是真正的问题</div><div class="eer-step-script">"这很有帮助——所以真正的问题是[对方的回答]，不只是数字本身。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">佣金是唯一的顾虑吗？</div><div class="eer-step-script">"如果我能清楚地展示，我的方式能带来更高的净成交价——哪怕加上佣金之后——那个百分比还会是主要的顾虑吗？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">成本 → 净收益</div><div class="eer-step-script">"佣金是成交价的一个百分比。真正重要的是您最终拿到手的净收益。一个降低了佣金、但卖价更低或拖得更久的经纪，可能让您损失的远比佣金差额多。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">对应对方的具体情况</div><div class="eer-step-script">"我能承诺的是一个以最大化您净收益为核心的策略——我很乐意带您看看我是怎么做的。如果看完数字您觉得价值不在那里，那是一个公平的对话。但我希望我们在<strong>您看过方案之后</strong>再谈，而不是之前。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">检查这个角度是否站得住脚</div><div class="eer-step-script">"这样理解，对您来说说得通吗？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">移到咨询见面</div><div class="eer-step-script">"让我上门，把完整策略展示给您，然后一起做一个净收益分析——那时候我们再讨论佣金，有数字参考的对话会更有意义。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote10" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议11 -->
+<div class="obj-card" id="obj11">
+  <div class="obj-head" onclick="toggleObj('obj11')">
+    <div class="obj-num">11</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"所有经纪都一样。"</div>
+      <div class="obj-tag">不要说——要展示</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">不要声称自己不同——用一件具体的可验证的事来展示。先问清楚上次哪里出了问题，再针对那个回应。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>一次不好的经历被泛化到整个行业</div>
+      <div class="reason-item"><span class="reason-num">2</span>接触过的每个经纪听起来都一样</div>
+      <div class="reason-item"><span class="reason-num">3</span>从来没看到过结果上的真正差异</div>
+      <div class="reason-item"><span class="reason-num">4</span>上次挂牌失败后的情绪防御</div>
+      <div class="reason-item"><span class="reason-num">5</span>真的不知道怎么分辨经纪的好坏</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受，不要变得防御</div><div class="eer-step-script">"我听到了——说实话，经历了您经历的事，有这种感觉是可以理解的。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">不要否定这个概括</div><div class="eer-step-script">"很多经纪的确听起来一样——做起来也差不多。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">创造一个入口，不先下结论</div><div class="eer-step-script">"我不打算站在这里告诉您我不一样。我宁愿展示给您看。能不能先问您几个问题？"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">了解对方的经历究竟是什么</div><div class="eer-step-script">"让您得出这个结论的，主要是最近这次挂牌的经历，还是之前也有过类似的感受？"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">接收具体信息</div><div class="eer-step-script">"这很有参考价值——谢谢您。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">什么才会真正改变他们的看法？</div><div class="eer-step-script">"有没有什么，能真正让您看到经纪之间的差别？还是说已经到了觉得这根本不可能的程度？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">让差异变得具体、可验证</div><div class="eer-step-script">"这是我的建议：别听我说。让我带着实际数据来——上次挂牌的情况、我会做什么不同以及为什么、附近可比房产的数字。<strong>这是证据，您自己来判断。</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">一个具体的、可验证的差异点</div><div class="eer-step-script">"我有一件事很多经纪不做：在定价之前，我会做一个买家需求分析——看看现在您这个价格段、您这个区域，有多少买家在主动搜索。这能告诉我，我们在往满满的池子里撒网，还是在一个空的地方。我可以把这个分析给您看。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">邀请怀疑</div><div class="eer-step-script">"我宁愿您保持怀疑、来看看真实的工作，而不是要求您相信我的话。30分钟的上门分析——如果看起来和您之前见过的一模一样，十分钟之后您可以离开。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">让请求变得简单</div><div class="eer-step-script">"就让我来展示一下分析。没有承诺。如果看起来和以前所有的一样，您完全有理由这么说。"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote11" placeholder="对方反应、哪句话奏效、下一步……"></textarea></div>
+  </div>
+</div>
+
+<!-- 异议12 -->
+<div class="obj-card" id="obj12">
+  <div class="obj-head" onclick="toggleObj('obj12')">
+    <div class="obj-num">12</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"我没有兴趣。"</div>
+      <div class="obj-tag">表面性拒绝——不要硬闯，要绕过去</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">绕过它，不要硬闯。一个问题，一个小小的提议，然后优雅地退出。一个月后的跟进往往比今天继续推更有效。</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">潜在原因</div>
+      <div class="reason-item"><span class="reason-num">1</span>挂牌结束后被太多经纪联系，已经厌倦了</div>
+      <div class="reason-item"><span class="reason-num">2</span>上次经历后情绪上已经精疲力竭</div>
+      <div class="reason-item"><span class="reason-num">3</span>真的决定了至少暂时不卖</div>
+      <div class="reason-item"><span class="reason-num">4</span>用礼貌的方式回绝，不想接受推销电话</div>
+      <div class="reason-item"><span class="reason-num">5</span>个人情况发生了变化</div>
+    </div>
+    <div class="phase-header phase-empathy">第一阶段 — 同理心</div>
+    <div class="eer-step"><div class="eer-step-label">认可</div><div class="eer-step-content"><div class="eer-step-purpose">接受，不要抵触</div><div class="eer-step-script">"完全没问题——感谢您直接告诉我。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">认同</div><div class="eer-step-content"><div class="eer-step-purpose">立刻消除压力</div><div class="eer-step-script">"我不是来说服您的。我知道您最近可能已经接了不少类似的电话了。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">在挂断前问一个问题</div><div class="eer-step-script">"能不能在您挂电话之前，问您一个小问题——就是想知道，万一将来情况有变，我能不能真正帮上忙。"</div></div></div>
+    <div class="phase-header phase-explore">第二阶段 — 探索</div>
+    <div class="eer-step"><div class="eer-step-label">探索</div><div class="eer-step-content"><div class="eer-step-purpose">一个聚焦、无威胁感的问题</div><div class="eer-step-script">"请问是已经决定了暂时不卖——还是更多是现在时机还没到？"</div></div></div>
+    <div class="eer-note">〔 这一个问题就能说明一切。如果是"已经决定了"→ 温和地收尾。如果是"时机还没到"→ 还有对话空间。〕</div>
+    <div class="eer-step"><div class="eer-step-label">致谢</div><div class="eer-step-content"><div class="eer-step-purpose">感谢对方的回答</div><div class="eer-step-script">"谢谢您告诉我——这对我很有帮助。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">聚焦</div><div class="eer-step-content"><div class="eer-step-purpose">只有在对方说"时机还没到"时才用</div><div class="eer-step-script">"是有什么具体的原因让现在不合适，还是单纯需要一些空间先缓一缓？"</div></div></div>
+    <div class="phase-header phase-respond">第三阶段 — 回应</div>
+    <div class="eer-step"><div class="eer-step-label">重新定框</div><div class="eer-step-content"><div class="eer-step-purpose">只有在有入口时才用——否则不要推</div><div class="eer-step-script">"我不打算说服您做任何事。我只是想让您知道——当您准备好了，或者哪怕只是想了解一些信息再做决定，这个对话随时都在。我这边没有任何压力。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">针对回应</div><div class="eer-step-content"><div class="eer-step-purpose">一个小的、零义务的提议</div><div class="eer-step-script">"说完这个我就不打扰您了——能不能让我发给您一份这一带的简短市场快报？就是您那条街上发生的事，您可以随便处置。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">确认</div><div class="eer-step-content"><div class="eer-step-purpose">让对方选择</div><div class="eer-step-script">"如果您不需要，也完全没关系——我只是想问一下。"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">过渡</div><div class="eer-step-content"><div class="eer-step-purpose">温和地收尾</div><div class="eer-step-script">"谢谢您接我的电话。如果将来有任何变化，我的联系方式很容易找到。祝您今天愉快。"</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">📌 重要提醒</div>如果对方明显没有兴趣——不要试图重新打开这个对话。优雅地退出，比强行继续留下更好的印象。4到6周后的一次低压力跟进，可能比今天的任何进一步说服都更有效。</div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">备注</div><textarea class="obj-notes-input" id="onote12" placeholder="对方反应、如有约定的下一步……"></textarea></div>
+  </div>
+</div>
+
+</div><!-- 异议处理标签结束 -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 标签三：备注保存 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panelNotes">
+<div class="session-card" style="margin-top:4px;">
+  <div class="card-inner">
+    <div class="card-title">联系摘要</div>
+    <div class="frow2">
+      <div class="field"><label>潜力评级</label>
+        <select id="leadRating">
+          <option value="">— 请选择 —</option>
+          <option>🔥 热——想约见面</option>
+          <option>☀️ 温——开放，需要时间</option>
+          <option>❄️ 冷——有阻力</option>
+          <option>🌱 培育——长线跟进</option>
+          <option>✗ 无效——不打算卖</option>
+        </select>
+      </div>
+      <div class="field"><label>下次跟进日期</label><input type="date" id="followUpDate"></div>
+    </div>
+    <div style="margin-top:10px;" class="frow2">
+      <div class="field"><label>遇到的异议</label>
+        <select id="objFaced">
+          <option value="">— 请选择 —</option>
+          <option>不卖了</option>
+          <option>上一个经纪没卖出去</option>
+          <option>还是找同一个经纪</option>
+          <option>你会做什么不同的事</option>
+          <option>等春天 / 市场好转</option>
+          <option>我会打给你的</option>
+          <option>没有结果 / 没有看房</option>
+          <option>市场不好</option>
+          <option>需要再想想 / 跟家人商量</option>
+          <option>能减一点佣金吗</option>
+          <option>所有经纪都一样</option>
+          <option>没有兴趣</option>
+        </select>
+      </div>
+      <div class="field"><label>EER推进阶段</label>
+        <select id="eerStage">
+          <option value="">— 请选择 —</option>
+          <option>只完成同理心</option>
+          <option>探索已开始</option>
+          <option>探索已完成</option>
+          <option>回应已完成</option>
+          <option>已约好见面</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:10px;" class="field">
+      <label>跟进行动</label>
+      <select id="followUpAction">
+        <option value="">— 请选择 —</option>
+        <option>发送本地市场快报</option>
+        <option>发送净收益分析</option>
+        <option>发送沟通计划</option>
+        <option>一周后致电</option>
+        <option>两周后致电</option>
+        <option>每月更新即可</option>
+        <option>无需跟进</option>
+      </select>
+    </div>
+    <div style="margin-top:10px;" class="field">
+      <label>整体对话备注</label>
+      <textarea id="overallNotes" style="min-height:100px;" placeholder="对方说的关键内容、识别出的真实异议、谈话氛围、哪些话有效、下次应避免什么……"></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="save-area">
+  <button class="save-btn warm" onclick="saveAllData()">💾 保存联系记录</button>
+  <button class="save-btn rec-save" id="btnSaveRec" onclick="saveRecording()" disabled>🎙 保存录音文件</button>
+  <div class="rec-note">保存至「文件」App → 下载文件夹</div>
+  <button class="save-btn grey" onclick="resetForm()">🔄 新建联系</button>
+</div>
+</div><!-- 备注保存标签结束 -->
+
+</main>
+
+<!-- 加载弹窗 -->
+<div class="modal-overlay" id="loadModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📂 已保存记录</div>
+    <div id="savedList"></div>
+    <button class="modal-close" onclick="closeLoadModal()">关闭</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+function toggleApproach(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+function toggleObj(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+document.getElementById('sessDate').value = new Date().toISOString().split('T')[0];
+
+const FIELDS = [
+  'sessDate','sessArea','sessAddress','sessName','sessSource',
+  'apNote1','apNote2','apNote3','apNote4','apNote5','apNote6',
+  'apRef3','apResp3','apCtx5',
+  'onote1','onote2','onote3','onote4','onote5','onote6',
+  'onote7','onote8','onote9','onote10','onote11','onote12',
+  'leadRating','followUpDate','objFaced','eerStage','followUpAction','overallNotes'
+];
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function buildFilename() {
+  const addr = (v('sessAddress') || 'Address').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const now = new Date();
+  const MM = String(now.getMonth()+1).padStart(2,'0');
+  const DD = String(now.getDate()).padStart(2,'0');
+  let HH = now.getHours(); const min = String(now.getMinutes()).padStart(2,'0');
+  const ampm = HH >= 12 ? 'PM' : 'AM'; HH = (HH % 12) || 12;
+  return `Expired_${addr}.${now.getFullYear()}_${MM}_${DD}_${String(HH).padStart(2,'0')}${ampm}_${min}`;
+}
+
+function saveAllData() {
+  const data = { savedAt: new Date().toISOString(), nameSnapshot: v('sessName') || '未知' };
+  FIELDS.forEach(id => { data[id] = v(id); });
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired_ch') || '[]');
+  all.unshift(data);
+  if (all.length > 50) all.splice(50);
+  localStorage.setItem('pinnacle_expired_ch', JSON.stringify(all));
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = buildFilename() + '.json'; a.click();
+  showToast('已保存 ✓');
+}
+
+function openLoadModal() { renderSavedList(); document.getElementById('loadModal').classList.add('open'); }
+function closeLoadModal() { document.getElementById('loadModal').classList.remove('open'); }
+document.getElementById('loadModal').addEventListener('click', e => { if (e.target === document.getElementById('loadModal')) closeLoadModal(); });
+
+function renderSavedList() {
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired_ch') || '[]');
+  const el = document.getElementById('savedList');
+  if (!all.length) { el.innerHTML = '<div class="empty-state">暂无保存记录</div>'; return; }
+  el.innerHTML = all.map((c,i) => {
+    const d = c.savedAt ? new Date(c.savedAt).toLocaleDateString('zh-CN') : '—';
+    return `<div class="saved-item" onclick="loadRecord(${i})">
+      <div><div class="saved-name">${c.nameSnapshot || '未知'}</div>
+      <div class="saved-meta">${c.sessDate||'—'} · ${c.sessArea||'—'} · ${d}</div></div>
+      <button class="del-btn" onclick="event.stopPropagation();deleteRecord(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function loadRecord(i) {
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired_ch') || '[]');
+  const data = all[i]; if (!data) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el && data[id] !== undefined) el.value = data[id]; });
+  closeLoadModal(); showToast('已加载 ✓');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteRecord(i) {
+  if (!confirm('确定要删除这条记录吗？')) return;
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired_ch') || '[]');
+  all.splice(i, 1); localStorage.setItem('pinnacle_expired_ch', JSON.stringify(all));
+  renderSavedList();
+}
+
+function resetForm() {
+  if (!confirm('清除所有内容，开始新的联系记录？')) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('sessDate').value = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('open'));
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  stopRecording();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+let mediaRecorder = null, audioChunks = [], recordedBlob = null;
+let timerInterval = null, elapsedSec = 0;
+
+async function toggleRecord() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+                     : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        recordedBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        document.getElementById('btnSaveRec').removeAttribute('disabled');
+        document.getElementById('recStatus').textContent = '录音完成——点击保存录音';
+      };
+      mediaRecorder.start(500); elapsedSec = 0; startTimer();
+      document.getElementById('btnRecord').classList.add('recording');
+      document.getElementById('recLabel').textContent = '停止';
+      document.getElementById('btnPause').style.display = 'flex';
+      document.getElementById('recTimer').style.display = 'inline';
+      document.getElementById('recStatus').textContent = '● 录音中……';
+    } catch(e) { alert('麦克风权限被拒绝。\n请在Safari设置中允许麦克风访问。'); }
+  } else { stopRecording(); }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop(); mediaRecorder.stream?.getTracks().forEach(t => t.stop());
+  }
+  clearInterval(timerInterval);
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('recLabel').textContent = '开始';
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+function togglePause() {
+  if (!mediaRecorder) return;
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause(); clearInterval(timerInterval);
+    document.getElementById('btnPause').textContent = '▶ 继续';
+    document.getElementById('recStatus').textContent = '⏸ 已暂停';
+  } else if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume(); startTimer();
+    document.getElementById('btnPause').textContent = '⏸ 暂停';
+    document.getElementById('recStatus').textContent = '● 录音中……';
+  }
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    const m = Math.floor(elapsedSec / 60);
+    const s = String(elapsedSec % 60).padStart(2, '0');
+    document.getElementById('recTimer').textContent = m + ':' + s;
+  }, 1000);
+}
+
+function saveRecording() {
+  if (!recordedBlob) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(recordedBlob);
+  a.download = buildFilename() + '.m4a'; a.click();
+  showToast('录音已保存 ✓');
+}
+</script>
+</body>
+</html>

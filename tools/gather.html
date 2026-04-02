@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Information Gathering Form – Peter Luo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #B8963E;
+    --gold-light: #D4AF6A;
+    --gold-pale: #F5EDD8;
+    --dark: #1A1A1A;
+    --mid: #4A4A4A;
+    --light: #F9F6F0;
+    --white: #FFFFFF;
+    --border: #D6C99A;
+    --section-bg: #FDFAF4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--dark);
+    padding: 28px 48px 20px;
+    border-bottom: 3px solid var(--gold);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-brand h1 {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--gold-light);
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+  }
+  .header-brand p {
+    color: #aaa;
+    font-size: 0.68rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── Action Buttons ── */
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    border-radius: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn svg { flex-shrink: 0; }
+
+  .btn-gold {
+    background: var(--gold);
+    color: var(--white);
+    border-color: var(--gold);
+  }
+  .btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--gold-light);
+    border-color: var(--gold);
+  }
+  .btn-outline:hover { background: rgba(184,150,62,0.12); }
+
+  .btn-dark {
+    background: #2E2E2E;
+    color: #ccc;
+    border-color: #444;
+  }
+  .btn-dark:hover { background: #3a3a3a; color: #fff; }
+
+  /* ── Main wrapper ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+
+  /* ── Section ── */
+  .section {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--gold);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gold);
+    padding: 16px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    background: #FAF6EC;
+    letter-spacing: 0.04em;
+  }
+
+  .section-body { padding: 20px 24px 24px; }
+
+  /* ── Field rows ── */
+  .field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .field-row:last-child { margin-bottom: 0; }
+
+  .field-row.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-row.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+  }
+
+  label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  input[type=text], input[type=date], input[type=email], input[type=tel],
+  input[type=number], textarea, select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 8px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    color: var(--dark);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(184,150,62,0.1);
+  }
+
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+
+  /* ── Importance scale (page 1) ── */
+  .scale-table { width: 100%; border-collapse: collapse; }
+  .scale-table th {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    padding: 6px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .scale-table th:first-child { text-align: left; }
+  .scale-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #EDE6D4;
+    font-size: 0.8rem;
+  }
+  .scale-table td:first-child { font-weight: 500; }
+  .scale-table tr:last-child td { border-bottom: none; }
+  .scale-table td.center { text-align: center; }
+
+  .radio-scale { display: flex; justify-content: center; gap: 6px; }
+  .radio-scale input[type=radio] { accent-color: var(--gold); cursor: pointer; }
+
+  /* ── Checkbox rows ── */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid #EDE6D4;
+    font-size: 0.82rem;
+  }
+  .check-row:last-child { border-bottom: none; }
+  .check-row input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+  .check-row label { font-size: 0.82rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--dark); cursor: pointer; }
+  .check-row .check-detail { flex: 1; margin-left: 8px; }
+  .check-row .check-detail input { font-size: 0.78rem; }
+
+  /* ── Yes/No toggle ── */
+  .yn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #EDE6D4;
+    font-size: 0.82rem;
+    flex-wrap: wrap;
+  }
+  .yn-row:last-child { border-bottom: none; }
+  .yn-label { font-weight: 500; flex: 1; min-width: 200px; }
+  .yn-options { display: flex; gap: 16px; }
+  .yn-options label { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--mid); cursor: pointer; }
+  .yn-options input[type=radio] { accent-color: var(--gold); cursor: pointer; }
+  .yn-sub { flex-basis: 100%; margin-top: 4px; display: none; }
+  .yn-sub.visible { display: block; }
+  .yn-sub input, .yn-sub textarea { font-size: 0.8rem; }
+
+  /* ── Rental / chattel table ── */
+  .item-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .item-table th {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    background: #FAF6EC;
+    text-align: left;
+  }
+  .item-table td { padding: 5px 6px; border-bottom: 1px solid #EDE6D4; }
+  .item-table td input { border: none; background: transparent; padding: 3px 0; font-size: 0.8rem; }
+  .item-table td input:focus { background: var(--gold-pale); }
+  .item-table tr:last-child td { border-bottom: none; }
+
+  /* ── Improvements table ── */
+  .imp-table { width: 100%; border-collapse: collapse; }
+  .imp-table th {
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--mid); padding: 6px 8px; border-bottom: 1px solid var(--border);
+    background: #FAF6EC; text-align: left;
+  }
+  .imp-table td { padding: 5px 6px; border-bottom: 1px solid #EDE6D4; }
+  .imp-table td input { border: none; background: transparent; padding: 3px 0; font-size: 0.8rem; width: 100%; }
+  .imp-table td input:focus { background: var(--gold-pale); }
+
+  /* ── ID record ── */
+  .id-block {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--white);
+  }
+  .id-block h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .id-block:last-child { margin-bottom: 0; }
+
+  /* ── Disclosure list ── */
+  .disclosure-info {
+    background: #FFF8E8;
+    border-left: 3px solid var(--gold);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+  .disclosure-info strong { color: var(--dark); }
+  .disclosure-examples { margin-top: 10px; padding-left: 16px; }
+  .disclosure-examples li { margin-bottom: 4px; }
+
+  /* ── Questions textarea ── */
+  .big-textarea { min-height: 180px; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 20px 20px 16px; }
+    main { padding: 24px 16px 60px; }
+    .field-row.cols-2, .field-row.cols-3 { grid-template-columns: 1fr; }
+    .section-body { padding: 16px; }
+  }
+
+  /* ── Showing Schedule Grid ── */
+  .sched-wrap { overflow-x: auto; margin: 4px 0 18px; }
+  .sched-table { width: 100%; border-collapse: collapse; min-width: 520px; font-size: 0.78rem; }
+  .sched-table thead tr { background: #FAF6EC; border-bottom: 2px solid var(--border); }
+  .sched-table th {
+    font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--mid); padding: 8px 6px; text-align: center; border-right: 1px solid #EDE6D4;
+  }
+  .sched-table th:first-child { text-align: left; padding-left: 10px; width: 128px; border-right: 2px solid var(--border); }
+  .sched-table th:last-child { border-right: none; }
+  .sched-table tbody tr:nth-child(even) { background: #FAF6EC; }
+  .sched-table tbody tr:hover { background: var(--gold-pale); }
+  .sched-table td { padding: 5px 6px; border-bottom: 1px solid #EDE6D4; border-right: 1px solid #EDE6D4; text-align: center; vertical-align: middle; }
+  .sched-table td:first-child { text-align: left; padding-left: 8px; padding-right: 8px; border-right: 2px solid var(--border); }
+  .sched-table td:last-child { border-right: none; }
+  .sched-table tr.sched-divider td {
+    background: linear-gradient(135deg,#FAF6EC 0%,#F5EDD8 100%);
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); padding: 3px 10px; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border);
+  }
+  .sched-cb { width: 17px; height: 17px; accent-color: var(--gold); cursor: pointer; }
+  /* Row toggle button */
+  .time-cell { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .row-toggle {
+    flex-shrink: 0; width: 18px; height: 18px;
+    border: 1.5px solid var(--border); border-radius: 2px; background: var(--white);
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s; padding: 0; font-family: inherit;
+  }
+  .row-toggle:hover { border-color: var(--gold); background: var(--gold-pale); }
+  .row-toggle.state-all { background: var(--gold); border-color: var(--gold); }
+  .row-toggle.state-all::after {
+    content: ''; display: block; width: 10px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolyline points='2,6 5,9 10,3' stroke='white' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+  .row-toggle.state-some { background: var(--gold-pale); border-color: var(--gold); }
+  .row-toggle.state-some::after { content: ''; display: block; width: 8px; height: 2px; background: var(--gold); border-radius: 1px; }
+  .time-label { font-size: 0.75rem; color: var(--mid); font-weight: 500; }
+  /* Quick-select bar */
+  .sched-quick { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+  .sel-btn {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border: 1px solid var(--border); background: var(--white); color: var(--mid);
+    border-radius: 2px; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat', sans-serif;
+  }
+  .sel-btn:hover { background: var(--gold-pale); border-color: var(--gold); color: var(--dark); }
+  .sel-btn.active { background: var(--gold); color: var(--white); border-color: var(--gold); }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <h1>Seller Information Gathering</h1>
+    <p>Peter Luo · RE/MAX Realtron Realty Inc., Brokerage · 647-824-3718</p>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="saveJSON()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save JSON
+    </button>
+    <button class="btn btn-outline" onclick="loadJSON()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Load JSON
+    </button>
+    <button class="btn btn-gold" onclick="exportPDF()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Export PDF
+    </button>
+    <button class="btn btn-dark" onclick="sendEmail()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Email to Peter
+    </button>
+    <button class="btn btn-outline" onclick="clearDB()" style="color:#c0736a;border-color:#c0736a;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Clear
+    </button>
+  </div>
+</header>
+
+<input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleJSONLoad(event)">
+
+<main id="formContent">
+
+  <!-- ══════════════════════════════════════════
+       SECTION 1 · Seller Priorities
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Seller Priorities — Importance Scale</div>
+    <div class="section-body">
+      <p style="font-size:0.75rem;color:var(--mid);margin-bottom:14px;">Rate each factor from 1 (Less Important) to 5 (More Important)</p>
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Factor</th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+          </tr>
+        </thead>
+        <tbody id="priorityTable">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 2 · Emotional Connection
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Home & Location Insights</div>
+    <div class="section-body">
+      <div class="field-row"><div class="field">
+        <label>What will you miss most about your house?</label>
+        <textarea id="missHouse" rows="3"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>What will you miss most about this location?</label>
+        <textarea id="missLocation" rows="3"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>What are some favourite features about your home?</label>
+        <textarea id="favFeatures" rows="3"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>What compliments have friends and neighbours made about your house?</label>
+        <textarea id="compliments" rows="3"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>What characteristics make your house unique compared to others?</label>
+        <textarea id="unique" rows="3"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>Who do you consider to be the target market for your house?</label>
+        <textarea id="targetMarket" rows="3"></textarea>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 3 · Improvements
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Home Improvements</div>
+    <div class="section-body">
+      <table class="imp-table" id="improvements">
+        <thead>
+          <tr><th style="width:55%">Improvement</th><th style="width:20%">Year</th><th style="width:25%">Cost ($)</th></tr>
+        </thead>
+        <tbody>
+          <!-- rows generated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 4 · Include / Exclude
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Include / Exclude Items</div>
+    <div class="section-body">
+      <div class="field-row"><div class="field">
+        <label>Items to Include in Sale</label>
+        <textarea id="includeItems" rows="4"></textarea>
+      </div></div>
+      <div class="field-row"><div class="field">
+        <label>Fixtures to Exclude from Sale</label>
+        <textarea id="excludeItems" rows="4"></textarea>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 5 · Taxes & Utilities
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Tax / Utility / Monthly Costs</div>
+    <div class="section-body">
+      <div class="field-row cols-2">
+        <div class="field"><label>Property Tax Amount ($)</label><input type="text" id="propTax"></div>
+        <div class="field"><label>Tax Period</label><input type="text" id="propTaxPeriod" placeholder="e.g. Annual"></div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field"><label>Hydro Cost ($)</label><input type="text" id="hydro"></div>
+        <div class="field"><label>Hydro Cost Period</label><input type="text" id="hydroPeriod" placeholder="Monthly / Bimonthly"></div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field"><label>Gas Cost ($)</label><input type="text" id="gas"></div>
+        <div class="field"><label>Gas Cost Period</label><input type="text" id="gasPeriod"></div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field"><label>Maintenance Fee – Condo ($)</label><input type="text" id="condoFee"></div>
+        <div class="field"><label>Alarm System</label><input type="text" id="alarmSystem"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 6 · Chattel / Equipment Status
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Equipment & Chattel Status</div>
+    <div class="section-body">
+      <table class="scale-table" id="chattelTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Owned</th><th>Rented</th><th>Leased</th><th>Assumable</th>
+            <th>Term</th><th>Cost/Mo ($)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 7 · Available Documents
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Available Documents</div>
+    <div class="section-body">
+      <div class="check-row"><input type="checkbox" id="docSurvey"><label for="docSurvey">Survey</label></div>
+      <div class="check-row"><input type="checkbox" id="docFloorPlan"><label for="docFloorPlan">Floor Plan</label></div>
+      <div class="check-row"><input type="checkbox" id="docBlueprint"><label for="docBlueprint">Blueprint</label></div>
+      <div class="check-row"><input type="checkbox" id="docRenovation"><label for="docRenovation">Renovation Receipts</label></div>
+      <div class="check-row"><input type="checkbox" id="docManuals"><label for="docManuals">Manuals and Instructions</label></div>
+      <div class="check-row">
+        <input type="checkbox" id="docOther"><label for="docOther">Others:</label>
+        <div class="check-detail"><input type="text" id="docOtherDetail" placeholder="Describe..."></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 8 · Legal & Financial
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Legal & Financial Details</div>
+    <div class="section-body">
+
+      <div class="yn-row">
+        <span class="yn-label">Do you have a mortgage?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="hasMortgage" value="yes" onchange="toggleSub(this,'mortgageSub')"> Yes</label>
+          <label><input type="radio" name="hasMortgage" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="mortgageSub">
+          <label style="margin-bottom:4px;display:block">Does current mortgage have a prepayment penalty?</label>
+          <div style="display:flex;gap:16px;margin-bottom:8px">
+            <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:500;color:var(--mid)"><input type="radio" name="prepayPenalty" value="yes"> Yes</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:500;color:var(--mid)"><input type="radio" name="prepayPenalty" value="no"> No</label>
+          </div>
+          <input type="text" id="mortgageDetails" placeholder="Lender, balance, maturity date...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Are there any Liens on your house?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="hasLiens" value="yes" onchange="toggleSub(this,'liensSub')"> Yes</label>
+          <label><input type="radio" name="hasLiens" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="liensSub">
+          <input type="text" id="liensDetails" placeholder="Details...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Are there any Easements or Encroachments on Your Property?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="hasEasements" value="yes" onchange="toggleSub(this,'easementsSub')"> Yes</label>
+          <label><input type="radio" name="hasEasements" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="easementsSub">
+          <input type="text" id="easementsDetails" placeholder="Details...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Are there liens on appliances?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="applianceLiens" value="yes" onchange="toggleSub(this,'applianceLiensSub')"> Yes</label>
+          <label><input type="radio" name="applianceLiens" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="applianceLiensSub">
+          <input type="text" id="applianceLiensDetails" placeholder="Details...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Are there any warranties on the home, fixtures or appliances?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="hasWarranty" value="yes" onchange="toggleSub(this,'warrantySub')"> Yes</label>
+          <label><input type="radio" name="hasWarranty" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="warrantySub">
+          <input type="text" id="warrantyDetails" placeholder="Describe warranties...">
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top:16px">
+        <div class="field"><label>Your Preferred Closing Date</label><input type="date" id="closingDate"></div>
+        <div class="field"><label>Flexible on Closing Date?</label>
+          <select id="closingFlexible"><option value="">Select...</option><option>Yes – very flexible</option><option>Somewhat flexible</option><option>Fixed date only</option></select>
+        </div>
+      </div>
+
+      <div class="yn-row" style="margin-top:8px">
+        <span class="yn-label">Would you consider Vendor Take-Back (VTB) financing?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="vtb" value="yes" onchange="toggleSub(this,'vtbSub')"> Yes</label>
+          <label><input type="radio" name="vtb" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="vtbSub">
+          <input type="text" id="vtbDetails" placeholder="Terms you'd consider...">
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top:16px"><div class="field">
+        <label>Closing Lawyer Contact Information</label>
+        <textarea id="closingLawyer" rows="3" placeholder="Name, firm, phone, email..."></textarea>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 9 · Disclosure
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Seller Disclosure</div>
+    <div class="section-body">
+      <div class="disclosure-info">
+        <strong>Duty to Disclose:</strong> Sellers (and their agents) must disclose any defects that might affect a buyer's use and enjoyment of the property. Latent (hidden) defects that are known to the seller must be disclosed if they pose a serious risk to health and safety. Sellers cannot intentionally conceal patent defects.<br><br>
+        <strong>Examples of required disclosures:</strong>
+        <ul class="disclosure-examples">
+          <li>Basement leaks (seasonal or otherwise)</li>
+          <li>Known pest issues (termites, etc.) not treated</li>
+          <li>Knob and tube wiring</li>
+          <li>Additions built without permits</li>
+          <li>Illegal basement apartment (no permit)</li>
+          <li>Lead in drinking water</li>
+        </ul>
+      </div>
+      <div class="field"><label>Please list anything you need to disclose to the buyer</label>
+        <textarea id="disclosures" rows="6" class="big-textarea" placeholder="List all known defects, permit issues, past damage, environmental concerns..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 9b · Showing Schedule
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Showing Schedule</div>
+    <div class="section-body">
+      <div class="sched-quick" id="schedQuickBtns"></div>
+      <div class="sched-wrap">
+        <table class="sched-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+            </tr>
+          </thead>
+          <tbody id="schedBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 10 · Showing Instructions
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Showing Instructions</div>
+    <div class="section-body">
+
+      <div style="background:#FFF8E8;border-left:3px solid var(--gold);padding:14px 16px;margin:4px 0 14px;border-radius:1px;">
+        <p style="font-size:0.8rem;font-weight:600;color:var(--dark);margin-bottom:6px;">Appointment Notification</p>
+        <p style="font-size:0.78rem;color:var(--mid);line-height:1.65;margin:0 0 12px;">When a Buyer Agent books an appointment, my office can notify you by <strong style="color:var(--dark)">Text Message</strong>, <strong style="color:var(--dark)">Email</strong>, and/or <strong style="color:var(--dark)">Phone Call</strong>. You can choose one or any combination of these.</p>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:500;cursor:pointer;color:var(--dark);text-transform:none;letter-spacing:0;">
+            <input type="checkbox" id="notifyText" style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;"> Text Message
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:500;cursor:pointer;color:var(--dark);text-transform:none;letter-spacing:0;">
+            <input type="checkbox" id="notifyEmail" style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;"> Email
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:500;cursor:pointer;color:var(--dark);text-transform:none;letter-spacing:0;">
+            <input type="checkbox" id="notifyPhone" style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;"> Phone Call
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div class="field"><label>Email Address</label><input type="email" id="showingEmail"></div>
+        <div class="field"><label>Phone Number</label><input type="tel" id="showingPhone"></div>
+      </div>
+      <div class="field-row cols-3">
+        <div class="field"><label>Alternative Phone Number</label><input type="tel" id="altPhone"></div>
+        <div class="field"><label>Required Notice (hours)</label><input type="number" id="noticeHours" min="0" placeholder="e.g. 2"></div>
+        <div class="field"><label>Alarm Code</label><input type="text" id="alarmCode"></div>
+      </div>
+
+      <div class="yn-row" style="margin-top:8px">
+        <span class="yn-label">Do you have pets?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="hasPets" value="yes" onchange="toggleSub(this,'petsSub')"> Yes</label>
+          <label><input type="radio" name="hasPets" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="petsSub">
+          <input type="text" id="petsDetails" placeholder="Describe pet concerns or instructions...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Do you have the keys ready?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="keysReady" value="yes"> Yes</label>
+          <label><input type="radio" name="keysReady" value="no"> No</label>
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Have you placed valuables in a safe place?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="valuablesSafe" value="yes"> Yes</label>
+          <label><input type="radio" name="valuablesSafe" value="no" onchange="toggleSub(this,'valuablesSub')"> No</label>
+        </div>
+        <div class="yn-sub" id="valuablesSub">
+          <input type="text" id="valuablesDetails" placeholder="Concern or plan...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Do you have any showing restrictions?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="showingRestrictions" value="yes" onchange="toggleSub(this,'restrictionsSub')"> Yes</label>
+          <label><input type="radio" name="showingRestrictions" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="restrictionsSub">
+          <input type="text" id="restrictionsDetails" placeholder="Describe restrictions...">
+        </div>
+      </div>
+
+      <div class="yn-row">
+        <span class="yn-label">Do you want me (Peter) to attend showings as well?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="agentAttend" value="yes" onchange="toggleSub(this,'agentAttendSub')"> Yes</label>
+          <label><input type="radio" name="agentAttend" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="agentAttendSub">
+          <input type="text" id="agentAttendInstructions" placeholder="Special instructions...">
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top:12px"><div class="field">
+        <label>Any other concerns regarding showings</label>
+        <textarea id="showingOtherConcerns" rows="3"></textarea>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 10b · Open House
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Open House</div>
+    <div class="section-body">
+      <div class="yn-row">
+        <span class="yn-label">Can I hold an Open House?</span>
+        <div class="yn-options">
+          <label><input type="radio" name="openHouse" value="yes" onchange="toggleSub(this,'openHouseSub')"> Yes</label>
+          <label><input type="radio" name="openHouse" value="no"> No</label>
+        </div>
+        <div class="yn-sub" id="openHouseSub">
+          <input type="text" id="openHouseDates" placeholder="Preferred date(s) and time(s)...">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 11 · Identity Verification
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Individual Identification Information Record</div>
+    <div class="section-body">
+      <p style="font-size:0.73rem;color:var(--mid);margin-bottom:16px;line-height:1.5;">Required by the <em>Proceeds of Crime and Terrorist Financing Act</em>. Must be completed whenever a REALTOR® acts in respect to the purchase or sale of real estate.</p>
+      <div id="idRecords"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 12 · Questions for Peter
+  ══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">Your Questions for Me</div>
+    <div class="section-body">
+      <div class="field">
+        <label>Please write your questions here so we can discuss when we meet</label>
+        <textarea id="clientQuestions" rows="8" class="big-textarea" placeholder="Write any questions you have about the selling process, pricing, marketing, etc..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Peter Luo · RE/MAX Realtron Realty Inc., Brokerage · 647-824-3718 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4333263726312f362c0333263726312f362c6d202c2e">[email&#160;protected]</a></footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ──────────────────────────────────────────
+   BUILD DYNAMIC TABLES
+────────────────────────────────────────── */
+
+const priorities = [
+  "Buyer's Qualifications","Showing Schedule","Broker's Commission","Advertising",
+  "Open House","Personal Inconvenience","Tips on Home Staging","Closing / Moving Date",
+  "Price of Your Home","Closing Cost","Lock Boxes and Security",
+  "Salability in Today's Market","Agent Communication","Showing Feedback",
+  "Property Brochures"
+];
+
+const priorityTbody = document.querySelector('#priorityTable');
+priorities.forEach((p,i) => {
+  const tr = document.createElement('tr');
+  let radios = '';
+  for(let v=1;v<=5;v++){
+    radios += `<td class="center"><div class="radio-scale"><input type="radio" name="priority_${i}" value="${v}"></div></td>`;
+  }
+  tr.innerHTML = `<td>${p}</td>${radios}`;
+  priorityTbody.appendChild(tr);
+});
+
+// Improvements rows
+const impTbody = document.querySelector('#improvements tbody');
+for(let i=1;i<=20;i++){
+  impTbody.innerHTML += `<tr>
+    <td><input type="text" name="imp_desc_${i}" placeholder="Description"></td>
+    <td><input type="text" name="imp_year_${i}" placeholder="Year" style="width:80px"></td>
+    <td><input type="text" name="imp_cost_${i}" placeholder="$"></td>
+  </tr>`;
+}
+
+
+// Chattel table
+const chattelItems = ["Hot Water Tank","Furnace","Water Softener","Alarm System","Air Conditioner","Windows Replacement","Heat Pump","Solar System","Pool","Other"];
+const chattelTbody = document.querySelector('#chattelTable tbody');
+chattelItems.forEach((item,i) => {
+  chattelTbody.innerHTML += `<tr>
+    <td style="font-weight:500;font-size:0.8rem">${item}</td>
+    <td class="center"><input type="radio" name="chattel_${i}" value="owned"></td>
+    <td class="center"><input type="radio" name="chattel_${i}" value="rented"></td>
+    <td class="center"><input type="radio" name="chattel_${i}" value="leased"></td>
+    <td class="center"><input type="radio" name="chattel_${i}" value="assumable"></td>
+    <td><input type="text" name="chattel_term_${i}" placeholder="Term" style="width:70px;border:none;background:transparent;font-size:0.78rem"></td>
+    <td><input type="text" name="chattel_cost_${i}" placeholder="$" style="width:60px;border:none;background:transparent;font-size:0.78rem"></td>
+  </tr>`;
+});
+
+// ID Records
+const idContainer = document.getElementById('idRecords');
+for(let n=1;n<=4;n++){
+  idContainer.innerHTML += `
+  <div class="id-block">
+    <h4>Person ${n}</h4>
+    <div class="field-row cols-2">
+      <div class="field"><label>Full Legal Name</label><input type="text" id="id${n}_name"></div>
+      <div class="field"><label>Date of Birth</label><input type="date" id="id${n}_dob"></div>
+    </div>
+    <div class="field-row"><div class="field"><label>Address</label><input type="text" id="id${n}_address"></div></div>
+    <div class="field-row"><div class="field"><label>Nature of Principal Business or Occupation</label><input type="text" id="id${n}_occupation"></div></div>
+    <div class="field-row cols-2">
+      <div class="field"><label>Type of Identification Document</label><input type="text" id="id${n}_idType" placeholder="e.g. Passport, Driver's Licence"></div>
+      <div class="field"><label>Document ID Number</label><input type="text" id="id${n}_idNum"></div>
+    </div>
+    <div class="field-row cols-3">
+      <div class="field"><label>Issuing Jurisdiction</label><input type="text" id="id${n}_jurisdiction"></div>
+      <div class="field"><label>Country</label><input type="text" id="id${n}_country"></div>
+      <div class="field"><label>Document Expiry Date</label><input type="date" id="id${n}_expiry"></div>
+    </div>
+  </div>`;
+}
+
+
+/* ──────────────────────────────────────────
+   SHOWING SCHEDULE GRID
+────────────────────────────────────────── */
+var schedTimes = [
+  '8:00 AM','8:30 AM','9:00 AM','9:30 AM',
+  '10:00 AM','10:30 AM','11:00 AM','11:30 AM',
+  '12:00 PM','12:30 PM',
+  '1:00 PM','1:30 PM','2:00 PM','2:30 PM',
+  '3:00 PM','3:30 PM','4:00 PM','4:30 PM',
+  '5:00 PM','5:30 PM','6:00 PM','6:30 PM',
+  '7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM'
+];
+var schedDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var schedDividers = {0:'Morning', 8:'Afternoon', 18:'Evening'};
+
+function updateRowToggle(ti) {
+  var btn = document.getElementById('rt_' + ti);
+  if (!btn) return;
+  var checked = 0;
+  for (var di = 0; di < schedDays.length; di++) {
+    var cb = document.getElementById('scb_' + ti + '_' + di);
+    if (cb && cb.checked) checked++;
+  }
+  btn.className = 'row-toggle' +
+    (checked === schedDays.length ? ' state-all' : checked > 0 ? ' state-some' : '');
+}
+
+function toggleSchedRow(ti) {
+  var allOn = true;
+  for (var di = 0; di < schedDays.length; di++) {
+    var cb = document.getElementById('scb_' + ti + '_' + di);
+    if (!cb || !cb.checked) { allOn = false; break; }
+  }
+  for (var di2 = 0; di2 < schedDays.length; di2++) {
+    var cb2 = document.getElementById('scb_' + ti + '_' + di2);
+    if (cb2) cb2.checked = !allOn;
+  }
+  updateRowToggle(ti);
+}
+
+// Build table
+var schedBody = document.getElementById('schedBody');
+if (schedBody) {
+  for (var ti = 0; ti < schedTimes.length; ti++) {
+    if (schedDividers[ti] !== undefined) {
+      var divRow = document.createElement('tr');
+      divRow.className = 'sched-divider';
+      var divTd = document.createElement('td');
+      divTd.setAttribute('colspan', '8');
+      divTd.textContent = schedDividers[ti];
+      divRow.appendChild(divTd);
+      schedBody.appendChild(divRow);
+    }
+    var tr = document.createElement('tr');
+    var tdTime = document.createElement('td');
+    var cell = document.createElement('div');
+    cell.className = 'time-cell';
+    var toggleBtn = document.createElement('button');
+    toggleBtn.className = 'row-toggle';
+    toggleBtn.id = 'rt_' + ti;
+    toggleBtn.title = 'Toggle all days for ' + schedTimes[ti];
+    toggleBtn.onclick = (function(idx) { return function() { toggleSchedRow(idx); }; })(ti);
+    var timeSpan = document.createElement('span');
+    timeSpan.className = 'time-label';
+    timeSpan.textContent = schedTimes[ti];
+    cell.appendChild(toggleBtn);
+    cell.appendChild(timeSpan);
+    tdTime.appendChild(cell);
+    tr.appendChild(tdTime);
+    for (var di = 0; di < schedDays.length; di++) {
+      var td = document.createElement('td');
+      var cbId = 'scb_' + ti + '_' + di;
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'sched-cb';
+      cb.id = cbId;
+      cb.name = cbId;
+      cb.onchange = (function(idx) { return function() { updateRowToggle(idx); }; })(ti);
+      td.appendChild(cb);
+      tr.appendChild(td);
+    }
+    schedBody.appendChild(tr);
+  }
+}
+
+// Quick-select buttons
+var schedQuickBtns = document.getElementById('schedQuickBtns');
+if (schedQuickBtns) {
+  for (var di = 0; di < schedDays.length; di++) {
+    (function(dayIdx, dayName) {
+      var btn = document.createElement('button');
+      btn.className = 'sel-btn';
+      btn.textContent = 'All ' + dayName;
+      btn.onclick = function() {
+        var allOn = true;
+        for (var ti = 0; ti < schedTimes.length; ti++) {
+          var cb = document.getElementById('scb_' + ti + '_' + dayIdx);
+          if (!cb || !cb.checked) { allOn = false; break; }
+        }
+        for (var ti2 = 0; ti2 < schedTimes.length; ti2++) {
+          var cb2 = document.getElementById('scb_' + ti2 + '_' + dayIdx);
+          if (cb2) cb2.checked = !allOn;
+          updateRowToggle(ti2);
+        }
+        this.classList.toggle('active', !allOn);
+      };
+      schedQuickBtns.appendChild(btn);
+    })(di, schedDays[di]);
+  }
+  var sep = document.createElement('span');
+  sep.style.cssText = 'width:1px;background:var(--border);margin:0 4px;align-self:stretch;display:inline-block;';
+  schedQuickBtns.appendChild(sep);
+
+  var wdBtn = document.createElement('button');
+  wdBtn.className = 'sel-btn';
+  wdBtn.textContent = 'All Weekdays';
+  wdBtn.onclick = function() {
+    var idx = [1,2,3,4,5];
+    var allOn = idx.every(function(di) {
+      return schedTimes.every(function(_, ti) { var cb = document.getElementById('scb_'+ti+'_'+di); return cb ? cb.checked : false; });
+    });
+    idx.forEach(function(di) {
+      for (var ti = 0; ti < schedTimes.length; ti++) { var cb = document.getElementById('scb_'+ti+'_'+di); if (cb) cb.checked = !allOn; }
+    });
+    for (var ti = 0; ti < schedTimes.length; ti++) updateRowToggle(ti);
+  };
+  schedQuickBtns.appendChild(wdBtn);
+
+  var weBtn = document.createElement('button');
+  weBtn.className = 'sel-btn';
+  weBtn.textContent = 'All Weekends';
+  weBtn.onclick = function() {
+    var idx = [0,6];
+    var allOn = idx.every(function(di) {
+      return schedTimes.every(function(_, ti) { var cb = document.getElementById('scb_'+ti+'_'+di); return cb ? cb.checked : false; });
+    });
+    idx.forEach(function(di) {
+      for (var ti = 0; ti < schedTimes.length; ti++) { var cb = document.getElementById('scb_'+ti+'_'+di); if (cb) cb.checked = !allOn; }
+    });
+    for (var ti = 0; ti < schedTimes.length; ti++) updateRowToggle(ti);
+  };
+  schedQuickBtns.appendChild(weBtn);
+
+  var clearSchedBtn = document.createElement('button');
+  clearSchedBtn.className = 'sel-btn';
+  clearSchedBtn.textContent = 'Clear All';
+  clearSchedBtn.onclick = function() {
+    for (var ti = 0; ti < schedTimes.length; ti++) {
+      for (var di = 0; di < schedDays.length; di++) { var cb = document.getElementById('scb_'+ti+'_'+di); if (cb) cb.checked = false; }
+      updateRowToggle(ti);
+    }
+    schedQuickBtns.querySelectorAll('.sel-btn').forEach(function(b) { b.classList.remove('active'); });
+  };
+  schedQuickBtns.appendChild(clearSchedBtn);
+}
+
+/* ──────────────────────────────────────────
+   YES/NO TOGGLE SUBFIELDS
+────────────────────────────────────────── */
+function toggleSub(radio, subId) {
+  const sub = document.getElementById(subId);
+  if (!sub) return;
+  if (radio.value === 'yes') sub.classList.add('visible');
+  else sub.classList.remove('visible');
+}
+
+/* ──────────────────────────────────────────
+   COLLECT ALL FORM DATA → OBJECT
+────────────────────────────────────────── */
+function collectFormData() {
+  const data = {};
+  // All inputs/textareas/selects with id
+  document.querySelectorAll('input[id], textarea[id], select[id]').forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') return;
+    data[el.id] = el.value;
+  });
+  // Radio groups
+  const radioGroups = {};
+  document.querySelectorAll('input[type=radio]').forEach(r => {
+    if (r.checked) radioGroups[r.name] = r.value;
+  });
+  data._radioGroups = radioGroups;
+  // Checkboxes
+  document.querySelectorAll('input[type=checkbox][id]').forEach(cb => {
+    data[cb.id] = cb.checked;
+  });
+  // Named inputs without ids (improvements, chattel, etc.)
+  document.querySelectorAll('input[name]').forEach(el => {
+    if (el.type === 'radio') return;
+    if (el.type === 'checkbox') return; // checkboxes handled by id loop above
+    data[el.name] = el.value;
+  });
+  // Schedule checkboxes (named scb_ti_di)
+  for (var _ti = 0; _ti < schedTimes.length; _ti++) {
+    for (var _di = 0; _di < schedDays.length; _di++) {
+      var _cb = document.getElementById('scb_' + _ti + '_' + _di);
+      if (_cb) data['scb_' + _ti + '_' + _di] = _cb.checked;
+    }
+  }
+  return data;
+}
+
+/* ──────────────────────────────────────────
+   RESTORE FORM FROM DATA OBJECT
+────────────────────────────────────────── */
+function restoreFormData(data) {
+  Object.keys(data).forEach(key => {
+    if (key === '_radioGroups') return;
+    const el = document.getElementById(key) || document.querySelector(`[name="${key}"]`);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!data[key];
+    else el.value = data[key] || '';
+  });
+  // Restore radio groups
+  if (data._radioGroups) {
+    Object.keys(data._radioGroups).forEach(name => {
+      const val = data._radioGroups[name];
+      const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+      if (r) {
+        r.checked = true;
+        if (r.onchange) r.onchange.call(r);
+      }
+    });
+  }
+  // Restore schedule checkboxes and row toggles
+  for (var _ti = 0; _ti < schedTimes.length; _ti++) {
+    for (var _di = 0; _di < schedDays.length; _di++) {
+      var _key = 'scb_' + _ti + '_' + _di;
+      var _cb = document.getElementById(_key);
+      if (_cb && data[_key] !== undefined) _cb.checked = !!data[_key];
+    }
+    updateRowToggle(_ti);
+  }
+}
+
+/* ──────────────────────────────────────────
+   SAVE JSON
+────────────────────────────────────────── */
+function saveJSON() {
+  const data = collectFormData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'seller_info_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+/* ──────────────────────────────────────────
+   LOAD JSON
+────────────────────────────────────────── */
+function loadJSON() {
+  document.getElementById('jsonFileInput').click();
+}
+function handleJSONLoad(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      restoreFormData(data);
+      autoSave();
+      alert('Form data loaded successfully.');
+    } catch(err) {
+      alert('Error reading JSON file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ──────────────────────────────────────────
+   EXPORT PDF (using jsPDF)
+────────────────────────────────────────── */
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+
+  const GOLD = [184, 150, 62];
+  const DARK = [26, 26, 26];
+  const MID  = [100, 100, 100];
+  const LGRAY = [230, 225, 210];
+  const pageW = 216;
+  const ml = 18, mr = 18, contentW = pageW - ml - mr;
+
+  let y = 0;
+
+  function checkPage(needed = 10) {
+    if (y + needed > 262) {
+      doc.addPage();
+      y = 16;
+    }
+  }
+
+  function drawHeader() {
+    doc.setFillColor(26, 26, 26);
+    doc.rect(0, 0, pageW, 28, 'F');
+    doc.setFillColor(...GOLD);
+    doc.rect(0, 28, pageW, 1.2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(212, 175, 106);
+    doc.text('SELLER INFORMATION GATHERING', ml, 12);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(160, 160, 160);
+    doc.text('PETER LUO · RE/MAX REALTRON REALTY INC., BROKERAGE · 647-824-3718 · PETERLUO@PETERLUO.COM', ml, 20);
+    doc.setFontSize(7);
+    doc.text('Generated: ' + new Date().toLocaleDateString('en-CA'), pageW - mr - 32, 20);
+  }
+
+  function sectionHeading(title) {
+    checkPage(16);
+    doc.setFillColor(...GOLD);
+    doc.rect(ml, y, contentW, 1, 'F');
+    y += 3;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...GOLD);
+    doc.text(title.toUpperCase(), ml, y + 4);
+    y += 8;
+    doc.setFillColor(...LGRAY);
+    doc.rect(ml, y, contentW, 0.3, 'F');
+    y += 5;
+  }
+
+  function fieldLine(label, value) {
+    checkPage(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(...MID);
+    doc.text(label.toUpperCase(), ml, y);
+    y += 4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DARK);
+    const lines = doc.splitTextToSize(value || '—', contentW);
+    lines.forEach(line => {
+      checkPage(6);
+      doc.text(line, ml, y);
+      y += 5;
+    });
+    y += 2;
+  }
+
+  function twoCol(label1, val1, label2, val2) {
+    checkPage(12);
+    const hw = (contentW - 8) / 2;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(...MID);
+    doc.text(label1.toUpperCase(), ml, y);
+    doc.text(label2.toUpperCase(), ml + hw + 8, y);
+    y += 4;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DARK);
+    doc.text(val1 || '—', ml, y);
+    doc.text(val2 || '—', ml + hw + 8, y);
+    y += 7;
+  }
+
+  function radioVal(name) {
+    const r = document.querySelector(`input[name="${name}"]:checked`);
+    return r ? r.value.toUpperCase() : '—';
+  }
+  function inputVal(id) {
+    const el = document.getElementById(id);
+    return el ? (el.value || '') : '';
+  }
+  function checkVal(id) {
+    const el = document.getElementById(id);
+    return el ? (el.checked ? '✓ Yes' : '✗ No') : '—';
+  }
+  function namedVal(name) {
+    const el = document.querySelector(`[name="${name}"]`);
+    return el ? (el.value || '') : '';
+  }
+
+  drawHeader();
+  y = 36;
+
+  // ── Priorities
+  sectionHeading('Seller Priorities');
+  const priRows = [];
+  priorities.forEach((p, i) => {
+    const r = document.querySelector(`input[name="priority_${i}"]:checked`);
+    priRows.push(`${p}: ${r ? r.value + '/5' : '—'}`);
+  });
+  for (let i = 0; i < priRows.length; i += 2) {
+    checkPage(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...DARK);
+    doc.text(priRows[i], ml, y);
+    if (priRows[i+1]) doc.text(priRows[i+1], ml + contentW / 2 + 4, y);
+    y += 6;
+  }
+  y += 4;
+
+  // ── Home Insights
+  sectionHeading('Home & Location Insights');
+  fieldLine("What will you miss most about your house?", inputVal('missHouse'));
+  fieldLine("What will you miss most about this location?", inputVal('missLocation'));
+  fieldLine("Favourite features", inputVal('favFeatures'));
+  fieldLine("Compliments from friends & neighbours", inputVal('compliments'));
+  fieldLine("Unique characteristics", inputVal('unique'));
+  fieldLine("Target market", inputVal('targetMarket'));
+
+  // ── Improvements
+  sectionHeading('Home Improvements');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MID);
+  doc.text('IMPROVEMENT', ml, y);
+  doc.text('YEAR', ml + 100, y);
+  doc.text('COST ($)', ml + 140, y);
+  y += 5;
+  doc.setFillColor(...LGRAY);
+  doc.rect(ml, y, contentW, 0.3, 'F');
+  y += 4;
+  let hasImprovements = false;
+  for (let i = 1; i <= 20; i++) {
+    const desc = namedVal(`imp_desc_${i}`);
+    const yr = namedVal(`imp_year_${i}`);
+    const cost = namedVal(`imp_cost_${i}`);
+    if (desc || yr || cost) {
+      hasImprovements = true;
+      checkPage(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...DARK);
+      doc.text(desc || '', ml, y);
+      doc.text(yr || '', ml + 100, y);
+      doc.text(cost || '', ml + 140, y);
+      y += 6;
+    }
+  }
+  if (!hasImprovements) { doc.setTextColor(...MID); doc.setFontSize(8); doc.text('No improvements recorded.', ml, y); y += 6; }
+  y += 4;
+
+  // ── Include / Exclude
+  sectionHeading('Include / Exclude Items');
+  fieldLine("Include", inputVal('includeItems'));
+  fieldLine("Fixtures to Exclude", inputVal('excludeItems'));
+
+  // ── Taxes & Utilities
+  sectionHeading('Tax / Utility / Monthly Costs');
+  twoCol('Property Tax ($)', inputVal('propTax'), 'Tax Period', inputVal('propTaxPeriod'));
+  twoCol('Hydro Cost ($)', inputVal('hydro'), 'Hydro Cost Period', inputVal('hydroPeriod'));
+  twoCol('Gas Cost ($)', inputVal('gas'), 'Gas Cost Period', inputVal('gasPeriod'));
+  twoCol('Condo Maintenance Fee ($)', inputVal('condoFee'), 'Alarm System', inputVal('alarmSystem'));
+  y += 2;
+
+  // ── Chattel
+  sectionHeading('Equipment & Chattel Status');
+  const chattelNames = ["Hot Water Tank","Furnace","Water Softener","Alarm System","Air Conditioner","Windows Replacement","Heat Pump","Solar System","Pool","Other"];
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(...MID);
+  doc.text('ITEM', ml, y); doc.text('STATUS', ml + 70, y); doc.text('TERM', ml + 110, y); doc.text('COST/MO', ml + 150, y); y += 5;
+  doc.setFillColor(...LGRAY); doc.rect(ml, y, contentW, 0.3, 'F'); y += 4;
+  chattelNames.forEach((name, i) => {
+    const r = document.querySelector(`input[name="chattel_${i}"]:checked`);
+    const term = namedVal(`chattel_term_${i}`);
+    const cost = namedVal(`chattel_cost_${i}`);
+    if (r || term || cost) {
+      checkPage(7);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...DARK);
+      doc.text(name, ml, y);
+      doc.text(r ? r.value : '—', ml + 70, y);
+      doc.text(term || '—', ml + 110, y);
+      doc.text(cost ? '$' + cost : '—', ml + 150, y);
+      y += 6;
+    }
+  });
+  y += 4;
+
+  // ── Documents
+  sectionHeading('Available Documents');
+  const docMap = {docSurvey:'Survey',docFloorPlan:'Floor Plan',docBlueprint:'Blueprint',docRenovation:'Renovation Receipts',docManuals:'Manuals & Instructions'};
+  const haveDocs = Object.keys(docMap).filter(id => document.getElementById(id)?.checked);
+  checkPage(8);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...DARK);
+  doc.text(haveDocs.length ? haveDocs.map(id => docMap[id]).join(', ') : 'None indicated', ml, y); y += 7;
+  const docOtherDetail = inputVal('docOtherDetail');
+  if (docOtherDetail) { fieldLine('Other Documents', docOtherDetail); }
+
+  // ── Legal & Financial
+  sectionHeading('Legal & Financial Details');
+  twoCol('Mortgage', radioVal('hasMortgage'), 'Prepayment Penalty', radioVal('prepayPenalty'));
+  fieldLine('Mortgage Details', inputVal('mortgageDetails'));
+  twoCol('Liens on House', radioVal('hasLiens'), 'Liens on Appliances', radioVal('applianceLiens'));
+  fieldLine('Lien Details', inputVal('liensDetails'));
+  twoCol('Easements/Encroachments on Property', radioVal('hasEasements'), 'Warranties', radioVal('hasWarranty'));
+  fieldLine('Warranty Details', inputVal('warrantyDetails'));
+  twoCol('Your Preferred Closing Date', inputVal('closingDate'), 'Flexibility', inputVal('closingFlexible'));
+  twoCol('Vendor Take-Back (VTB)', radioVal('vtb'), 'VTB Terms', inputVal('vtbDetails'));
+  fieldLine('Closing Lawyer', inputVal('closingLawyer'));
+
+  // ── Disclosure
+  sectionHeading('Seller Disclosure');
+  fieldLine('Disclosures to Buyer', inputVal('disclosures'));
+
+  // ── Showing Schedule grid
+  sectionHeading('Showing Schedule');
+  const pdfSchedDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const pdfSchedTimes = schedTimes;
+  const pdfColW = contentW / 8;
+  // header row
+  checkPage(10);
+  doc.setFillColor(250,246,236); doc.rect(ml, y-2, contentW, 8, 'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(...MID);
+  doc.text('TIME', ml+1, y+3);
+  pdfSchedDays.forEach((d, di) => { doc.text(d.toUpperCase(), ml+pdfColW+di*pdfColW+pdfColW/2-3, y+3); });
+  y += 9;
+  doc.setFillColor(...LGRAY); doc.rect(ml, y, contentW, 0.3, 'F'); y += 3;
+  let lastPdfPeriod = '';
+  pdfSchedTimes.forEach((t, ti) => {
+    const period = ti < 8 ? 'Morning' : ti < 18 ? 'Afternoon' : 'Evening';
+    if (period !== lastPdfPeriod) {
+      checkPage(8);
+      doc.setFillColor(248,244,234); doc.rect(ml, y-1, contentW, 5.5, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(...GOLD);
+      doc.text(period.toUpperCase(), ml+1, y+3); y += 6; lastPdfPeriod = period;
+    }
+    checkPage(7);
+    if (ti % 2 === 0) { doc.setFillColor(253,250,244); doc.rect(ml, y-1, contentW, 6, 'F'); }
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(...MID);
+    doc.text(t, ml+1, y+3);
+    pdfSchedDays.forEach((d, di) => {
+      const cb = document.getElementById('scb_'+ti+'_'+di);
+      const cx = ml+pdfColW+di*pdfColW+pdfColW/2;
+      const cy = y+1.5;
+      if (cb && cb.checked) {
+        doc.setFillColor(...GOLD); doc.rect(cx-2.5, cy, 5, 5, 'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255,255,255);
+        doc.text('✓', cx-1.5, cy+3.8);
+      } else {
+        doc.setDrawColor(...LGRAY); doc.setLineWidth(0.3); doc.rect(cx-2.5, cy, 5, 5);
+      }
+    });
+    y += 6;
+  });
+  y += 4;
+
+  // ── Showing Instructions
+  sectionHeading('Showing Instructions');
+  const notifParts = [];
+  if (document.getElementById('notifyText')?.checked) notifParts.push('Text Message');
+  if (document.getElementById('notifyEmail')?.checked) notifParts.push('Email');
+  if (document.getElementById('notifyPhone')?.checked) notifParts.push('Phone Call');
+  fieldLine('Appointment Notification', notifParts.length ? notifParts.join(', ') : '—');
+  twoCol('Showing Email', inputVal('showingEmail'), 'Phone Number', inputVal('showingPhone'));
+  twoCol('Alternative Phone', inputVal('altPhone'), 'Notice Required (hrs)', inputVal('noticeHours'));
+  twoCol('Alarm Code', inputVal('alarmCode'), 'Pets', radioVal('hasPets'));
+  fieldLine('Pet Details', inputVal('petsDetails'));
+  twoCol('Keys Ready', radioVal('keysReady'), 'Valuables Secured', radioVal('valuablesSafe'));
+  twoCol('Showing Restrictions', radioVal('showingRestrictions'), 'Agent Attend', radioVal('agentAttend'));
+  fieldLine('Showing Notes', inputVal('showingOtherConcerns'));
+
+  // ── Open House
+  sectionHeading('Open House');
+  twoCol('Open House Permitted', radioVal('openHouse'), 'Preferred Dates/Times', inputVal('openHouseDates'));
+
+  // ── ID Records
+  sectionHeading('Individual Identification Information Records');
+  for (let n = 1; n <= 4; n++) {
+    const name = inputVal(`id${n}_name`);
+    if (!name) continue;
+    checkPage(40);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...GOLD);
+    doc.text(`PERSON ${n}`, ml, y); y += 5;
+    twoCol('Full Legal Name', name, 'Date of Birth', inputVal(`id${n}_dob`));
+    fieldLine('Address', inputVal(`id${n}_address`));
+    fieldLine('Occupation', inputVal(`id${n}_occupation`));
+    twoCol('ID Type', inputVal(`id${n}_idType`), 'ID Number', inputVal(`id${n}_idNum`));
+    twoCol('Jurisdiction', inputVal(`id${n}_jurisdiction`), 'Country', inputVal(`id${n}_country`));
+    fieldLine('Expiry Date', inputVal(`id${n}_expiry`));
+    y += 2;
+  }
+
+  // ── Questions
+  sectionHeading('Client Questions');
+  fieldLine('Questions for Peter', inputVal('clientQuestions'));
+
+  // ── Footer on each page
+  const totalPages = doc.getNumberOfPages();
+  for (let pg = 1; pg <= totalPages; pg++) {
+    doc.setPage(pg);
+    doc.setFillColor(...LGRAY);
+    doc.rect(0, 267, pageW, 0.5, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(...MID);
+    doc.text('Peter Luo · RE/MAX Realtron Realty Inc., Brokerage · 647-824-3718 · peterluo@peterluo.com', ml, 273);
+    doc.text(`Page ${pg} of ${totalPages}`, pageW - mr - 12, 273);
+  }
+
+  doc.save('seller_information_' + new Date().toISOString().slice(0,10) + '.pdf');
+}
+
+/* ──────────────────────────────────────────
+   SEND EMAIL
+────────────────────────────────────────── */
+function sendEmail() {
+  const data = collectFormData();
+  const jsonText = JSON.stringify(data, null, 2);
+  const subject = encodeURIComponent('Seller Information Gathering – ' + new Date().toLocaleDateString('en-CA'));
+  const body = encodeURIComponent(
+    'Please find the completed Seller Information Gathering form data below.\n' +
+    'To load it, save the text between the markers as a .json file and use the Load JSON button.\n\n' +
+    '===== BEGIN JSON =====\n' +
+    jsonText + '\n' +
+    '===== END JSON ====='
+  );
+  window.location.href = `mailto:peterluo@peterluo.com?subject=${subject}&body=${body}`;
+}
+
+/* ──────────────────────────────────────────
+   IndexedDB STORAGE LAYER
+────────────────────────────────────────── */
+const DB_NAME = 'plGatherDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'gather';
+const DB_KEY = 'gatherState';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+function dbGet(key) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(key, val) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    const req = tx.objectStore(STORE_NAME).put(val, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbClearStore() {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/* ── Auto-save (debounced) ── */
+let _saveTimer = null;
+function autoSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (_db) {
+      dbPut(DB_KEY, collectFormData()).catch(e => console.error('IndexedDB save error:', e));
+    }
+  }, 500);
+}
+
+/* ── Attach auto-save listeners to entire form ── */
+const formContent = document.getElementById('formContent');
+formContent.addEventListener('input', autoSave);
+formContent.addEventListener('change', autoSave);
+
+/* ── Clear form to blank state ── */
+function clearForm() {
+  // Text inputs, textareas, selects
+  formContent.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number], input[type=date], textarea, select').forEach(el => {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  // Radios
+  formContent.querySelectorAll('input[type=radio]').forEach(r => { r.checked = false; });
+  // Checkboxes
+  formContent.querySelectorAll('input[type=checkbox]').forEach(cb => { cb.checked = false; });
+  // Hide all yn-sub panels
+  formContent.querySelectorAll('.yn-sub').forEach(sub => { sub.classList.remove('visible'); });
+  // Reset schedule row toggles
+  for (var ti = 0; ti < schedTimes.length; ti++) { updateRowToggle(ti); }
+  // Reset quick-select button active states
+  var qbtns = document.getElementById('schedQuickBtns');
+  if (qbtns) qbtns.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+}
+
+/* ── Clear DB + form ── */
+function clearDB() {
+  if (!confirm('Clear all saved data and reset the form?\nThis cannot be undone.')) return;
+  clearForm();
+  if (_db) {
+    dbClearStore().catch(e => console.error('Clear error:', e));
+  }
+}
+
+/* ── INIT: open DB, restore state ── */
+openDB().then(() => dbGet(DB_KEY)).then(saved => {
+  if (saved && typeof saved === 'object' && Object.keys(saved).length > 0) {
+    restoreFormData(saved);
+  }
+}).catch(err => {
+  console.error('IndexedDB init failed:', err);
+});
+</script>
+</body>
+</html>

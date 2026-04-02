@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Expired Listing Toolkit — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --navy: #1b3a6b;
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+/* TOP BAR */
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+/* TAB ROW */
+.tab-row { display: flex; gap: 6px; }
+.tab-btn { flex: 1; padding: 8px 6px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 12px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.tab-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+/* COMPLIANCE BANNER */
+.compliance-banner { background: #fff8e8; border-left: 4px solid var(--gold-tag); padding: 11px 14px; margin: 10px 14px 0; border-radius: 0 8px 8px 0; }
+.compliance-banner .cb-title { font-size: 12px; font-weight: 700; color: var(--gold-tag); margin-bottom: 5px; }
+.compliance-banner .cb-text { font-size: 12px; color: var(--gold-text); line-height: 1.55; }
+/* MAIN */
+main { padding: 10px 14px; max-width: 500px; margin: 0 auto; }
+/* TAB PANELS */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+/* CATEGORY LABEL */
+.cat-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 8px 2px; display: flex; align-items: center; gap: 8px; }
+.cat-pill { background: var(--step-active); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+/* APPROACH CARDS */
+.approach-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.approach-card.open { border-color: var(--step-active); border-width: 2px; }
+.approach-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.approach-card.open .approach-head { background: var(--step-active); }
+.approach-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.approach-card.open .approach-num { background: rgba(255,255,255,.2); color: #fff; }
+.approach-label { flex: 1; }
+.approach-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.35; }
+.approach-card.open .approach-title { color: #fff; }
+.approach-sub { font-size: 11px; color: var(--light); margin-top: 2px; }
+.approach-card.open .approach-sub { color: rgba(255,255,255,.55); }
+.approach-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.approach-card.open .approach-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.approach-body { display: none; border-top: 1px solid var(--border); }
+.approach-card.open .approach-body { display: block; }
+/* WHEN TO USE */
+.when-box { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); font-style: italic; line-height: 1.5; }
+.when-box strong { color: var(--dark); font-style: normal; }
+/* SCRIPT BLOCKS */
+.script-block { background: var(--gold-bg); border-left: 4px solid var(--gold-tag); padding: 12px 14px; margin: 0; }
+.script-block + .script-block { border-top: 1px solid var(--gold-border); }
+.script-text { font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.7; }
+.script-text strong { color: var(--gold-strong); font-style: normal; }
+.script-note { padding: 9px 14px; background: var(--bg); border-top: 1px solid var(--border); font-size: 13px; color: var(--mid); line-height: 1.5; }
+/* STEP FIELDS */
+.approach-fields { padding: 12px 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--mid); font-weight: 600; }
+.field input, .field select, .field textarea {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 15px; font-family: inherit;
+  color: var(--black); -webkit-appearance: none; width: 100%; min-height: 44px;
+}
+.field textarea { resize: vertical; min-height: 72px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+.frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* OBJ CARDS */
+.obj-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.obj-card.open { border-color: var(--step-active); border-width: 2px; }
+.obj-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.obj-card.open .obj-head { background: var(--step-active); }
+.obj-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.obj-card.open .obj-num { background: rgba(255,255,255,.2); color: #fff; }
+.obj-lbl { flex: 1; }
+.obj-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.35; }
+.obj-card.open .obj-title { color: #fff; }
+.obj-tag { font-size: 11px; color: var(--light); margin-top: 2px; }
+.obj-card.open .obj-tag { color: rgba(255,255,255,.55); }
+.obj-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.obj-card.open .obj-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.obj-body { display: none; border-top: 1px solid var(--border); }
+.obj-card.open .obj-body { display: block; }
+/* SITUATION BOX */
+.situation-box { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); font-style: italic; }
+/* UNDERLYING REASONS */
+.reasons-wrap { padding: 10px 14px; background: var(--white); border-bottom: 1px solid var(--border); }
+.reasons-title { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 8px; }
+.reason-item { display: flex; gap: 8px; font-size: 13px; color: var(--dark); line-height: 1.5; padding: 4px 0; border-bottom: 1px solid var(--bg2); }
+.reason-item:last-child { border-bottom: none; }
+.reason-num { color: var(--gold-tag); font-weight: 700; flex-shrink: 0; min-width: 18px; }
+/* PHASE BLOCKS */
+.phase-header { padding: 9px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+.phase-empathy { background: #1b3a6b; color: #fff; }
+.phase-explore { background: #a07820; color: #fff; }
+.phase-respond { background: #5a4a2a; color: #fff; }
+.phase-followup { background: #2e7d32; color: #fff; }
+/* EER STEP ROWS */
+.eer-step { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); }
+.eer-step:last-child { border-bottom: none; }
+.eer-step-label { width: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; text-align: center; padding: 10px 6px; line-height: 1.3; }
+.eer-step-content { flex: 1; padding: 10px 12px; background: var(--gold-bg); }
+.eer-step-purpose { font-size: 11px; color: var(--gold-tag); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+.eer-step-script { font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.65; }
+.eer-step-script strong { color: var(--gold-strong); font-style: normal; }
+.eer-note { padding: 9px 14px; background: var(--bg); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--mid); font-style: italic; line-height: 1.5; }
+.de-escalation-box { margin: 0; padding: 10px 14px; background: #fff8e8; border-bottom: 1px solid var(--gold-border); border-left: 4px solid var(--gold-tag); font-size: 13px; color: var(--gold-text); line-height: 1.55; }
+.de-escalation-box .de-title { font-size: 11px; font-weight: 700; color: var(--gold-tag); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+/* NOTES SECTION */
+.obj-notes-wrap { padding: 12px 14px; border-top: 1px solid var(--border); }
+.obj-notes-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.obj-notes-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--black); resize: vertical; min-height: 68px; }
+.obj-notes-input:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+/* SESSION CARD */
+.session-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+.session-card .card-inner { padding: 14px; }
+.card-title { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
+/* RECORD STRIP */
+.rec-strip { background: var(--white); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.rec-label { font-size: 11px; color: var(--light); text-transform: uppercase; letter-spacing: .08em; }
+.rbtn { padding: 9px 16px; border-radius: 20px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; -webkit-appearance: none; }
+.rbtn:active { opacity: .7; }
+#btnRecord { background: var(--red); color: #fff; }
+#btnRecord.recording { animation: rpulse 1.2s infinite; }
+#btnPause { background: var(--bg2); color: var(--dark); border: 1px solid var(--border); display: none; }
+#recTimer { font-size: 13px; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; display: none; min-width: 38px; }
+#recStatus { font-size: 11px; color: var(--light); flex: 1; }
+@keyframes rpulse { 0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)} 50%{box-shadow:0 0 0 7px rgba(192,57,43,0)} }
+/* TOAST */
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; pointer-events: none; }
+.toast.show { opacity: 1; }
+/* SAVE AREA */
+.save-area { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.save-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; }
+.save-btn.warm { background: #7a5c00; color: #fff; }
+.save-btn.rec-save { background: var(--gold-bg); color: var(--gold-strong); border: 2px solid var(--gold-border); }
+.save-btn.grey { background: var(--bg2); color: var(--mid); border: 1px solid var(--border); }
+.save-btn:disabled { opacity: .5; cursor: not-allowed; }
+.rec-note { font-size: 12px; color: var(--light); text-align: center; margin-top: -4px; }
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: flex-end; }
+.modal-overlay.open { display: flex; }
+.modal-sheet { background: var(--white); width: 100%; border-radius: 18px 18px 0 0; padding: 20px 16px calc(20px + var(--safe-bottom)); max-height: 72vh; overflow-y: auto; }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.saved-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.saved-item:last-child { border-bottom: none; }
+.saved-item:active { opacity: .6; }
+.saved-name { font-size: 15px; font-weight: 600; }
+.saved-meta { font-size: 12px; color: var(--light); margin-top: 2px; }
+.del-btn { color: var(--red); font-size: 13px; font-weight: 700; padding: 8px 12px; background: none; border: none; cursor: pointer; }
+.modal-close { width: 100%; padding: 14px; background: var(--bg2); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; color: var(--dark); cursor: pointer; margin-top: 14px; }
+.empty-state { text-align: center; color: var(--light); font-size: 14px; padding: 32px 0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title">Expired Listing Toolkit</div>
+      <div class="app-sub">Pinnacle Listing System · Peter Luo</div>
+    </div>
+    <button class="rbtn" style="background:var(--bg2);color:var(--dark);border:1px solid var(--border);padding:9px 14px;font-size:13px;" onclick="openLoadModal()">📂 Load</button>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabApproach" onclick="switchTab('approach')">Approach</button>
+    <button class="tab-btn" id="tabObj" onclick="switchTab('obj')">Objections</button>
+    <button class="tab-btn" id="tabNotes" onclick="switchTab('notes')">Notes</button>
+  </div>
+</div>
+
+
+
+<!-- RECORD STRIP -->
+<div class="rec-strip">
+  <span class="rec-label">Rec</span>
+  <button class="rbtn" id="btnRecord" onclick="toggleRecord()"><span>⏺</span><span id="recLabel">Record</span></button>
+  <button class="rbtn" id="btnPause" onclick="togglePause()">⏸ Pause</button>
+  <span id="recTimer">0:00</span>
+  <span id="recStatus">Ready</span>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 1: APPROACH SCRIPTS -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel active" id="panelApproach">
+
+<!-- SESSION INFO -->
+<div class="session-card">
+  <div class="card-inner">
+    <div class="card-title">Session Info</div>
+    <div class="frow2">
+      <div class="field"><label>Date</label><input type="date" id="sessDate"></div>
+      <div class="field"><label>Area / Street</label><input type="text" id="sessArea" placeholder="e.g. Elmwood Ave, Markham"></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div class="field"><label>Property Address</label><input type="text" id="sessAddress" placeholder="e.g. 123 Elmwood Ave, Markham"></div>
+    </div>
+    <div style="margin-top:10px;" class="frow2">
+      <div class="field"><label>Homeowner Name</label><input type="text" id="sessName" placeholder="e.g. Mr. Chen"></div>
+      <div class="field"><label>Contact Source</label>
+        <select id="sessSource">
+          <option value="">— Select —</option>
+          <option>Neighbourhood Canvass</option>
+          <option>Sign Observed</option>
+          <option>Referral</option>
+          <option>Mailer Follow-Up</option>
+          <option>Community Connection</option>
+          <option>Phone Prospecting</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cat-label"><span class="cat-pill">6 Scripts</span> Choose the approach matching your contact source</div>
+
+<!-- APPROACH 1 -->
+<div class="approach-card" id="ap1">
+  <div class="approach-head" onclick="toggleApproach('ap1')">
+    <div class="approach-num">1</div>
+    <div class="approach-label">
+      <div class="approach-title">Neighbourhood Canvass (Door Knock)</div>
+      <div class="approach-sub">Buyer in the area · Systematic street work</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> You are systematically working a street or neighbourhood. No specific prior knowledge of this property's history.</div>
+    <div class="script-block">
+      <div class="script-text">"Good morning — my name is <strong>Peter Luo</strong>, I'm a real estate agent with <strong>RE/MAX Realtron</strong>. I work a lot in this neighbourhood, and I'm always looking to connect with homeowners here."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I actually have a buyer who is <strong>specifically looking in this area</strong> — they've been quite particular about the street, so I'm going door to door to see if anyone might be open to a conversation."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I'm not here to pitch you on anything — I'm just curious: <strong>is selling something you've ever thought about</strong>, even casually?"</div>
+    </div>
+    <div class="script-note">〔 If yes → bridge into EER objection handling. If no → ask for referrals and leave card. 〕</div>
+    <div class="script-block">
+      <div class="script-text">"If not, that's completely fine — I appreciate you answering the door. Would you happen to know any neighbours who've mentioned thinking about making a move?"</div>
+    </div>
+    <div class="approach-fields">
+      <div class="field"><label>Response / Notes</label><textarea id="apNote1" placeholder="Their reaction, openness level, referrals mentioned…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROACH 2 -->
+<div class="approach-card" id="ap2">
+  <div class="approach-head" onclick="toggleApproach('ap2')">
+    <div class="approach-num">2</div>
+    <div class="approach-label">
+      <div class="approach-title">Property Sign Observed (No Longer Active)</div>
+      <div class="approach-sub">You saw a sign that has since been removed</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> You observed a real estate sign that has since been removed and are following up based on that public observation.</div>
+    <div class="script-block">
+      <div class="script-text">"Hi — my name is <strong>Peter Luo</strong> with <strong>RE/MAX Realtron</strong>. I was in the neighbourhood a little while ago and noticed there had been a sign in front of your home at one point."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I wanted to reach out because I work with buyers who are actively looking in this area, and I thought it might be worth a quick conversation — just to see if selling is still something that might be on your mind."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I'm not here to pressure you in any direction. I'm just someone who works in this neighbourhood and likes to keep things simple. <strong>Would you be open to a short conversation?</strong>"</div>
+    </div>
+    <div class="script-note">〔 The sign observation is the contact basis — do not reference any board data. Keep it low-pressure. 〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>Response / Notes</label><textarea id="apNote2" placeholder="Their reaction, openness level…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROACH 3 -->
+<div class="approach-card" id="ap3">
+  <div class="approach-head" onclick="toggleApproach('ap3')">
+    <div class="approach-num">3</div>
+    <div class="approach-label">
+      <div class="approach-title">Referral from Neighbour or Mutual Contact</div>
+      <div class="approach-sub">Someone you know mentioned them</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> A neighbour, mutual acquaintance, or past client mentioned that this homeowner may be thinking about selling.</div>
+    <div class="script-block">
+      <div class="script-text">"Hi [Name] — my name is <strong>Peter Luo</strong>, I'm a real estate agent with <strong>RE/MAX Realtron</strong>. I hope it's okay to reach out — [referral name] mentioned that you might be going through some changes and had been thinking about the house."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I don't want to assume anything, and I'm not here with any agenda. I just thought — if there's ever a moment where selling is on your mind — <strong>I'd rather you have someone you can call who actually knows this neighbourhood</strong>, rather than going in cold."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"Is that a conversation that would be worth five minutes right now, or would another time work better?"</div>
+    </div>
+    <div class="script-note">〔 Always confirm the referral contact is comfortable with being named. Keep the tone warm and unhurried. 〕</div>
+    <div class="approach-fields">
+      <div class="frow2">
+        <div class="field"><label>Referral Name</label><input type="text" id="apRef3" placeholder="Who referred you"></div>
+        <div class="field"><label>Their Response</label><select id="apResp3"><option value="">— Select —</option><option>Open to chat</option><option>Called back later</option><option>Not interested</option><option>Asked for time</option></select></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="apNote3" placeholder="What they said, next step…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROACH 4 -->
+<div class="approach-card" id="ap4">
+  <div class="approach-head" onclick="toggleApproach('ap4')">
+    <div class="approach-num">4</div>
+    <div class="approach-label">
+      <div class="approach-title">Follow-Up to a Value Report or Mailer</div>
+      <div class="approach-sub">You sent a market update — following up now</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> You sent a market update, home valuation offer, or neighbourhood report to homes in the area and are following up on that mailing.</div>
+    <div class="script-block">
+      <div class="script-text">"Hi — this is <strong>Peter Luo</strong> calling from <strong>RE/MAX Realtron</strong>. I sent a neighbourhood market update to homes on your street a little while ago, and I wanted to follow up in case you had a chance to look at it."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I don't know if selling is on your radar at all — but the reason I send these is because <strong>a lot of homeowners in this neighbourhood don't realize what the market has been doing</strong>, and I'd hate for you to make any big decisions without having accurate information."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"Even if you're not thinking about selling right now, is it a conversation worth having — <strong>just so you know where you stand?</strong>"</div>
+    </div>
+    <div class="script-note">〔 This approach works well as a phone call. Reference the specific mailer to establish context and credibility. 〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>Notes</label><textarea id="apNote4" placeholder="Did they recall the mailer? Their response…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROACH 5 -->
+<div class="approach-card" id="ap5">
+  <div class="approach-head" onclick="toggleApproach('ap5')">
+    <div class="approach-num">5</div>
+    <div class="approach-label">
+      <div class="approach-title">Community or Social Connection</div>
+      <div class="approach-sub">School, gym, community group — they know your face</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> You have a connection through a community group, local business, school, or social network — and they may know you by name or face.</div>
+    <div class="script-block">
+      <div class="script-text">"Hey [Name] — it's <strong>Peter Luo</strong>. We've run into each other a few times at [context — school, gym, community group]. I hope it's okay that I'm reaching out like this."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I've been thinking about reaching out for a while, actually — I didn't want to bring work into things, but someone in the neighbourhood mentioned you might be thinking about the house, and <strong>I figured I'd rather you hear it from someone you know</strong> than get a cold call from a stranger."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I'm honestly not here with a pitch. I just want you to know I'm around if it ever becomes a conversation worth having. <strong>Would that be okay?</strong>"</div>
+    </div>
+    <div class="script-note">〔 Keep the tone personal and warm. Do not lead with a market pitch — lead with the relationship. 〕</div>
+    <div class="approach-fields">
+      <div class="field"><label>Connection Context</label><input type="text" id="apCtx5" placeholder="School / gym / community group…"></div>
+      <div class="field"><label>Notes</label><textarea id="apNote5" placeholder="Their reaction…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROACH 6 -->
+<div class="approach-card" id="ap6">
+  <div class="approach-head" onclick="toggleApproach('ap6')">
+    <div class="approach-num">6</div>
+    <div class="approach-label">
+      <div class="approach-title">Phone Call — Area Prospecting</div>
+      <div class="approach-sub">Public directory · No prior knowledge of property</div>
+    </div>
+    <span class="approach-chevron">▼</span>
+  </div>
+  <div class="approach-body">
+    <div class="when-box"><strong>When to use:</strong> Calling homeowners in a specific area from a publicly available directory. You have no specific knowledge of this property's history.</div>
+    <div class="script-block">
+      <div class="script-text">"Good morning — my name is <strong>Peter Luo</strong>, I'm a real estate agent with <strong>RE/MAX Realtron</strong>. I know this is a bit out of the blue, and I'll be brief."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I'm working with a few buyers who are very specifically looking in [neighbourhood name], and I'm calling homeowners directly because <strong>sometimes the right home never makes it to the market</strong> — it gets matched before that."</div>
+    </div>
+    <div class="script-block">
+      <div class="script-text">"I'm not calling to sell you anything or sign you up for anything. I just want to ask one question: <strong>is selling something that's been on your mind at all</strong>, even as a long-term thought?"</div>
+    </div>
+    <div class="script-note">〔 Keep it under 30 seconds to the question. If they say no, thank them and ask for referrals. If yes, bridge into EER. 〕</div>
+    <div class="script-block">
+      <div class="script-text">"If not, I completely understand — and I'm sorry to interrupt your morning. Do you happen to know anyone in the area who's been talking about making a move? That's really all I'm after."</div>
+    </div>
+    <div class="approach-fields">
+      <div class="field"><label>Notes</label><textarea id="apNote6" placeholder="Their response, next step…"></textarea></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab approach -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 2: OBJECTION HANDLING -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panelObj">
+
+<!-- HOW TO USE -->
+<div style="background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+  <div style="font-size:12px;font-weight:700;color:var(--gold-tag);margin-bottom:5px;">📌 How to Use</div>
+  <div style="font-size:13px;color:var(--gold-text);line-height:1.55;">Always complete Empathy before Explore. Always complete Explore before Respond. The Response must reference what they actually told you — not a generic pitch.</div>
+</div>
+
+<div class="cat-label"><span class="cat-pill">EER</span> Empathy → Explore → Respond</div>
+
+<!-- helper macro for objection -->
+<!-- OBJ 1 -->
+<div class="obj-card" id="obj1">
+  <div class="obj-head" onclick="toggleObj('obj1')">
+    <div class="obj-num">1</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"We're not selling anymore."</div>
+      <div class="obj-tag">Protective reaction — often not permanent</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">The seller has stepped back from selling entirely. Usually frustration or fatigue — not a final decision.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Frustration and emotional exhaustion from the previous listing attempt</div>
+      <div class="reason-item"><span class="reason-num">2</span>Disappointment with results — low showings, no offers, or a low offer that didn't meet expectations</div>
+      <div class="reason-item"><span class="reason-num">3</span>Dissatisfaction with the previous agent's effort or communication</div>
+      <div class="reason-item"><span class="reason-num">4</span>Market concern — they believe conditions have worsened and don't see the point</div>
+      <div class="reason-item"><span class="reason-num">5</span>Personal circumstances changed — motivation to sell has faded</div>
+      <div class="reason-item"><span class="reason-num">6</span>Fear of repeating the same outcome with a new agent</div>
+      <div class="reason-item"><span class="reason-num">7</span>Exploring alternatives — renting out, staying longer, or waiting for a better market</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Mirror their position back</div><div class="eer-step-script">"I hear you — you've decided to step back from selling for now."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Normalise the decision</div><div class="eer-step-script">"After going through the listing process and not getting the result you were hoping for, that makes complete sense. A lot of people feel the same way."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Signal curiosity, not pitch</div><div class="eer-step-script">"I'm not here to talk you into anything. I'm just curious — if it's okay — <strong>what led to that decision?</strong>"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Open-ended — find the real reason</div><div class="eer-step-script">"Was it something about the process itself, the offers you received, the agent experience — or something else entirely?"</div></div></div>
+    <div class="eer-note">〔 Listen fully. The real reason usually comes in the second or third sentence. Do not rush to respond. 〕</div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge specifically</div><div class="eer-step-script">"Thank you for telling me that — I appreciate you being straight with me. That really helps."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Confirm this is the main issue</div><div class="eer-step-script">"Is that the main thing — [their reason] — or is there something else sitting underneath it?"</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">⚠️ De-escalation — if they resist questions</div>"No problem at all — I'm not here to dig into anything you'd rather not revisit. Would it be okay if I just left you a bit of information on what's been happening in the area? You can do whatever you like with it."</div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">From "failed listing" → "information gap"</div><div class="eer-step-script">"A lot of sellers who step back after an expired listing tell me the same thing later: the missing piece wasn't the house — it was the strategy or the timing. The house didn't change. <strong>What happened around it did.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Tailor to what they told you in Explore</div><div class="eer-step-script"><strong>If offers were too low:</strong> "If the offers were below what you needed, that often means the pricing or the marketing didn't attract the right buyers — not that the number isn't achievable. I'd want to show you specifically what I think happened and what I'd do differently."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check if it landed</div><div class="eer-step-script">"Does that make sense for your situation, or is there something I'm missing?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Low-commitment next step</div><div class="eer-step-script">"I'm not asking you to do anything today. Would it be worth <strong>30 minutes</strong> for me to come by, show you what I think happened, and leave you with a clear picture — no obligation at all?"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote1" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 2 -->
+<div class="obj-card" id="obj2">
+  <div class="obj-head" onclick="toggleObj('obj2')">
+    <div class="obj-num">2</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"Our previous agent couldn't sell it."</div>
+      <div class="obj-tag">Still wants to sell — frustrated with the agent</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">An opening — they're still interested in selling but frustrated. Do not defend the industry.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Overpricing — often initiated or agreed to by the agent to win the listing</div>
+      <div class="reason-item"><span class="reason-num">2</span>Insufficient or ineffective marketing — poor photos, limited online exposure, no targeting</div>
+      <div class="reason-item"><span class="reason-num">3</span>Weak communication — infrequent updates left the seller feeling ignored</div>
+      <div class="reason-item"><span class="reason-num">4</span>Lack of buyer feedback — seller never knew what buyers actually thought</div>
+      <div class="reason-item"><span class="reason-num">5</span>No pricing strategy adjustment when the market signalled the price was off</div>
+      <div class="reason-item"><span class="reason-num">6</span>Mismatch between agent expertise and property type or price range</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive — don't defend the industry</div><div class="eer-step-script">"I hear that — the property was listed and didn't sell."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Name the frustration</div><div class="eer-step-script">"That's genuinely frustrating — you went through the whole process, and at the end of it, you're back where you started."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Show curiosity, not judgement</div><div class="eer-step-script">"I'd love to understand what happened, if you're open to sharing — not to point fingers, just so I'm not walking in blind."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Invite the story</div><div class="eer-step-script">"What was the experience like? <strong>What do you think went wrong</strong> — or what were you most frustrated by?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Reflect their specific words back</div><div class="eer-step-script">"That's really helpful — thank you. It sounds like [reflect their specific words back]."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Is there more?</div><div class="eer-step-script">"Is the agent's performance the main issue, or is there something else — pricing, the market, timing — that's also on your mind?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Separate the property from the experience</div><div class="eer-step-script">"The property usually isn't the problem. Most expired listings come down to one of three things — pricing, exposure, or strategy. <strong>And all three are fixable.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Reference what they told you — be specific</div><div class="eer-step-script"><strong>If communication was the issue:</strong> "The way I work is structured around communication — I commit to a written update every week regardless of activity, so you're never wondering what's happening. You always have something in writing."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Verify alignment</div><div class="eer-step-script">"Does that address what frustrated you, or is there more to it?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Propose the visit</div><div class="eer-step-script">"What I'd suggest is coming by for about <strong>30–45 minutes</strong> — I'll bring a full breakdown of what I think happened and what I'd do differently. No agenda other than leaving you better informed."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote2" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 3 -->
+<div class="obj-card" id="obj3">
+  <div class="obj-head" onclick="toggleObj('obj3')">
+    <div class="obj-num">3</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"We're listing with the same agent again."</div>
+      <div class="obj-tag">Loyalty — often emotional, not logical</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Do not challenge the loyalty. Respect it — then ask for one comparison conversation before they sign.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Genuine loyalty and personal relationship — they like the agent</div>
+      <div class="reason-item"><span class="reason-num">2</span>The agent has promised to try harder, adjust price, or change strategy</div>
+      <div class="reason-item"><span class="reason-num">3</span>Fear of change — switching agents feels like starting over</div>
+      <div class="reason-item"><span class="reason-num">4</span>Discomfort with having to fire someone they know</div>
+      <div class="reason-item"><span class="reason-num">5</span>Belief that the market, not the agent, was the real problem</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Respect the loyalty — don't challenge it</div><div class="eer-step-script">"I understand — you're planning to relist with the same agent."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Validate the reasoning</div><div class="eer-step-script">"That makes sense — you have a relationship with them, and starting over with someone new can feel like a lot."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Keep the door open</div><div class="eer-step-script">"I'm not here to change your mind. I'd just ask one thing — would you be open to a quick conversation <strong>before you sign anything</strong>, just so you have a basis for comparison?"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Understand the loyalty</div><div class="eer-step-script">"What is it about going back to them that feels right — is it the relationship, a specific plan they've laid out, or just familiarity with the process?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge what they shared</div><div class="eer-step-script">"I appreciate you being open about that — it helps me understand."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Find the doubt underneath</div><div class="eer-step-script">"Other than the relationship — is there any part of you that's uncertain about whether the outcome will be different this time?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">No negativity — one sharp question</div><div class="eer-step-script">"I'm not going to say anything negative about anyone. What I will say is — when a listing doesn't sell, something needs to change. The question worth asking is: <strong>what specifically is going to be different this time?</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Ask for one comparison meeting</div><div class="eer-step-script">"All I'm asking is thirty minutes. Come and see what I would do — the analysis I would bring, the strategy I'd recommend. Then you'll know exactly what you're comparing. If you still feel the other agent is the right choice, that's completely fair."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check their openness</div><div class="eer-step-script">"Would that kind of comparison be useful to you, or would it feel like a waste of time?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Make it easy</div><div class="eer-step-script">"I'm available this week — it would take no more than half an hour, and I'd come prepared with everything."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote3" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 4 -->
+<div class="obj-card" id="obj4">
+  <div class="obj-head" onclick="toggleObj('obj4')">
+    <div class="obj-num">4</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"What are you going to do differently?"</div>
+      <div class="obj-tag">Genuine question — they want evidence, not promises</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">An open door — they're testing your competence. Don't give a generic pitch. Find out what broke down first, then answer specifically.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Skepticism from the previous failure — they've heard promises before</div>
+      <div class="reason-item"><span class="reason-num">2</span>Need to see real differentiation — not generic "I work harder" claims</div>
+      <div class="reason-item"><span class="reason-num">3</span>They want to be educated, not sold to</div>
+      <div class="reason-item"><span class="reason-num">4</span>Testing whether you know your craft and have thought this through</div>
+      <div class="reason-item"><span class="reason-num">5</span>Fear of wasting time and money on the same outcome</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive directly — no defensiveness</div><div class="eer-step-script">"That's exactly the right question to ask."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Show you understand why they're asking</div><div class="eer-step-script">"If someone promised results and didn't deliver, why would you trust the next person who shows up with the same kind of talk?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Turn the question into a dialogue</div><div class="eer-step-script">"Before I answer, can I ask you a couple of things — just so my answer is actually relevant to your situation?"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Find what broke down</div><div class="eer-step-script">"What do you think went wrong the last time? Was it the price, the way it was presented, the showings, the offers — or something else?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Confirm you heard them</div><div class="eer-step-script">"Thank you — that's really useful. So the main issues were [their words]."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Confirm completeness</div><div class="eer-step-script">"Is that the full picture, or is there something else I should know before I tell you what I'd do differently?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Connect their problem to a specific solution</div><div class="eer-step-script">"Now I can actually answer your question — because I know what broke down. And I can tell you exactly what I would do differently <strong>for those specific things</strong>."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Be specific — use their words</div><div class="eer-step-script"><strong>If poor photos + no showings:</strong> "On marketing — I hire a professional photographer and videographer for every listing, no exceptions. I run targeted digital ads to buyers actively searching in this price range. The goal is to create 3–4× more online traffic in the first week than a standard listing."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check you answered what they actually wanted</div><div class="eer-step-script">"Does that answer your question, or is there a specific area where you'd like more detail?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Move to a property visit</div><div class="eer-step-script">"The best way for me to be useful is to look at the property and put together an actual plan — specific to your home. Would <strong>30–45 minutes this week</strong> work?"</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote4" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 5 -->
+<div class="obj-card" id="obj5">
+  <div class="obj-head" onclick="toggleObj('obj5')">
+    <div class="obj-num">5</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"We're waiting until spring / market gets better."</div>
+      <div class="obj-tag">Timing hesitation — find out what they're actually waiting for</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">May be logical or may be delay. Explore first — then bring local data, not national headlines.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Conventional wisdom that spring is always better for selling</div>
+      <div class="reason-item"><span class="reason-num">2</span>Genuine concern about current buyer demand or market conditions</div>
+      <div class="reason-item"><span class="reason-num">3</span>Using timing as a way to delay without fully deciding</div>
+      <div class="reason-item"><span class="reason-num">4</span>A specific event they're waiting for: job change, child finishing school, family situation</div>
+      <div class="reason-item"><span class="reason-num">5</span>Hoping mortgage rates will drop to bring more buyers</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive without arguing</div><div class="eer-step-script">"I understand — you're thinking spring, or whenever conditions improve."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge the logic</div><div class="eer-step-script">"That's a reasonable instinct — most people associate spring with more buyer activity, and there's truth in that."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Open the door to understanding</div><div class="eer-step-script">"I'm curious what's behind the timing — is it about the market, something personal, or a combination? Can I ask you about it?"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">What does "better" actually mean to them?</div><div class="eer-step-script">"When you say spring — or when the market gets better — what does 'better' look like to you? Is it more buyers, higher prices, lower rates, something else?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Reflect back</div><div class="eer-step-script">"That's helpful — so the main thing is [their specific answer]."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Is timing the only barrier?</div><div class="eer-step-script">"If the market were exactly where you'd want it — would you be ready to move forward? Or is there something else that would still need to be in place?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Spring is real — but more nuanced</div><div class="eer-step-script">"The spring market theory is real. But here's what often gets missed: that's also when more competing properties hit the market. Whether spring is better for you specifically depends on your neighbourhood, your price point, and what the competition looks like."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Use local data — not national headlines</div><div class="eer-step-script"><strong>If waiting for rates to drop:</strong> "When rates do drop significantly, it typically brings a surge of buyers — and a surge of sellers. The sellers already positioned in the market at that point tend to do very well. There's an argument that getting ready now means you capture the first wave rather than competing in it."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check where their head is</div><div class="eer-step-script">"Does looking at it that way change anything for you, or do you still feel like waiting is the right call?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">No-obligation data offer</div><div class="eer-step-script">"Let me send you a neighbourhood market analysis specific to your street — what sold, what's sitting, what buyers have been paying. That way, when you're ready, you'll be making the decision with full information."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote5" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 6 -->
+<div class="obj-card" id="obj6">
+  <div class="obj-head" onclick="toggleObj('obj6')">
+    <div class="obj-num">6</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"I'll call you."</div>
+      <div class="obj-tag">Polite brush-off — rarely a firm no</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Accept it without resistance — then ask one clarifying question before you go. Set a specific follow-up time before hanging up.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Not emotionally ready to re-engage after the previous experience</div>
+      <div class="reason-item"><span class="reason-num">2</span>Shopping around — comparing agents before choosing</div>
+      <div class="reason-item"><span class="reason-num">3</span>Politely declining without confrontation</div>
+      <div class="reason-item"><span class="reason-num">4</span>Testing persistence — want to see if you follow through</div>
+      <div class="reason-item"><span class="reason-num">5</span>Doesn't see enough differentiation yet to say yes</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Accept without resistance</div><div class="eer-step-script">"Of course — I appreciate that."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Remove pressure</div><div class="eer-step-script">"I don't want to take more of your time than you're happy to give. That's completely fair."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Ask one thing before you go</div><div class="eer-step-script">"Before I let you go — can I ask one quick thing? Just to make sure if you do call, I'm actually useful to you."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">One focused, low-pressure question</div><div class="eer-step-script">"Is there something specific that would need to happen before a conversation with me makes sense — a timeline, a decision, something you're waiting on? Or is it just not the right moment?"</div></div></div>
+    <div class="eer-note">〔 Whatever they say — receive it without pushing. This is information-gathering, not a negotiation. 〕</div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Thank them</div><div class="eer-step-script">"Thank you — that's helpful to know."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Is there still an opening?</div><div class="eer-step-script">"Is selling still something you're thinking about, even casually — or has that really moved off the table for now?"</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">⚠️ De-escalation — if clearly brushing you off</div>"No problem at all — I won't take any more of your time. I'll just leave you with a quick market update for the area, and if anything ever comes up, you'll know where to find me." Then stop. Do not push further.</div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Give them a reason to value the future call</div><div class="eer-step-script">"By the time most sellers call, they've already lost a few weeks of the best window. The 30-minute conversation I'm asking for costs you nothing, and it might change how you're thinking about timing and price."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Make the next step concrete</div><div class="eer-step-script">"Let me send you a brief market snapshot for your neighbourhood — no pitch, just data. If you do call, you'll have context. If you don't call, you'll at least have the information."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">One small ask</div><div class="eer-step-script">"Would that be okay — just an email with the neighbourhood data? Nothing else."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Set a specific follow-up time</div><div class="eer-step-script">"I'll send that over today. And I'll give you a quick call in about a week — not to push, just to make sure it was useful. Does that work?"</div></div></div>
+    <div class="eer-note">〔 Do not say "I'll be in touch." Set a specific timeframe. Vagueness kills follow-through. 〕</div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote6" placeholder="Their reaction, what worked, agreed follow-up date…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 7 -->
+<div class="obj-card" id="obj7">
+  <div class="obj-head" onclick="toggleObj('obj7')">
+    <div class="obj-num">7</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"We didn't see any results — no showings, no offers."</div>
+      <div class="obj-tag">Demoralised — pricing or exposure problem</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Zero activity is one of the clearest signals you can get. Explore first, then diagnose — don't assume the cause.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Overpricing — the most common single cause of zero activity</div>
+      <div class="reason-item"><span class="reason-num">2</span>Poor photography or visual presentation repelled online browsers</div>
+      <div class="reason-item"><span class="reason-num">3</span>Inadequate marketing reach — not enough buyers ever saw the listing</div>
+      <div class="reason-item"><span class="reason-num">4</span>Access and showing restrictions that limited viewing opportunities</div>
+      <div class="reason-item"><span class="reason-num">5</span>Property condition issues surfaced in buyer feedback</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive directly</div><div class="eer-step-script">"No showings, no offers — that's a hard experience."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Name the feeling</div><div class="eer-step-script">"When you go through the effort of preparing your home and listing it — and nothing happens — that's disheartening. It makes sense that you'd question whether it's worth trying again."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Signal diagnosis, not pitch</div><div class="eer-step-script">"Before I tell you anything — can I ask you a few questions? 'No results' usually has a specific cause, and I'd like to understand your situation before I say anything about what I'd do."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Dig into the specifics</div><div class="eer-step-script">"How many showings did you get in total? Did you receive any buyer feedback? And do you have a sense of what the main issues were, based on what you were told?"</div></div></div>
+    <div class="eer-note">〔 Listen carefully. Don't diagnose before they finish. The answer will usually point to pricing, exposure, or access. 〕</div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Reflect back</div><div class="eer-step-script">"That's really useful context — thank you. Based on what you've described, it sounds like [reflect their specific words]."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Confirm the root cause</div><div class="eer-step-script">"If you had to guess — what do you think was the biggest single reason? Was it the price, how it was marketed, the condition, or something else?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">No activity = a clear signal, not a dead end</div><div class="eer-step-script">"No activity is actually one of the clearest signals you can get. If it were condition, you'd get showings but no offers. <strong>If it's no showings at all — that's almost always price or exposure. Both are fixable.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Connect to what they told you</div><div class="eer-step-script"><strong>If zero showings:</strong> "Zero showings in the first two weeks means buyers are filtering the property out before they even visit. That happens when the price is above where buyers are searching, or when the online presentation isn't compelling enough to click through. Both of those are things I would address from day one."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check alignment</div><div class="eer-step-script">"Does that resonate with what you experienced, or am I missing something?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Walk-through visit</div><div class="eer-step-script">"I'd like to walk through the property with you — not to list it, just to look at it with fresh eyes and tell you honestly what I think happened and what I'd change. That's worth 30 minutes of your time, I promise."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote7" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 8 -->
+<div class="obj-card" id="obj8">
+  <div class="obj-head" onclick="toggleObj('obj8')">
+    <div class="obj-num">8</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"The market isn't good right now."</div>
+      <div class="obj-tag">Perception — explore the specific concern first</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Often a headline-driven perception. Bring local data, not national arguments. What matters is what's happening on their street.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Absorbing negative headlines without local context</div>
+      <div class="reason-item"><span class="reason-num">2</span>Generalising from their previous listing experience to the whole market</div>
+      <div class="reason-item"><span class="reason-num">3</span>Fear of selling low — wanting to wait for prices to improve</div>
+      <div class="reason-item"><span class="reason-num">4</span>Lock-in effect — reluctant to sell and take on a higher rate on the next purchase</div>
+      <div class="reason-item"><span class="reason-num">5</span>Conflating a buyer's market with an unsellable market</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive without arguing</div><div class="eer-step-script">"I hear you — the market feels uncertain right now."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge the concern is reasonable</div><div class="eer-step-script">"That's not an unfair read — there are real headwinds right now with rates, and the market has shifted from where it was a couple of years ago."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Move toward specifics</div><div class="eer-step-script">"Can I ask what specifically concerns you about the market right now? I want to make sure I'm addressing what's actually on your mind, not a general version of it."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Understand their specific concern</div><div class="eer-step-script">"Is it the prices — you're worried you won't get what you need? Or the demand — you're worried no one will buy? Or is it more about where you're going next and what that will cost you?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge what they told you</div><div class="eer-step-script">"Thank you — that helps me understand where the concern is actually coming from."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Is market the only barrier?</div><div class="eer-step-script">"If the market were more in your favour — would you be ready to move? Or is there something else that would still be holding things up?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">National ≠ local</div><div class="eer-step-script">"The market nationally and the market on your street are two different things. What matters for your decision is what's actually happening with properties like yours, in your neighbourhood, in the past 90 days. <strong>The headlines are about averages — your decision isn't.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Use local data — cite specific recent sales</div><div class="eer-step-script"><strong>Example:</strong> "Based on what I've seen in this area recently — homes like yours in the right price range are still moving. The ones that are sitting are either overpriced or not being marketed well. That's a strategy issue, not a market issue."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Does the local framing shift it?</div><div class="eer-step-script">"Does that change how you're looking at it, or is the concern still there?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Offer data, not a decision</div><div class="eer-step-script">"Let me put together a local market summary for your specific area — not national news, just what's happening on your street and nearby. You can look at it and decide for yourself whether now makes sense."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote8" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 9 -->
+<div class="obj-card" id="obj9">
+  <div class="obj-head" onclick="toggleObj('obj9')">
+    <div class="obj-num">9</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"We need to think about it / talk to family first."</div>
+      <div class="obj-tag">Usually genuine — make sure all decision-makers are in the room</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Respect it and use it. The goal is to ensure the right people are in the room when you do meet — not to override the process.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Multiple decision-makers who haven't aligned yet</div>
+      <div class="reason-item"><span class="reason-num">2</span>Financial uncertainty — they want to model the numbers before committing</div>
+      <div class="reason-item"><span class="reason-num">3</span>Not emotionally ready — the decision to sell is still unsettled</div>
+      <div class="reason-item"><span class="reason-num">4</span>Family member who wasn't part of the conversation needs to be</div>
+      <div class="reason-item"><span class="reason-num">5</span>Using 'family' as a polite buffer to avoid committing on the spot</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Respect the process</div><div class="eer-step-script">"Of course — this is a big decision. Taking time to think it through and make sure everyone's aligned is exactly the right approach."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Normalise the family dynamic</div><div class="eer-step-script">"Selling a home is rarely just one person's decision — and trying to move forward without everyone on the same page usually creates problems later."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Ensure the right people are in the room</div><div class="eer-step-script">"Can I ask — who else is involved in making this decision? I want to make sure that when we do sit down, I'm not presenting to only part of the picture."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Understand what the conversation will cover</div><div class="eer-step-script">"When you say you need to think about it — is it more the timing, the price expectations, or is there someone specific who needs to be brought along first?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge the context</div><div class="eer-step-script">"That makes sense — thank you for being honest with me about that."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Confirm what you're waiting on</div><div class="eer-step-script">"Once you've had that conversation — and assuming it goes the way you're hoping — would you be ready to sit down with me then? Or is there something else that would still need to be worked out?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Give them something for the family conversation</div><div class="eer-step-script">"One thing that might help that conversation go more smoothly is having some real data — what homes like yours are actually selling for, how long they're taking, what the market looks like right now. That way the discussion isn't based on estimates or assumptions."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Offer to make the family meeting easier</div><div class="eer-step-script">"I'm happy to put together a brief market summary you can share — no obligation, no agenda. Just something concrete for the conversation."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Lock in the next step</div><div class="eer-step-script">"Would that be useful? And once you've had the family conversation — when do you think you'd have a sense of the direction?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Set a specific follow-up time</div><div class="eer-step-script">"Why don't I give you a call in about a week? That gives you time to have the conversation, and if it makes sense to meet, we can set something up then."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote9" placeholder="Who else is involved? Agreed follow-up date…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 10 -->
+<div class="obj-card" id="obj10">
+  <div class="obj-head" onclick="toggleObj('obj10')">
+    <div class="obj-num">10</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"Can you lower your commission?"</div>
+      <div class="obj-tag">Usually about perceived value — explore before responding</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Do not discount before you understand why they're asking. Shift the conversation from cost to net proceeds.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>The previous listing cost them money without a result — commission feels like paying for failure again</div>
+      <div class="reason-item"><span class="reason-num">2</span>They don't yet understand what justifies the commission</div>
+      <div class="reason-item"><span class="reason-num">3</span>Comparing to discount brokers or flat-fee services</div>
+      <div class="reason-item"><span class="reason-num">4</span>Financial pressure — they need a specific net amount to make the move work</div>
+      <div class="reason-item"><span class="reason-num">5</span>They see all agents as the same and don't understand why one would cost more</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive without defending</div><div class="eer-step-script">"That's a fair question to ask."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Show you understand the logic</div><div class="eer-step-script">"Especially after paying for a listing that didn't sell — I get why the commission conversation feels loaded."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Redirect to value before numbers</div><div class="eer-step-script">"Before I answer that — can I ask you a question? Because the answer depends on what you're trying to achieve."</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Understand what's behind the ask</div><div class="eer-step-script">"Is it that the fee feels high in absolute terms, or is it more that you're not sure what you'd get for it that's different from last time?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge which issue it is</div><div class="eer-step-script">"That's helpful — so it's really about [their answer], not just the number."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Is commission the only sticking point?</div><div class="eer-step-script">"If I could show you clearly how my approach leads to a higher net sale price — even after the commission — would the percentage still be the main concern?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Cost → net proceeds</div><div class="eer-step-script">"The commission is a percentage of the sale price. What actually matters is your net proceeds — what you walk away with after everything. An agent who reduces their fee but sells the property for less, or slower, can cost you significantly more than the commission difference."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">Connect to their situation</div><div class="eer-step-script">"What I can commit to is a strategy focused on maximising your net — and I'm happy to walk you through exactly how I do that. If you look at the numbers and you don't see the value, that's a fair conversation to have. But I'd rather we have it <strong>after you've seen the plan, not before.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Check the framing lands</div><div class="eer-step-script">"Does that feel like a reasonable way to look at it?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Move to the consultation</div><div class="eer-step-script">"Let me come by, show you the full strategy, and walk you through a net proceeds analysis. Then we can talk about the fee in that context."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote10" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 11 -->
+<div class="obj-card" id="obj11">
+  <div class="obj-head" onclick="toggleObj('obj11')">
+    <div class="obj-num">11</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"All realtors are the same."</div>
+      <div class="obj-tag">Don't argue it — demonstrate it</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Don't claim to be different — show them something specific and verifiable. Ask what broke down, then address that exactly.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>One bad experience has been generalised to the entire profession</div>
+      <div class="reason-item"><span class="reason-num">2</span>Every agent they've spoken to has sounded the same</div>
+      <div class="reason-item"><span class="reason-num">3</span>They've never seen proof of real differentiation in outcomes</div>
+      <div class="reason-item"><span class="reason-num">4</span>Emotional guard after the previous listing failed</div>
+      <div class="reason-item"><span class="reason-num">5</span>They genuinely don't know how to evaluate agents</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive without becoming defensive</div><div class="eer-step-script">"I hear you — and honestly, after what you've been through, I understand why it might feel that way."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Don't dismiss the generalisation</div><div class="eer-step-script">"A lot of agents do sound the same — and a lot of them operate the same way."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">Create an opening without making a claim</div><div class="eer-step-script">"I'm not going to stand here and tell you I'm different. I'd rather show you. Can I ask you a couple of questions first?"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">Find out what their experience actually looked like</div><div class="eer-step-script">"What was the specific experience that led you to that conclusion — was it this most recent listing, or something before that as well?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Receive the specifics</div><div class="eer-step-script">"That's useful context — thank you."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">What would actually change their mind?</div><div class="eer-step-script">"Is there anything that would actually make you see a difference between agents? Or has it reached the point where that feels impossible?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Make differentiation concrete and verifiable</div><div class="eer-step-script">"Here's what I'd suggest. Don't take my word for it. Let me bring you the actual data — what happened with the previous listing, what I would have done differently and why, and what the numbers on comparable properties look like. <strong>That's evidence. You can judge it yourself.</strong>"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">One specific verifiable difference — not a list</div><div class="eer-step-script">"One thing I do that I find most agents don't: before setting a price, I run a buyer demand analysis — how many buyers are actively searching in your price range in your area right now. That tells me whether we're fishing in a full pond or an empty one before we even launch."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Invite scepticism</div><div class="eer-step-script">"I'd rather you be sceptical and come see the work than take my word for it. Would a 30-minute walk-through with the data in front of us change anything — or are you closed to it?"</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Make the ask simple</div><div class="eer-step-script">"If nothing else — just let me show you the analysis. No commitment. If it looks like everything else you've seen, you can walk out after ten minutes."</div></div></div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote11" placeholder="Their reaction, what worked, next step…"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 12 -->
+<div class="obj-card" id="obj12">
+  <div class="obj-head" onclick="toggleObj('obj12')">
+    <div class="obj-num">12</div>
+    <div class="obj-lbl">
+      <div class="obj-title">"I'm not interested."</div>
+      <div class="obj-tag">Surface-level reflex — don't push through it</div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="situation-box">Work around it, not through it. One question, one small offer, then a graceful exit. The follow-up touchpoint may do more than any continued conversation today.</div>
+    <div class="reasons-wrap">
+      <div class="reasons-title">Underlying Reasons</div>
+      <div class="reason-item"><span class="reason-num">1</span>Overwhelmed by agent contact after the listing ended</div>
+      <div class="reason-item"><span class="reason-num">2</span>Emotionally exhausted from the previous experience</div>
+      <div class="reason-item"><span class="reason-num">3</span>Genuinely decided not to sell — at least for now</div>
+      <div class="reason-item"><span class="reason-num">4</span>Using it as a polite brush-off to avoid a sales call</div>
+      <div class="reason-item"><span class="reason-num">5</span>Personal circumstances have changed</div>
+    </div>
+    <div class="phase-header phase-empathy">Phase 1 — Empathy</div>
+    <div class="eer-step"><div class="eer-step-label">Acknowledge</div><div class="eer-step-content"><div class="eer-step-purpose">Receive without resistance</div><div class="eer-step-script">"That's completely fine — I appreciate you being straight with me."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Validate</div><div class="eer-step-content"><div class="eer-step-purpose">Reduce pressure immediately</div><div class="eer-step-script">"I'm not here to convince you of anything. I know you've probably heard from a lot of people lately."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Bridge</div><div class="eer-step-content"><div class="eer-step-purpose">One question before you go</div><div class="eer-step-script">"Can I ask you one quick thing — just to make sure if things ever change, I have a sense of your situation?"</div></div></div>
+    <div class="phase-header phase-explore">Phase 2 — Explore</div>
+    <div class="eer-step"><div class="eer-step-label">Explore</div><div class="eer-step-content"><div class="eer-step-purpose">One focused, non-threatening question</div><div class="eer-step-script">"Is it more that you've decided not to sell at all — or that you're just not ready to think about it yet?"</div></div></div>
+    <div class="eer-note">〔 This one question tells you everything. If "decided not to sell" → close warmly. If "not ready yet" → there's a conversation. 〕</div>
+    <div class="eer-step"><div class="eer-step-label">Appreciate</div><div class="eer-step-content"><div class="eer-step-purpose">Acknowledge their answer</div><div class="eer-step-script">"I appreciate you telling me that — that's helpful."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Isolate</div><div class="eer-step-content"><div class="eer-step-purpose">Only if "not ready yet" — clarify timing</div><div class="eer-step-script">"Is there a specific reason it's not the right moment, or is it more that you just need some space first?"</div></div></div>
+    <div class="phase-header phase-respond">Phase 3 — Respond</div>
+    <div class="eer-step"><div class="eer-step-label">Reframe</div><div class="eer-step-content"><div class="eer-step-purpose">Only if there's an opening — don't push otherwise</div><div class="eer-step-script">"I'm not going to try to talk you into anything. What I will say is — when you are ready, or even if you just want information before you decide, that conversation is available to you. There's no pressure on this end."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Respond</div><div class="eer-step-content"><div class="eer-step-purpose">One small, no-commitment offer</div><div class="eer-step-script">"I'll leave you alone after this — but would it be okay if I sent you a brief neighbourhood update? Just what's been happening on your street. You can do whatever you like with it."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Confirm</div><div class="eer-step-content"><div class="eer-step-purpose">Let them choose</div><div class="eer-step-script">"If that's not welcome, that's fine too — I just wanted to ask."</div></div></div>
+    <div class="eer-step"><div class="eer-step-label">Transition</div><div class="eer-step-content"><div class="eer-step-purpose">Close warmly</div><div class="eer-step-script">"Thank you for speaking with me. If anything changes, my number is easy to find — or I can leave you my card. Have a good day."</div></div></div>
+    <div class="de-escalation-box"><div class="de-title">📌 Important</div>If they are clearly not interested — do NOT attempt to re-open the objection. A graceful exit is more valuable than a pushed conversation. A follow-up touchpoint in 4–6 weeks may yield more than any further engagement today.</div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label">Notes</div><textarea class="obj-notes-input" id="onote12" placeholder="Their reaction, agreed next step if any…"></textarea></div>
+  </div>
+</div>
+
+</div><!-- end tab obj -->
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 3: NOTES & SAVE -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-panel" id="panelNotes">
+<div class="session-card" style="margin-top:4px;">
+  <div class="card-inner">
+    <div class="card-title">Contact Summary</div>
+    <div class="frow2">
+      <div class="field"><label>Lead Rating</label>
+        <select id="leadRating">
+          <option value="">— Select —</option>
+          <option>🔥 Hot — wants to meet</option>
+          <option>☀️ Warm — open, needs time</option>
+          <option>❄️ Cool — resistant</option>
+          <option>🌱 Nurture — long-term</option>
+          <option>✗ Dead — not selling</option>
+        </select>
+      </div>
+      <div class="field"><label>Next Follow-Up</label><input type="date" id="followUpDate"></div>
+    </div>
+    <div style="margin-top:10px;" class="frow2">
+      <div class="field"><label>Objection Faced</label>
+        <select id="objFaced">
+          <option value="">— Select —</option>
+          <option>Not selling anymore</option>
+          <option>Previous agent couldn't sell</option>
+          <option>Going back to same agent</option>
+          <option>What will you do differently</option>
+          <option>Waiting for spring / market</option>
+          <option>I'll call you</option>
+          <option>No results / no showings</option>
+          <option>Market is bad</option>
+          <option>Need to think / talk to family</option>
+          <option>Lower your commission</option>
+          <option>All realtors are the same</option>
+          <option>Not interested</option>
+        </select>
+      </div>
+      <div class="field"><label>EER Stage Reached</label>
+        <select id="eerStage">
+          <option value="">— Select —</option>
+          <option>Empathy only</option>
+          <option>Explore started</option>
+          <option>Explore completed</option>
+          <option>Respond completed</option>
+          <option>Appointment booked</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:10px;" class="field">
+      <label>Follow-Up Action</label>
+      <select id="followUpAction">
+        <option value="">— Select —</option>
+        <option>Send neighbourhood market snapshot</option>
+        <option>Send net proceeds analysis</option>
+        <option>Send communication plan</option>
+        <option>Call back in 1 week</option>
+        <option>Call back in 2 weeks</option>
+        <option>Monthly update only</option>
+        <option>No follow-up needed</option>
+      </select>
+    </div>
+    <div style="margin-top:10px;" class="field">
+      <label>Overall Contact Notes</label>
+      <textarea id="overallNotes" style="min-height:100px;" placeholder="Key things said, real objection identified, tone of conversation, what resonated, what to avoid next time…"></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="save-area">
+  <button class="save-btn warm" onclick="saveAllData()">💾 Save Contact Record</button>
+  <button class="save-btn rec-save" id="btnSaveRec" onclick="saveRecording()" disabled>🎙 Save Voice Recording</button>
+  <div class="rec-note">Saves to iPhone Files app → Downloads</div>
+  <button class="save-btn grey" onclick="resetForm()">🔄 New Contact</button>
+</div>
+</div><!-- end tab notes -->
+
+</main>
+
+<!-- LOAD MODAL -->
+<div class="modal-overlay" id="loadModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📂 Saved Records</div>
+    <div id="savedList"></div>
+    <button class="modal-close" onclick="closeLoadModal()">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Tab switching ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+// ── Approach toggle (only one open at a time) ──
+function toggleApproach(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// ── Obj toggle (only one open at a time) ──
+function toggleObj(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// ── Set today ──
+document.getElementById('sessDate').value = new Date().toISOString().split('T')[0];
+
+// ── Field IDs ──
+const FIELDS = [
+  'sessDate','sessArea','sessAddress','sessName','sessSource',
+  'apNote1','apNote2','apNote3','apNote4','apNote5','apNote6',
+  'apRef3','apResp3','apCtx5',
+  'onote1','onote2','onote3','onote4','onote5','onote6',
+  'onote7','onote8','onote9','onote10','onote11','onote12',
+  'leadRating','followUpDate','objFaced','eerStage','followUpAction','overallNotes'
+];
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// ── Filename ──
+function buildFilename() {
+  const addr = (v('sessAddress') || 'Address').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const now = new Date();
+  const MM = String(now.getMonth()+1).padStart(2,'0');
+  const DD = String(now.getDate()).padStart(2,'0');
+  let HH = now.getHours(); const min = String(now.getMinutes()).padStart(2,'0');
+  const ampm = HH >= 12 ? 'PM' : 'AM'; HH = (HH % 12) || 12;
+  return `Expired_${addr}.${now.getFullYear()}_${MM}_${DD}_${String(HH).padStart(2,'0')}${ampm}_${min}`;
+}
+
+// ── Save ──
+function saveAllData() {
+  const data = { savedAt: new Date().toISOString(), nameSnapshot: v('sessName') || 'Unknown' };
+  FIELDS.forEach(id => { data[id] = v(id); });
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired') || '[]');
+  all.unshift(data);
+  if (all.length > 50) all.splice(50);
+  localStorage.setItem('pinnacle_expired', JSON.stringify(all));
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = buildFilename() + '.json'; a.click();
+  showToast('Saved ✓');
+}
+
+// ── Load Modal ──
+function openLoadModal() { renderSavedList(); document.getElementById('loadModal').classList.add('open'); }
+function closeLoadModal() { document.getElementById('loadModal').classList.remove('open'); }
+document.getElementById('loadModal').addEventListener('click', e => { if (e.target === document.getElementById('loadModal')) closeLoadModal(); });
+
+function renderSavedList() {
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired') || '[]');
+  const el = document.getElementById('savedList');
+  if (!all.length) { el.innerHTML = '<div class="empty-state">No saved records yet</div>'; return; }
+  el.innerHTML = all.map((c,i) => {
+    const d = c.savedAt ? new Date(c.savedAt).toLocaleDateString() : '—';
+    return `<div class="saved-item" onclick="loadRecord(${i})">
+      <div><div class="saved-name">${c.nameSnapshot || 'Unknown'}</div>
+      <div class="saved-meta">${c.sessDate||'—'} · ${c.sessArea||'—'} · ${d}</div></div>
+      <button class="del-btn" onclick="event.stopPropagation();deleteRecord(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function loadRecord(i) {
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired') || '[]');
+  const data = all[i]; if (!data) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el && data[id] !== undefined) el.value = data[id]; });
+  closeLoadModal(); showToast('Loaded ✓');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteRecord(i) {
+  if (!confirm('Delete this record?')) return;
+  const all = JSON.parse(localStorage.getItem('pinnacle_expired') || '[]');
+  all.splice(i, 1); localStorage.setItem('pinnacle_expired', JSON.stringify(all));
+  renderSavedList();
+}
+
+// ── Reset ──
+function resetForm() {
+  if (!confirm('Clear all fields and start a new contact?')) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('sessDate').value = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('open'));
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  stopRecording();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Recording ──
+let mediaRecorder = null, audioChunks = [], recordedBlob = null;
+let timerInterval = null, elapsedSec = 0;
+
+async function toggleRecord() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+                     : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        recordedBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        document.getElementById('btnSaveRec').removeAttribute('disabled');
+        document.getElementById('recStatus').textContent = 'Done — tap Save Recording';
+      };
+      mediaRecorder.start(500); elapsedSec = 0; startTimer();
+      document.getElementById('btnRecord').classList.add('recording');
+      document.getElementById('recLabel').textContent = 'Stop';
+      document.getElementById('btnPause').style.display = 'flex';
+      document.getElementById('recTimer').style.display = 'inline';
+      document.getElementById('recStatus').textContent = '● Recording…';
+    } catch(e) { alert('Microphone access denied.\nPlease allow mic access in Safari Settings.'); }
+  } else { stopRecording(); }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop(); mediaRecorder.stream?.getTracks().forEach(t => t.stop());
+  }
+  clearInterval(timerInterval);
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('recLabel').textContent = 'Record';
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+function togglePause() {
+  if (!mediaRecorder) return;
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause(); clearInterval(timerInterval);
+    document.getElementById('btnPause').textContent = '▶ Resume';
+    document.getElementById('recStatus').textContent = '⏸ Paused';
+  } else if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume(); startTimer();
+    document.getElementById('btnPause').textContent = '⏸ Pause';
+    document.getElementById('recStatus').textContent = '● Recording…';
+  }
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    const m = Math.floor(elapsedSec / 60);
+    const s = String(elapsedSec % 60).padStart(2, '0');
+    document.getElementById('recTimer').textContent = m + ':' + s;
+  }, 1000);
+}
+
+function saveRecording() {
+  if (!recordedBlob) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(recordedBlob);
+  a.download = buildFilename() + '.m4a'; a.click();
+  showToast('Recording saved ✓');
+}
+</script>
+</body>
+</html>

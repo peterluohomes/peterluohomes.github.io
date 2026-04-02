@@ -1,0 +1,36 @@
+# Site Settings
+title: "Peter Luo"
+description: "A brief description of your site"
+url: "https://peterluo.homes"
+baseurl: ""
+
+# Author
+author:
+  name: "Peter Luo"
+  email: "peterluo@peterluo.com"
+
+# Permalink Style (extensionless URLs)
+# e.g. /about instead of /about.html
+permalink: /:path
+
+# Build Settings
+markdown: kramdown
+theme: minima                           # Replace or remove if using a custom theme
+
+# Plugins (GitHub Pages supported)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Force Jekyll to process all HTML files (enables permalink for plain HTML files)
+include:
+  - "**/*.html"
+
+# Exclude from build output
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

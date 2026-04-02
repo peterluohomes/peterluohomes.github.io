@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Inbound Call Objections — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --black: #222222; --dark: #444444;
+  --mid: #777777; --light: #aaaaaa; --border: #e0dbd0; --bg2: #eeebe3;
+  --red: #c0392b; --gold-bg: #fdf6e3; --gold-border: #e8d5a0;
+  --gold-tag: #a07820; --gold-text: #4a3800; --gold-strong: #7a5c00;
+  --step-active: #5a4a2a; --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); color: var(--black); min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 200; }
+.topbar-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+.lang-row { display: flex; gap: 8px; }
+.lang-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 600; color: var(--mid); cursor: pointer; text-align: center; }
+.lang-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+.back-btn { background: var(--bg2); border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+.back-btn:active { opacity: .6; }
+main { padding: 12px 14px; max-width: 500px; margin: 0 auto; }
+/* PRINCIPLES */
+.principles-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+.principles-head { display: flex; align-items: center; gap: 10px; padding: 13px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; background: var(--gold-bg); border-bottom: 1px solid var(--gold-border); }
+.principles-head-title { font-size: 13px; font-weight: 700; color: var(--step-active); flex: 1; }
+.principles-chevron { font-size: 13px; color: var(--gold-tag); transition: transform .25s; }
+.principles-card.open .principles-chevron { transform: rotate(180deg); }
+.principles-body { display: none; padding: 12px 14px; }
+.principles-card.open .principles-body { display: block; }
+.principle-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; color: var(--dark); }
+.principle-item:last-child { border-bottom: none; }
+.principle-dot { color: var(--gold-tag); font-weight: 700; flex-shrink: 0; }
+/* CAT LABEL */
+.cat-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 8px 2px; display: flex; align-items: center; gap: 8px; }
+.cat-label:first-of-type { margin-top: 4px; }
+.cat-step { background: var(--step-active); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; letter-spacing: .05em; }
+/* OBJ CARDS */
+.obj-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.obj-card.open { border-color: var(--step-active); border-width: 2px; }
+.obj-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.obj-card.open .obj-head { background: var(--step-active); }
+.obj-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg2); color: var(--dark); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.obj-card.open .obj-num { background: rgba(255,255,255,.2); color: #fff; }
+.obj-label { flex: 1; min-width: 0; }
+.obj-title { font-size: 14px; font-weight: 600; color: var(--black); line-height: 1.35; }
+.obj-card.open .obj-title { color: #fff; }
+.obj-tag { font-size: 11px; color: var(--light); margin-top: 3px; }
+.obj-card.open .obj-tag { color: rgba(255,255,255,.55); }
+.obj-chevron { font-size: 13px; color: var(--light); transition: transform .25s; flex-shrink: 0; }
+.obj-card.open .obj-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.obj-body { display: none; border-top: 1px solid var(--border); }
+.obj-card.open .obj-body { display: block; }
+.obj-context { padding: 11px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--mid); font-style: italic; line-height: 1.5; }
+.obj-script { padding: 14px; background: var(--gold-bg); border-left: 4px solid var(--gold-tag); font-size: 14px; color: var(--gold-text); font-style: italic; line-height: 1.75; }
+.obj-script strong { color: var(--gold-strong); font-style: normal; font-weight: 700; }
+.obj-script em { color: var(--mid); font-size: 13px; }
+.obj-notes-wrap { padding: 12px 14px; background: var(--white); border-top: 1px solid var(--border); }
+.obj-notes-label { font-size: 11px; font-weight: 700; color: var(--light); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.obj-notes-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: var(--black); resize: vertical; min-height: 68px; }
+.obj-notes-input:focus { outline: none; border-color: var(--gold-tag); background: var(--white); }
+/* LANG */
+[data-lang="ch"] { display: none; }
+body.lang-ch [data-lang="en"] { display: none; }
+body.lang-ch [data-lang="ch"] { display: block; }
+span[data-lang="ch"] { display: none; }
+body.lang-ch span[data-lang="en"] { display: none; }
+body.lang-ch span[data-lang="ch"] { display: inline; }
+.toast { position: fixed; bottom: calc(26px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--black); color: #fff; padding: 10px 22px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity .25s; white-space: nowrap; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title"><span data-lang="en">Inbound Call Objections</span><span data-lang="ch">来电异议处理</span></div>
+      <div class="app-sub">Inbound Call · Pinnacle Listing System</div>
+    </div>
+    <a href="./inbound_call_tool.html" class="back-btn">← <span data-lang="en">Script</span><span data-lang="ch">脚本</span></a>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnCH" onclick="setLang('ch')">中文</button>
+  </div>
+</div>
+
+<main>
+
+<!-- PRINCIPLES -->
+<div class="principles-card open" id="principlesCard">
+  <div class="principles-head" onclick="document.getElementById('principlesCard').classList.toggle('open')">
+    <span style="font-size:16px;">📌</span>
+    <div class="principles-head-title">
+      <span data-lang="en">Core Principles — Inbound Call Objections</span>
+      <span data-lang="ch">核心原则——来电异议处理</span>
+    </div>
+    <span class="principles-chevron">▼</span>
+  </div>
+  <div class="principles-body">
+    <div class="principle-item"><span class="principle-dot">✦</span><span data-lang="en">They called you — that's already strong intent. Don't panic at objections</span><span data-lang="ch">他们主动打来——这本身就是很强的意向，不要被异议吓到</span></div>
+    <div class="principle-item"><span class="principle-dot">✦</span><span data-lang="en">Acknowledge first, always — validate before redirecting</span><span data-lang="ch">永远先认可——先认同，再引导</span></div>
+    <div class="principle-item"><span class="principle-dot">✦</span><span data-lang="en">Never pitch or defend — stay curious and ask questions</span><span data-lang="ch">不要推销或辩护——保持好奇，用问题引导</span></div>
+    <div class="principle-item"><span class="principle-dot">✦</span><span data-lang="en">Your only goal on this call is one thing: book the appointment</span><span data-lang="ch">这通电话只有一个目标：预约面谈</span></div>
+    <div class="principle-item"><span class="principle-dot">✦</span><span data-lang="en">Keep your voice calm and unhurried — speed and anxiety lose appointments</span><span data-lang="ch">保持语速沉稳从容——急促和焦虑会让预约跑掉</span></div>
+  </div>
+</div>
+
+<!-- ═══ EARLY CALL OBJECTIONS ═══ -->
+<div class="cat-label">
+  <span class="cat-step"><span data-lang="en">Steps 1–2</span><span data-lang="ch">第1–2步</span></span>
+  <span data-lang="en">Early Call — Before They Open Up</span>
+  <span data-lang="ch">通话初期——对方还未放下戒备</span>
+</div>
+
+<!-- OBJ 1 -->
+<div class="obj-card" id="obj1">
+  <div class="obj-head" onclick="toggleObj('obj1')">
+    <div class="obj-num">1</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I'm just calling to get a price / I don't want a visit."</span><span data-lang="ch">"我只是想了解一下价格，不需要上门。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Most common early deflection — reframe the visit</span><span data-lang="ch">最常见的早期回避——重新定义上门拜访</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">They want the answer without the commitment. Giving a number without seeing the property destroys your credibility and gives them nothing useful. Reframe the visit as the only way to get a real number.</span><span data-lang="ch">他们想要答案，又不想有任何承诺。不看房就给价格会损害您的专业形象，对他们也没有实际帮助。重新定义上门拜访——这是给出真实数字的唯一方式。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"I completely understand — and I'd love to give you a number right now. The honest truth is, <strong>any price I give you without seeing the property would just be a guess</strong> — and you'd deserve better than that. What I can tell you is that homes in your area have been selling in a pretty wide range, and the difference often comes down to things I'd only know by walking through. <strong>It honestly only takes 30–45 minutes</strong>, and you'd walk away with a real, defensible number. Is there a time this week that works?"</span>
+      <span data-lang="ch">"我完全理解——我也很希望现在就给您一个数字。但说实话，<strong>不看房就给的价格只不过是猜测</strong>——这样对您不公平。我可以告诉您，您那个区域的房子成交价差距很大，关键往往在于一些我只有亲眼看过才能判断的细节。<strong>其实只需要30到45分钟</strong>，您就能得到一个真实、有依据的数字。这周有没有方便的时间？"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note1"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 2 -->
+<div class="obj-card" id="obj2">
+  <div class="obj-head" onclick="toggleObj('obj2')">
+    <div class="obj-num">2</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I don't have time for questions — just tell me what my house is worth."</span><span data-lang="ch">"我没时间回答问题，直接告诉我房子值多少。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Impatient caller — compress and stay warm</span><span data-lang="ch">没有耐心的来电者——压缩话术，保持温和</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">They're busy or testing you. Don't get defensive — compress your entire value into two sentences and pivot to the appointment.</span><span data-lang="ch">他们很忙，或者在测试您。不要防御——把您的全部价值压缩成两句话，然后直接引向预约。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"Fair enough — I'll be direct. <strong>Without seeing the property, any number I give would be unreliable</strong>, and I don't want to waste your time with a guess. Let me come by for 30 minutes — I'll bring the data, walk through quickly, and give you a number you can actually use. <strong>Thursday evening or Saturday morning — which is easier for you?</strong>"</span>
+      <span data-lang="ch">"好的，我直说。<strong>不看房给的任何数字都不可靠</strong>，我不想用猜测浪费您的时间。让我上门30分钟——我带好数据，快速走一遍，给您一个真正有用的数字。<strong>周四晚上还是周六上午，哪个时间更方便？</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note2"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 3 -->
+<div class="obj-card" id="obj3">
+  <div class="obj-head" onclick="toggleObj('obj3')">
+    <div class="obj-num">3</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"How did you get my number?" / "Why are you calling me?"</span><span data-lang="ch">"你怎么得到我电话的？" / "你为什么打给我？"</span></div>
+      <div class="obj-tag"><span data-lang="en">Suspicion / cold call — clarify immediately</span><span data-lang="ch">怀疑 / 陌生来电——立刻说明</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Note: this objection only applies if you called them (outbound). If they called you, redirect gently. Either way — transparency wins.</span><span data-lang="ch">注意：此异议仅适用于您主动致电的情况。如果是对方打来的，温和地转移即可。无论哪种情况——坦诚最有力。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a fair question — I work in your neighbourhood and I reached out to homeowners in the area because I have active buyers looking. <strong>I apologize if the timing wasn't great.</strong> I'll be very brief — I just wanted to let you know that if selling is ever something you're considering, I'd love to connect. <strong>Is that something that's on your radar at all?</strong>"</span>
+      <span data-lang="ch">"这个问题很合理——我在您所在的区域工作，因为手上有活跃买家，所以联系了附近的屋主。<strong>如果打扰到您，非常抱歉。</strong>我长话短说——如果您有考虑过卖房，我很希望能和您聊聊。<strong>这件事您有没有在考虑？</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note3"></textarea></div>
+  </div>
+</div>
+
+<!-- ═══ MID-CALL OBJECTIONS ═══ -->
+<div class="cat-label">
+  <span class="cat-step"><span data-lang="en">Step 3</span><span data-lang="ch">第3步</span></span>
+  <span data-lang="en">Mid-Call — During Info Gathering</span>
+  <span data-lang="ch">通话中期——收集信息阶段</span>
+</div>
+
+<!-- OBJ 4 -->
+<div class="obj-card" id="obj4">
+  <div class="obj-head" onclick="toggleObj('obj4')">
+    <div class="obj-num">4</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"Why do you need to know all this? Just tell me the price."</span><span data-lang="ch">"为什么要问这么多？直接告诉我价格就好。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Impatient with questions — explain the why briefly</span><span data-lang="ch">对问题不耐烦——简短说明原因</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">They feel interrogated. Briefly explain why each question helps them — then get back to it. Don't abandon the discovery.</span><span data-lang="ch">对方感觉在被盘问。简短解释每个问题如何帮助到他们——然后继续。不要放弃发现问题的过程。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"Completely fair — <strong>every question I ask directly affects the number I can give you</strong>. Motivation, timeline, and condition all move the price significantly. I'm not being nosy — I'm trying to make sure the advice I give you is actually useful rather than generic. <strong>Just two or three more questions and I'll be able to give you real insight.</strong>"</span>
+      <span data-lang="ch">"完全理解——<strong>我问的每个问题都直接影响我能给您的数字</strong>。动机、时间线、房子状况，每一项都会对价格产生明显影响。我不是在多管闲事——我是要确保给您的建议是真正有用的，而不是泛泛而谈。<strong>再问两三个问题，我就能给您真正有价值的信息了。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note4"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 5 -->
+<div class="obj-card" id="obj5">
+  <div class="obj-head" onclick="toggleObj('obj5')">
+    <div class="obj-num">5</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"We're not sure we want to sell — we're just curious about the value."</span><span data-lang="ch">"我们还没决定卖，只是想了解一下价值。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Fence-sitter — validate curiosity, offer insight</span><span data-lang="ch">犹豫不决者——认可好奇心，提供见解</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">This is honest — and it's perfectly fine. Many great listings start here. Don't push them to decide; instead make the no-pressure case for why knowing their number helps them decide.</span><span data-lang="ch">这是实话——完全没问题。很多优质委托就是从这里开始的。不要催他们做决定；而是在没有压力的情况下，让他们明白了解房价能帮助他们做决定。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's actually the smartest place to start — <strong>knowing your number before you decide is exactly how good decisions get made</strong>. A lot of my clients weren't sure either until they saw what was possible. I'm not here to push you into anything. Let me come by, show you the data, and you can decide from a position of knowledge rather than guessing. <strong>No pressure, no obligation — just information.</strong>"</span>
+      <span data-lang="ch">"其实这是最聪明的出发点——<strong>在做决定之前先了解您的房产价值，这才是正确的决策方式</strong>。我很多客户一开始也不确定，直到他们看到了可能的数字。我不是来推您做任何事的。让我上门，把数据展示给您，您可以在有充分信息的情况下做决定，而不是靠猜测。<strong>没有任何压力，没有任何义务——就是给您提供信息。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note5"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 6 -->
+<div class="obj-card" id="obj6">
+  <div class="obj-head" onclick="toggleObj('obj6')">
+    <div class="obj-num">6</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"The market is bad right now — it's not a good time to sell."</span><span data-lang="ch">"现在市场不好，不是卖房的好时机。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Market concern — reframe timing with data</span><span data-lang="ch">市场担忧——用数据重新定义时机</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">They've absorbed a negative market headline. Don't dismiss it — validate the concern, then add nuance. The "bad market" narrative is often oversimplified.</span><span data-lang="ch">对方接收到了负面的市场新闻。不要否定——认可顾虑，然后补充细节。"市场不好"的说法往往过于简化。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"You're not wrong — the market has shifted, and it's smart to pay attention to that. <strong>But here's what the headlines don't tell you</strong>: the market affects different properties very differently. Some homes are still selling quickly and at strong prices — it really depends on the property, the strategy, and the timing. <strong>The only way to know where yours stands is to look at the actual data for your specific area.</strong> That's exactly what I'd bring when I come by."</span>
+      <span data-lang="ch">"您说得有道理——市场确实有变化，关注这一点是对的。<strong>但新闻标题没有告诉您的是</strong>：市场对不同房产的影响差别很大。有些房子仍然成交快、价格好——关键在于房产本身、策略和时机。<strong>要知道您的房子处于什么位置，唯一的方法是看您那个区域的真实数据。</strong>这正是我上门时会带来的东西。"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note6"></textarea></div>
+  </div>
+</div>
+
+<!-- ═══ BOOKING OBJECTIONS ═══ -->
+<div class="cat-label">
+  <span class="cat-step"><span data-lang="en">Step 4</span><span data-lang="ch">第4步</span></span>
+  <span data-lang="en">Booking the Appointment</span>
+  <span data-lang="ch">预约面谈阶段</span>
+</div>
+
+<!-- OBJ 7 -->
+<div class="obj-card" id="obj7">
+  <div class="obj-head" onclick="toggleObj('obj7')">
+    <div class="obj-num">7</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I want to interview a few agents before deciding."</span><span data-lang="ch">"我想先比较几个经纪再做决定。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Shopping around — welcome it, go first</span><span data-lang="ch">在货比三家——欢迎比较，争取第一个上门</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Don't argue against comparing — that looks insecure. Instead welcome it, then anchor yourself as the first appointment. First impressions set the benchmark.</span><span data-lang="ch">不要反对比较——那会显得您没有自信。相反，欢迎比较，然后争取成为第一个上门的。第一印象会设定比较基准。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's exactly the right approach — <strong>you absolutely should</strong>. Choosing who represents you is one of the most important decisions in this process. All I'd ask is the opportunity to be one of those conversations. <strong>I'll come prepared with a full market analysis and a clear plan — and then you can compare properly.</strong> Would it make sense for me to come first, so you have a benchmark to measure the others against?"</span>
+      <span data-lang="ch">"这是完全正确的做法——<strong>您就应该这样做</strong>。选择谁来代表您，是整个过程中最重要的决定之一。我只是希望能有机会成为其中一次对话。<strong>我会带着完整的市场分析和清晰的方案上门——然后您可以做真正有依据的比较。</strong>我先去，这样您就有了一个比较基准，您觉得合理吗？"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note7"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 8 -->
+<div class="obj-card" id="obj8">
+  <div class="obj-head" onclick="toggleObj('obj8')">
+    <div class="obj-num">8</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I need to talk to my spouse / family first."</span><span data-lang="ch">"我需要先和另一半 / 家人商量。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Genuine — respect it, invite them both</span><span data-lang="ch">真实情况——尊重，邀请一起参与</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">This is often genuine — and important. The real risk is booking an appointment where the decision-maker doesn't show up. Make sure both people are in the room.</span><span data-lang="ch">这通常是真实情况——而且很重要。真正的风险是预约了上门，但决策者却没有到场。确保双方都在场。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — <strong>this is absolutely a decision to make together</strong>. In fact, that's exactly why I'd love for both of you to be there when I come by. It saves everyone time and makes sure you're working from the same information. <strong>What time would work for both of you this week or next?</strong>"</span>
+      <span data-lang="ch">"当然——<strong>这绝对是应该一起做的决定</strong>。正是因为这样，我很希望您们两位都能在场。这样可以节省大家的时间，确保你们基于相同的信息来考虑。<strong>这周或下周，什么时间对你们两位都方便？</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note8"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 9 -->
+<div class="obj-card" id="obj9">
+  <div class="obj-head" onclick="toggleObj('obj9')">
+    <div class="obj-num">9</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I'm not ready to commit to anything — I don't want to sign anything."</span><span data-lang="ch">"我还没准备好承诺任何事——我不想签任何东西。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Fear of commitment — remove all obligation explicitly</span><span data-lang="ch">害怕承诺——明确消除所有义务</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">They've been burned before or they've heard war stories. Be explicit — this visit has zero obligation attached. Saying it plainly is more convincing than overselling.</span><span data-lang="ch">对方可能有过不好的经历，或者听说过什么。说清楚——这次上门没有任何义务。直白地说出来，比过度推销更有说服力。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"I hear you — and I want to be completely clear: <strong>there is nothing to sign, no commitment, and no pressure.</strong> I'm coming to share information — a market analysis, my approach, and what your home could realistically achieve. What you do with that is entirely your call. <strong>The visit is just a conversation.</strong> Would that feel okay?"</span>
+      <span data-lang="ch">"我理解——我想完全说清楚：<strong>没有任何东西需要签，没有任何承诺，也没有任何压力。</strong>我上门是来分享信息的——市场分析、我的方法，以及您的房子实际上能达到什么价格。您怎么决定完全是您的事。<strong>这次上门只是一次对话。</strong>这样您能接受吗？"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note9"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 10 -->
+<div class="obj-card" id="obj10">
+  <div class="obj-head" onclick="toggleObj('obj10')">
+    <div class="obj-num">10</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"We already have an agent / someone we're going to use."</span><span data-lang="ch">"我们已经有经纪了 / 已经决定用谁了。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Loyalty objection — respect and plant a seed</span><span data-lang="ch">忠诚异议——尊重并埋下种子</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Don't challenge their loyalty — that creates resistance. Respect it, wish them well, and plant a seed for the future. Handled well, this call ends positively and may come back.</span><span data-lang="ch">不要挑战他们的忠诚——那会引起反弹。尊重它，祝他们顺利，然后埋下一颗种子。处理得好，这通电话会以积极的方式结束，将来可能还会回来。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's great — I'm glad you have someone you trust. <strong>I genuinely hope it goes smoothly for you.</strong> If for any reason things change or you'd ever like a second opinion along the way, please don't hesitate to reach out. I'm always happy to be a resource. <strong>Best of luck with the sale.</strong>"</span>
+      <span data-lang="ch">"那很好——很高兴您有一个信任的人。<strong>我真心希望一切顺利。</strong>如果任何原因导致情况有变，或者您在过程中希望听听第二个意见，随时可以联系我。我很乐意作为您的参考资源。<strong>祝您卖房顺利。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note10"></textarea></div>
+  </div>
+</div>
+
+<!-- ═══ PRICE & VALUE OBJECTIONS ═══ -->
+<div class="cat-label">
+  <span class="cat-step"><span data-lang="en">Any Step</span><span data-lang="ch">任何阶段</span></span>
+  <span data-lang="en">Price & Value Challenges</span>
+  <span data-lang="ch">价格与价值质疑</span>
+</div>
+
+<!-- OBJ 11 -->
+<div class="obj-card" id="obj11">
+  <div class="obj-head" onclick="toggleObj('obj11')">
+    <div class="obj-num">11</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"We want $X for it — can you get us that?"</span><span data-lang="ch">"我们想卖$X——你能帮我们卖到吗？"</span></div>
+      <div class="obj-tag"><span data-lang="en">Unrealistic expectation — validate, don't commit or dismiss</span><span data-lang="ch">价格预期不切实际——认可，既不承诺也不否定</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Never say yes to a number you haven't validated, and never say no outright. Either response loses the appointment. Instead, validate the aspiration and tie the real answer to the visit.</span><span data-lang="ch">永远不要对未经核实的数字说"可以"，也不要直接说"不行"。两种回应都会让预约跑掉。应该认可他们的期望，并将真实答案与上门挂钩。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a number worth taking seriously — and <strong>I won't tell you yes or no on a call without having seen the property</strong>, because that wouldn't be fair to you. What I can tell you is that I've helped sellers in your area achieve strong results, and my job is to show you exactly what's realistic and why. <strong>Let me come by, run the numbers properly, and give you an honest answer in person.</strong>"</span>
+      <span data-lang="ch">"这个数字值得认真对待——而且<strong>不看房我不会在电话里告诉您可以还是不可以</strong>，因为那样对您不公平。我可以告诉您的是，我帮助过您那个区域的卖家取得了很好的结果，我的工作就是向您清楚地展示什么是现实的，以及为什么。<strong>让我上门，认真分析数据，当面给您一个诚实的答案。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note11"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 12 -->
+<div class="obj-card" id="obj12">
+  <div class="obj-head" onclick="toggleObj('obj12')">
+    <div class="obj-num">12</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"Your commission is too high / I want to pay less."</span><span data-lang="ch">"你的佣金太高了 / 我想少付一点。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Commission pushback — reframe as net result</span><span data-lang="ch">佣金异议——重新定位为净收益</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Don't defend commission as a number — defend it as a result. The conversation should shift from "what you pay" to "what you net."</span><span data-lang="ch">不要为佣金数字辩护——为结果辩护。对话应该从"您付多少"转向"您净得多少"。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a completely fair thing to bring up — and I'd rather talk about it in person with the full picture in front of us. <strong>What matters at the end of the day isn't the commission, it's what you actually walk away with.</strong> My clients typically net 3–8% more than the neighbourhood average — so the question isn't what I charge, it's whether the result justifies it. <strong>Let me show you the numbers when I come by, and you can judge for yourself.</strong>"</span>
+      <span data-lang="ch">"这个问题提得完全合理——我更希望当面在完整数据面前和您讨论这个问题。<strong>最终重要的不是佣金，而是您实际到手的净收益。</strong>我的客户通常比周边平均成交价多卖3–8%——所以问题不是我收多少，而是结果是否值得。<strong>让我上门时把数字展示给您，您自己来判断。</strong>"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note12"></textarea></div>
+  </div>
+</div>
+
+<!-- ═══ CALL GOING SIDEWAYS ═══ -->
+<div class="cat-label">
+  <span class="cat-step"><span data-lang="en">Any Step</span><span data-lang="ch">任何阶段</span></span>
+  <span data-lang="en">Call Going Sideways</span>
+  <span data-lang="ch">通话偏离正轨</span>
+</div>
+
+<!-- OBJ 13 -->
+<div class="obj-card" id="obj13">
+  <div class="obj-head" onclick="toggleObj('obj13')">
+    <div class="obj-num">13</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"We had a bad experience with an agent before."</span><span data-lang="ch">"我们之前跟经纪有过不好的经历。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Past trauma — listen fully, don't defend the industry</span><span data-lang="ch">过去的不愉快——充分倾听，不要为行业辩护</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">This is emotional, not logical. The worst response is to jump to defence. Listen fully first — let them feel heard — then and only then speak to how you work differently.</span><span data-lang="ch">这是情绪层面的，不是逻辑层面的。最糟糕的回应是立刻为自己辩护。先充分倾听——让对方感到被理解——然后才说您的做法有什么不同。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"I'm really sorry to hear that — <strong>that kind of experience is genuinely frustrating</strong>, and unfortunately it does happen. I'd love to hear what went wrong if you're open to sharing — not to defend anyone, just because I think it's important I understand what matters to you. <strong>[Listen fully.] Thank you for telling me that. The way I work is different in these specific ways…</strong> and ultimately I'd rather earn your trust over time than ask you to take my word for it."</span>
+      <span data-lang="ch">"听到这个真的很遗憾——<strong>这种经历确实令人沮丧</strong>，而且很不幸这种情况确实存在。如果您愿意分享，我很想听听当时发生了什么——不是为了替任何人辩护，只是因为我觉得了解您最在乎什么很重要。<strong>【充分倾听。】谢谢您告诉我这些。我的工作方式在这几个方面有所不同……</strong>最终我希望用时间来赢得您的信任，而不是要求您相信我的一面之词。"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note13"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 14 -->
+<div class="obj-card" id="obj14">
+  <div class="obj-head" onclick="toggleObj('obj14')">
+    <div class="obj-num">14</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"We're thinking of selling ourselves / FSBO."</span><span data-lang="ch">"我们在考虑自己卖 / 私下出售。"</span></div>
+      <div class="obj-tag"><span data-lang="en">FSBO intent — don't argue, offer a no-risk comparison</span><span data-lang="ch">私下出售意向——不要争论，提供无风险比较</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">Don't list the dangers of FSBO — that's condescending and triggers defensiveness. Instead, position your visit as giving them better information to make that choice wisely.</span><span data-lang="ch">不要列举私下出售的风险——那样显得高高在上，会引起反感。而是把您的上门定位为给他们更好的信息，帮助他们做出明智的选择。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"That's a completely valid option — and some people do it successfully. <strong>Before you go that route, the one thing I'd suggest is knowing your true market value first</strong>, so you can price it right from day one and not leave money on the table. Let me come by, show you what I'd list it for and why, and then you'll be in a much stronger position — whether you work with me or go on your own."</span>
+      <span data-lang="ch">"这是完全合理的选项——有些人确实做到了。<strong>在您走这条路之前，我唯一的建议是先了解您房子的真实市场价值</strong>，这样您可以从第一天就定对价格，不会白白损失钱。让我上门，把我建议的挂牌价和原因告诉您，然后无论您选择和我合作还是自己卖，您都会处于更有利的位置。"</span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note14"></textarea></div>
+  </div>
+</div>
+
+<!-- OBJ 15 -->
+<div class="obj-card" id="obj15">
+  <div class="obj-head" onclick="toggleObj('obj15')">
+    <div class="obj-num">15</div>
+    <div class="obj-label">
+      <div class="obj-title"><span data-lang="en">"I need to think about it — I'll call you back."</span><span data-lang="ch">"我需要想想——我会再打给你的。"</span></div>
+      <div class="obj-tag"><span data-lang="en">Soft exit — don't let them off without a time</span><span data-lang="ch">软性退出——不要让他们在没有时间约定的情况下挂电话</span></div>
+    </div>
+    <span class="obj-chevron">▼</span>
+  </div>
+  <div class="obj-body">
+    <div class="obj-context"><span data-lang="en">"I'll call you back" almost never happens. The call-back rate drops dramatically once they hang up. Don't beg — but do gently anchor a specific time before they go.</span><span data-lang="ch">"我会再打给你"这句话几乎不会成真。一旦挂断，回电率会大幅下降。不要苦苦哀求——但要在对方挂断前温和地确认一个具体的时间。</span></div>
+    <div class="obj-script">
+      <span data-lang="en">"Of course — take all the time you need. <strong>Just so I don't miss your call, is there a specific day that usually works well for you?</strong> I can make a note and reach out at a time that's convenient — or if you'd prefer, I'll leave it with you entirely and wait to hear from you." <em>(give them the choice — control reduces resistance)</em></span>
+      <span data-lang="ch">"当然——您慢慢考虑。<strong>为了不错过您的来电，请问哪天对您来说通常比较方便？</strong>我可以记下来，在合适的时间联系您——或者如果您更希望自己来，我完全尊重，等您的消息。"<em>（给他们选择权——控制感能减少阻力）</em></span>
+    </div>
+    <div class="obj-notes-wrap"><div class="obj-notes-label"><span data-lang="en">Notes</span><span data-lang="ch">备注</span></div><textarea class="obj-notes-input" id="note15"></textarea></div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('lang-ch', lang === 'ch');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnCH').classList.toggle('active', lang === 'ch');
+  const ph = lang === 'en' ? 'Their reaction, what worked…' : '对方反应、哪句话奏效了……';
+  document.querySelectorAll('.obj-notes-input').forEach(el => el.placeholder = ph);
+}
+function toggleObj(id) {
+  const card = document.getElementById(id);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+</script>
+</body>
+</html>

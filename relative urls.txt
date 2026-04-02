@@ -1,0 +1,18 @@
+
+From within the pricing folder (e.g. linking from index.html to the others):
+./pyramid.html
+./waterfall.html
+./showings-curve.html
+./first-week-signal.html
+
+linking from your main site
+pricing/pyramid.html
+pricing/waterfall.html
+pricing/showings-curve.html
+pricing/first-week-signal.html
+
+The ../ goes up one level from pricing to the root of your GitHub Pages site, then down into market.
+../market/
+../market/index.html
+../market/some-page.html
+

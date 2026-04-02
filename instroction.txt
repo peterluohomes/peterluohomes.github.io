@@ -1,0 +1,7 @@
+buying - pages for buying
+listing - pages for listing
+market - market insights dashboard
+mm - for memorize script - EN
+plp - pre-listing package
+pricing - pre-listing package - Strategic Pricing Philosophy
+tools - general tools

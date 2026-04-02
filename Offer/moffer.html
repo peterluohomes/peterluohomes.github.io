@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Multiple Offers Tracking</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b4a;--gold:#c9a84c;--gold2:#e0c070;--cream:#faf6ee;--cream2:#f0e8d5;--border:#ddd3bc;--text:#2c2c2c;--muted:#888;--orange:#e07a20;--red:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);font-size:12px}
+.hdr{background:var(--navy);border-bottom:3px solid var(--gold);padding:12px 20px;text-align:center}
+.hdr h1{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold)}
+.hdr p{font-size:10px;color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+
+/* Property bar */
+.prop-bar{background:var(--navy);padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid rgba(201,168,76,.3)}
+.prop-bar label{font-size:9px;font-weight:600;color:#aaa;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+.prop-bar input,.prop-bar select{background:rgba(255,255,255,.08);border:1px solid rgba(201,168,76,.35);border-radius:5px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;padding:6px 10px;outline:none}
+.prop-bar input:focus{border-color:var(--gold);background:rgba(255,255,255,.12)}
+.prop-bar .pf{display:flex;align-items:center;gap:6px}
+.prop-bar .ck-wrap{display:flex;align-items:center;gap:4px}
+.prop-bar .ck-wrap input[type="checkbox"]{width:16px;height:16px;accent-color:var(--gold)}
+
+/* Toolbar */
+.toolbar{background:var(--cream2);padding:8px 16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.btn{padding:8px 14px;border-radius:5px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+.btn-navy{background:var(--navy);color:var(--gold)}
+.save-indicator{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;padding:0 8px}
+.save-indicator.saved{color:#2ecc71}
+
+/* Table */
+.scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.mt{border-collapse:collapse;width:100%;min-width:600px}
+table.mt th,table.mt td{border:1px solid var(--border);padding:4px 6px;vertical-align:top;text-align:left}
+table.mt th{background:var(--navy);color:var(--gold);font-size:9px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;position:sticky;top:0;z-index:2}
+table.mt th.lbl{width:110px;min-width:110px;background:#2a3d62;position:sticky;left:0;z-index:3}
+table.mt td.lbl{width:110px;min-width:110px;background:var(--cream2);font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;position:sticky;left:0;z-index:1}
+table.mt td.offer-cell{min-width:160px;background:#fff}
+table.mt th.offer-hdr{min-width:160px;text-align:center;font-size:11px}
+table.mt input,table.mt select,table.mt textarea{width:100%;border:1px solid var(--border);border-radius:4px;padding:3px 5px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text);background:var(--cream);outline:none;-webkit-appearance:none}
+table.mt input:focus,table.mt select:focus,table.mt textarea:focus{border-color:var(--gold);background:#fff}
+table.mt input[type="date"]{font-family:'DM Mono',monospace;font-size:10px}
+table.mt select{font-size:10px}
+table.mt textarea{resize:vertical;min-height:22px;font-size:10px}
+table.mt input.mono{font-family:'DM Mono',monospace;font-size:11px}
+.pct-cell{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;min-height:20px}
+.words-cell{font-size:9px;color:var(--muted);min-height:20px;word-break:break-word;line-height:1.3}
+.section-row td{background:var(--navy)!important;color:var(--gold);font-family:'Playfair Display',serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 8px}
+.del-offer{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:2px 6px}
+.del-offer:hover{color:var(--red)}
+
+.page-footer{border-top:2px solid var(--gold);padding:8px 16px;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);background:var(--cream2)}
+.page-footer strong{color:var(--navy)}
+
+/* Print */
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .toolbar,.del-offer{display:none!important}
+  body{background:#fff;font-size:9px}
+  .hdr{padding:6px 12px}.hdr h1{font-size:14px}
+  .prop-bar{padding:6px 12px}
+  .prop-bar input,.prop-bar select{font-size:10px;padding:3px 6px}
+  table.mt th,table.mt td{padding:2px 4px;font-size:9px}
+  table.mt input,table.mt select,table.mt textarea{font-size:9px;padding:1px 3px}
+  table.mt th.lbl,table.mt td.lbl{width:90px;min-width:90px}
+  table.mt th.offer-hdr,table.mt td.offer-cell{min-width:120px}
+  .page-footer{padding:4px 12px;font-size:8px}
+  .print-hide{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="hdr"><h1>Multiple Offers Tracking</h1><p>Pinnacle Listing System</p></div>
+
+<div class="prop-bar">
+  <div class="pf"><label>Property</label><input type="text" id="g-property" placeholder="123 Main St" style="min-width:200px"></div>
+  <div class="pf"><label>Size</label><input type="text" id="g-frontage" placeholder="Front" style="width:50px"> × <input type="text" id="g-depth" placeholder="Depth" style="width:50px"></div>
+  <div class="ck-wrap"><label>Irrg</label><input type="checkbox" id="g-irrg"></div>
+  <div class="pf"><label>Seller</label><input type="text" id="g-seller" placeholder="Seller name(s)" maxlength="60" style="min-width:280px"></div>
+</div>
+
+<div class="toolbar">
+  <button class="btn btn-navy" onclick="addOffer()">+ Add Offer</button>
+  <button class="btn btn-outline" onclick="exportJSON()">📤 Export JSON</button>
+  <button class="btn btn-outline" onclick="document.getElementById('ld').click()">📂 Import JSON</button>
+  <input type="file" id="ld" accept=".json" style="display:none" onchange="importJSON(event)">
+  <button class="btn btn-outline" onclick="clearAll()">🗑 Clear</button>
+  <button class="btn btn-gold" onclick="prepPrint()">🖨 Print</button>
+  <span class="save-indicator" id="save-status">●  Auto-save off</span>
+</div>
+
+<div class="scroll-wrap">
+<table class="mt" id="mt">
+<thead id="mt-head"></thead>
+<tbody id="mt-body"></tbody>
+</table>
+</div>
+
+<div class="page-footer"><span><strong>Peter Luo</strong> · RE/MAX Realtron Realty Inc., Brokerage</span><span>647-824-3718</span></div>
+
+<script>
+/* ===== IndexedDB Layer ===== */
+var DB_NAME='PinnacleOffers';
+var DB_VERSION=1;
+var STORE_NAME='multiOffers';
+var RECORD_KEY='current';
+var db=null;
+var saveTimer=null;
+
+function openDB(){
+  return new Promise(function(resolve,reject){
+    var req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=function(e){
+      var d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE_NAME)){
+        d.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess=function(e){db=e.target.result;resolve(db);};
+    req.onerror=function(e){console.error('IndexedDB error',e);reject(e);};
+  });
+}
+
+function dbPut(key,value){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readwrite');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.put(value,key);
+    req.onsuccess=function(){resolve();};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function dbGet(key){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readonly');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.get(key);
+    req.onsuccess=function(){resolve(req.result);};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function dbDelete(key){
+  return new Promise(function(resolve,reject){
+    if(!db){reject('DB not open');return;}
+    var tx=db.transaction(STORE_NAME,'readwrite');
+    var store=tx.objectStore(STORE_NAME);
+    var req=store.delete(key);
+    req.onsuccess=function(){resolve();};
+    req.onerror=function(e){reject(e);};
+  });
+}
+
+function gatherAll(){
+  return {
+    property:document.getElementById('g-property').value,
+    frontage:document.getElementById('g-frontage').value,
+    depth:document.getElementById('g-depth').value,
+    irrg:document.getElementById('g-irrg').checked,
+    seller:document.getElementById('g-seller').value,
+    offers:offers
+  };
+}
+
+function showSaveStatus(msg,ok){
+  var el=document.getElementById('save-status');
+  el.textContent='● '+msg;
+  el.className='save-indicator'+(ok?' saved':'');
+}
+
+function autoSave(){
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    var data=gatherAll();
+    dbPut(RECORD_KEY,data).then(function(){
+      showSaveStatus('Saved',true);
+    }).catch(function(e){
+      showSaveStatus('Save failed',false);
+      console.error('Auto-save error:',e);
+    });
+  },400);
+}
+
+function autoLoad(){
+  return dbGet(RECORD_KEY).then(function(data){
+    if(!data)return false;
+    document.getElementById('g-property').value=data.property||'';
+    document.getElementById('g-frontage').value=data.frontage||'';
+    document.getElementById('g-depth').value=data.depth||'';
+    document.getElementById('g-irrg').checked=!!data.irrg;
+    document.getElementById('g-seller').value=data.seller||'';
+    if(data.offers&&data.offers.length>0){
+      offers=data.offers;offerCount=offers.length;
+    }
+    return true;
+  });
+}
+
+/* ===== CONFIG ===== */
+var TIME_OPTS=(function(){
+  var h='<option value="">—</option>';
+  for(var t=0;t<1440;t+=15){var h24=Math.floor(t/60),mm=t%60,ap=h24<12?'AM':'PM',h12=h24%12;if(h12===0)h12=12;
+    h+='<option value="'+String(h24).padStart(2,'0')+':'+String(mm).padStart(2,'0')+'">'+h12+':'+String(mm).padStart(2,'0')+ap+'</option>';}
+  h+='<option value="23:59">11:59PM</option><option value="11:59">11:59AM</option>';
+  return h;
+})();
+
+/* ===== NUMBER TO WORDS ===== */
+var ONES=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+var TENS=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function ck(n){if(n===0)return'';if(n<20)return ONES[n];if(n<100)return TENS[Math.floor(n/10)]+(n%10?' '+ONES[n%10]:'');return ONES[Math.floor(n/100)]+' Hundred'+(n%100?' '+ck(n%100):'');}
+function numberToWords(n){if(!n||isNaN(n)||n<=0)return'—';var w=Math.floor(n),c=Math.round((n-w)*100),r='';if(w>=1e6){r+=ck(Math.floor(w/1e6))+' Million';w%=1e6;if(w>0)r+=' ';}if(w>=1e3){r+=ck(Math.floor(w/1e3))+' Thousand';w%=1e3;if(w>0)r+=' ';}if(w>0)r+=ck(w);if(!r)r='Zero';r+=' Dollars';if(c>0)r+=' and '+ck(c)+' Cents';return r;}
+
+var ROWS=[
+  {id:'section',label:'📋 Offer Info'},
+  {id:'agent',label:'Agent',type:'text'},
+  {id:'phone',label:'Phone',type:'tel'},
+  {id:'email',label:'Email',type:'text'},
+  {id:'brokerage',label:'Brokerage',type:'text'},
+  {id:'coop-comm',label:'Co-Op Comm',type:'text'},
+  {id:'buyers',label:'Buyers',type:'text'},
+  {id:'offer-date',label:'Offer Date',type:'date'},
+  {id:'price',label:'Price$',type:'money'},
+  {id:'price-words',label:'',type:'display'},
+  {id:'deposit',label:'Deposit$',type:'money'},
+  {id:'deposit-words',label:'',type:'display'},
+  {id:'deposit-pct',label:'Deposit %',type:'display'},
+  {id:'deposit-submit',label:'Dpst Submit',type:'select',opts:['—','Herewith','Upon Acceptance','As Otherwise']},
+  {id:'section2',label:'⏰ Irrevocable & Closing'},
+  {id:'irrv-date',label:'Irrv Date',type:'date'},
+  {id:'irrv-time',label:'Irrv Time',type:'time'},
+  {id:'irrv-party',label:'Irrv Party',type:'select',opts:['—','Buyer','Seller']},
+  {id:'accept-party',label:'Accept Party',type:'select',opts:['—','Buyer','Seller']},
+  {id:'accept-date',label:'Accept Date',type:'date'},
+  {id:'accept-time',label:'Accept Time',type:'time'},
+  {id:'closing',label:'Closing Date',type:'date'},
+  {id:'title-search',label:'Title Search',type:'date'},
+  {id:'section3',label:'📦 Incl / Excl'},
+  {id:'incl',label:'Inclusions',type:'area'},
+  {id:'excl',label:'Exclusions',type:'area'},
+  {id:'section4',label:'📝 Conditions'},
+  {id:'cond1',label:'Condition 1',type:'text'},
+  {id:'cond1-days',label:'C1 Days',type:'text'},
+  {id:'cond1-date',label:'C1 Date',type:'date'},
+  {id:'cond2',label:'Condition 2',type:'text'},
+  {id:'cond2-days',label:'C2 Days',type:'text'},
+  {id:'cond2-date',label:'C2 Date',type:'date'},
+  {id:'cond3',label:'Condition 3',type:'text'},
+  {id:'cond3-days',label:'C3 Days',type:'text'},
+  {id:'cond3-date',label:'C3 Date',type:'date'},
+  {id:'section5',label:'📄 Clauses'},
+  {id:'clause1',label:'Clause 1',type:'area'},
+  {id:'clause2',label:'Clause 2',type:'area'},
+  {id:'clause3',label:'Clause 3',type:'area'},
+  {id:'clause4',label:'Clause 4',type:'area'},
+  {id:'clause5',label:'Clause 5',type:'area'},
+  {id:'clause6',label:'Clause 6',type:'area'},
+  {id:'clause7',label:'Clause 7',type:'area'},
+  {id:'clause8',label:'Clause 8',type:'area'},
+  {id:'clause9',label:'Clause 9',type:'area'},
+  {id:'clause10',label:'Clause 10',type:'area'},
+  {id:'section6',label:'💬 Notes'},
+  {id:'comments',label:'Comments',type:'area'}
+];
+
+var offerCount=0;
+var offers=[];
+
+/* ===== RENDER TABLE ===== */
+function render(){
+  var hHead='<tr><th class="lbl"></th>';
+  for(var c=0;c<offerCount;c++){
+    hHead+='<th class="offer-hdr">Offer '+(c+1)+' <button class="del-offer" onclick="removeOffer('+c+')" title="Remove">✕</button></th>';
+  }
+  hHead+='</tr>';
+  document.getElementById('mt-head').innerHTML=hHead;
+
+  var hBody='';
+  ROWS.forEach(function(row){
+    if(row.id.indexOf('section')===0){
+      hBody+='<tr class="section-row"><td class="lbl" colspan="'+(offerCount+1)+'">'+row.label+'</td></tr>';
+      return;
+    }
+    hBody+='<tr><td class="lbl">'+row.label+'</td>';
+    for(var c=0;c<offerCount;c++){
+      var val=offers[c][row.id]||'';
+      var fid='o'+c+'_'+row.id;
+      var cell='';
+      if(row.type==='text')cell='<input type="text" id="'+fid+'" value="'+esc(val)+'" onchange="sync('+c+',\''+row.id+'\')">';
+      else if(row.type==='tel')cell='<input type="tel" id="'+fid+'" value="'+esc(val)+'" maxlength="12" oninput="fmtPhone(this);sync('+c+',\''+row.id+'\')">';
+      else if(row.type==='date')cell='<input type="date" id="'+fid+'" value="'+esc(val)+'" onchange="sync('+c+',\''+row.id+'\')">';
+      else if(row.type==='money')cell='<input type="text" class="mono" id="'+fid+'" value="'+esc(val)+'" oninput="sync('+c+',\''+row.id+'\')" onblur="fmtMoney(this);sync('+c+',\''+row.id+'\')">';
+      else if(row.type==='time')cell='<select id="'+fid+'" onchange="sync('+c+',\''+row.id+'\')">'+TIME_OPTS+'</select>';
+      else if(row.type==='select'){cell='<select id="'+fid+'" onchange="sync('+c+',\''+row.id+'\')">';row.opts.forEach(function(o){cell+='<option'+(val===o?' selected':'')+'>'+o+'</option>';});cell+='</select>';}
+      else if(row.type==='area')cell='<textarea id="'+fid+'" onchange="sync('+c+',\''+row.id+'\')">'+esc(val)+'</textarea>';
+      else if(row.type==='display'){
+        var cls=(row.id.indexOf('words')>=0)?'words-cell':'pct-cell';
+        cell='<div class="'+cls+'" id="'+fid+'">—</div>';
+      }
+      hBody+='<td class="offer-cell">'+cell+'</td>';
+    }
+    hBody+='</tr>';
+  });
+  document.getElementById('mt-body').innerHTML=hBody;
+
+  /* Restore select values for time fields */
+  for(var c2=0;c2<offerCount;c2++){
+    ROWS.forEach(function(row){
+      if(row.type==='time'||row.type==='select'){
+        var el=document.getElementById('o'+c2+'_'+row.id);
+        if(el&&offers[c2][row.id])el.value=offers[c2][row.id];
+      }
+    });
+    updChecks(c2);
+  }
+}
+
+function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function sync(c,key){var el=document.getElementById('o'+c+'_'+key);if(el)offers[c][key]=el.value;updChecks(c);autoSave();}
+function fmtMoney(inp){var v=parseFloat(inp.value.replace(/[^0-9.]/g,''));if(v>0)inp.value=v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtPhone(inp){var d=inp.value.replace(/\D/g,'').slice(0,10),o='';if(d.length>0)o=d.slice(0,3);if(d.length>=4)o+='-'+d.slice(3,6);if(d.length>=7)o+='-'+d.slice(6,10);inp.value=o;}
+function parseMoney(s){if(!s)return 0;return parseFloat(s.replace(/[^0-9.]/g,''))||0;}
+
+/* ===== CHECKS PER COLUMN ===== */
+function updChecks(c){
+  var d=offers[c];
+  /* Price in words */
+  var pwEl=document.getElementById('o'+c+'_price-words');
+  if(pwEl){var pv=parseMoney(d.price);pwEl.textContent=pv>0?numberToWords(pv):'—';}
+  /* Deposit in words */
+  var dwEl=document.getElementById('o'+c+'_deposit-words');
+  if(dwEl){var dv2=parseMoney(d.deposit);dwEl.textContent=dv2>0?numberToWords(dv2):'—';}
+  /* Deposit % */
+  var pctEl=document.getElementById('o'+c+'_deposit-pct');
+  var depEl=document.getElementById('o'+c+'_deposit');
+  if(pctEl){
+    var price=parseMoney(d.price),dep=parseMoney(d.deposit);
+    if(price>0&&dep>0){var pct=dep/price*100;pctEl.textContent=pct.toFixed(2)+'%';
+      pctEl.style.color=pct<5?'var(--orange)':'';if(depEl){depEl.style.color=pct<5?'var(--orange)':'';depEl.style.fontWeight=pct<5?'600':'';}}
+    else{pctEl.textContent='—';pctEl.style.color='';if(depEl){depEl.style.color='';depEl.style.fontWeight='';}}
+  }
+  /* Irrevocable: red if past, orange if <=2h */
+  var irrvDt=mkDT(d['irrv-date'],d['irrv-time']);
+  var idEl=document.getElementById('o'+c+'_irrv-date'),itEl=document.getElementById('o'+c+'_irrv-time');
+  if(irrvDt&&idEl&&itEl){
+    var hrs=(irrvDt.getTime()-Date.now())/36e5;
+    var col=hrs<0?'var(--red)':hrs<=2?'var(--orange)':'';
+    idEl.style.color=col;idEl.style.borderColor=col;itEl.style.color=col;itEl.style.borderColor=col;
+  }else if(idEl&&itEl){idEl.style.color='';idEl.style.borderColor='';itEl.style.color='';itEl.style.borderColor='';}
+
+  /* Accept > Irrevocable → red */
+  var accDt=mkDT(d['accept-date'],d['accept-time']);
+  var adEl=document.getElementById('o'+c+'_accept-date'),atEl=document.getElementById('o'+c+'_accept-time');
+  if(irrvDt&&accDt&&adEl&&atEl){
+    var late=accDt.getTime()>irrvDt.getTime();
+    var col2=late?'var(--red)':'';
+    adEl.style.color=col2;adEl.style.borderColor=col2;atEl.style.color=col2;atEl.style.borderColor=col2;
+  }else if(adEl&&atEl){adEl.style.color='';adEl.style.borderColor='';atEl.style.color='';atEl.style.borderColor='';}
+
+  /* Party conflict */
+  var ipEl=document.getElementById('o'+c+'_irrv-party'),apEl=document.getElementById('o'+c+'_accept-party');
+  if(ipEl&&apEl){
+    var bad=ipEl.value&&apEl.value&&ipEl.value!=='—'&&apEl.value!=='—'&&ipEl.value===apEl.value;
+    var col3=bad?'var(--red)':'';
+    ipEl.style.color=col3;ipEl.style.borderColor=col3;apEl.style.color=col3;apEl.style.borderColor=col3;
+  }
+
+  /* Title search */
+  var tsEl=document.getElementById('o'+c+'_title-search');
+  if(tsEl&&d.closing){
+    if(!d['title-search']){
+      var dd=new Date(d.closing+'T12:00:00');dd.setDate(dd.getDate()-7);
+      d['title-search']=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
+      tsEl.value=d['title-search'];
+    }
+    var diff=Math.round((new Date(d.closing+'T12:00:00')-new Date(d['title-search']+'T12:00:00'))/864e5);
+    var col4=(diff<7||diff>14)?'var(--orange)':'';
+    tsEl.style.color=col4;tsEl.style.borderColor=col4;
+  }
+
+  /* Closing date */
+  var clEl=document.getElementById('o'+c+'_closing');
+  if(clEl&&d.closing){
+    var today=new Date();today.setHours(0,0,0,0);
+    var cdiff=Math.round((new Date(d.closing+'T12:00:00')-today)/864e5);
+    var col5=cdiff<5?'var(--red)':cdiff>120?'var(--orange)':'';
+    clEl.style.color=col5;clEl.style.borderColor=col5;
+  }
+
+  /* Condition dates: orange if before tomorrow or after 7 days from today */
+  var todayMid=new Date();todayMid.setHours(0,0,0,0);
+  var tomorrow=new Date(todayMid);tomorrow.setDate(tomorrow.getDate()+1);
+  var sevenDays=new Date(todayMid);sevenDays.setDate(sevenDays.getDate()+7);
+  ['cond1-date','cond2-date','cond3-date'].forEach(function(key){
+    var el=document.getElementById('o'+c+'_'+key);
+    if(el&&d[key]){
+      var cd=new Date(d[key]+'T12:00:00');
+      var bad2=cd<tomorrow||cd>sevenDays;
+      el.style.color=bad2?'var(--orange)':'';el.style.borderColor=bad2?'var(--orange)':'';
+    }else if(el){el.style.color='';el.style.borderColor='';}
+  });
+}
+
+function mkDT(dv,tv){if(!dv||!tv)return null;return new Date(dv+'T'+tv+':00');}
+
+/* ===== ADD / REMOVE OFFER ===== */
+function makeOffer(){
+  var now=new Date();
+  var today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  return{'irrv-date':today,'irrv-time':'23:59'};
+}
+function addOffer(){offers.push(makeOffer());offerCount++;render();autoSave();}
+function removeOffer(c){if(!confirm('Remove Offer '+(c+1)+'?'))return;offers.splice(c,1);offerCount--;render();autoSave();}
+
+/* ===== EXPORT / IMPORT JSON (secondary) ===== */
+function exportJSON(){
+  var d=gatherAll();
+  var addr=(d.property||'property').replace(/[^a-z0-9]/gi,'_').slice(0,30);
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
+  a.download='MultiOffer_'+addr+'.json';a.click();
+}
+function importJSON(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(e){
+    try{var d=JSON.parse(e.target.result);
+      document.getElementById('g-property').value=d.property||'';
+      document.getElementById('g-frontage').value=d.frontage||'';
+      document.getElementById('g-depth').value=d.depth||'';
+      document.getElementById('g-irrg').checked=!!d.irrg;
+      document.getElementById('g-seller').value=d.seller||'';
+      offers=d.offers||[];offerCount=offers.length;render();autoSave();
+    }catch(err){alert('Could not load.');}ev.target.value='';
+  };r.readAsText(f);
+}
+function clearAll(){if(!confirm('Clear everything?'))return;
+  document.getElementById('g-property').value='';document.getElementById('g-frontage').value='';
+  document.getElementById('g-depth').value='';document.getElementById('g-irrg').checked=false;
+  document.getElementById('g-seller').value='';offers=[makeOffer(),makeOffer()];offerCount=2;render();
+  dbDelete(RECORD_KEY).then(function(){showSaveStatus('Cleared',false);});
+}
+
+/* ===== Auto-save property bar on change ===== */
+document.getElementById('g-property').addEventListener('input',autoSave);
+document.getElementById('g-frontage').addEventListener('input',autoSave);
+document.getElementById('g-depth').addEventListener('input',autoSave);
+document.getElementById('g-irrg').addEventListener('change',autoSave);
+document.getElementById('g-seller').addEventListener('input',autoSave);
+
+/* ===== PRINT ===== */
+function prepPrint(){
+  var n=offerCount;
+  var css=document.getElementById('print-size');
+  if(!css){css=document.createElement('style');css.id='print-size';document.head.appendChild(css);}
+
+  /* Hide empty clause/condition rows */
+  var allRows=document.querySelectorAll('#mt-body tr');
+  allRows.forEach(function(tr){
+    if(tr.classList.contains('section-row'))return;
+    var lbl=tr.querySelector('td.lbl');
+    if(!lbl)return;
+    var txt=lbl.textContent.toLowerCase();
+    if(txt.indexOf('clause')>=0||txt.indexOf('condition')>=0||txt.indexOf('c1 ')>=0||txt.indexOf('c2 ')>=0||txt.indexOf('c3 ')>=0){
+      var hasData=false;
+      tr.querySelectorAll('input,textarea,select').forEach(function(inp){if(inp.value&&inp.value.trim()&&inp.value!=='—')hasData=true;});
+      tr.classList.toggle('print-hide',!hasData);
+    }
+  });
+
+  if(n<=3){css.textContent='@media print{@page{size:A4 portrait;}}';}
+  else if(n===4){css.textContent='@media print{@page{size:A4 landscape;}}';}
+  else if(n===5){css.textContent='@media print{@page{size:legal landscape;}}';}
+  else{css.textContent='@media print{@page{size:legal landscape;}}';}
+
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){document.querySelectorAll('.print-hide').forEach(function(el){el.classList.remove('print-hide');});},500);
+  },100);
+}
+
+/* ===== INIT ===== */
+offers=[makeOffer(),makeOffer()];offerCount=2;
+
+openDB().then(function(){
+  return autoLoad();
+}).then(function(loaded){
+  render();
+  showSaveStatus('Auto-save on',true);
+}).catch(function(e){
+  console.error('DB init error:',e);
+  render();
+  showSaveStatus('Auto-save off',false);
+});
+
+setInterval(function(){for(var i=0;i<offerCount;i++)updChecks(i);},60000);
+</script>
+</body>
+</html>

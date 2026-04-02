@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Listing Presentation EN</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #f7f5f0; --white: #ffffff; --border: #e0dbd0; --bg2: #eeebe3;
+  --gold-bg: #fdf6e3; --gold-border: #e8d5a0; --gold-tag: #a07820;
+  --warm-dark: #5a4a2a; --navy: #1b3a6b; --light: #aaaaaa; --mid: #777777;
+  --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px);
+  --safe-left: env(safe-area-inset-left,0px); --safe-right: env(safe-area-inset-right,0px);
+}
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg); min-height: 100vh;
+  padding-top: var(--safe-top); padding-left: var(--safe-left);
+  padding-right: var(--safe-right); padding-bottom: calc(40px + var(--safe-bottom));
+  display: flex; flex-direction: column;
+}
+header {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 20px 24px 16px; text-align: center;
+}
+.header-title { font-size: 22px; font-weight: 700; color: var(--warm-dark); line-height: 1.2; }
+main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 100%; }
+.section-label {
+  font-size: 12px; font-weight: 700; color: var(--light); text-transform: uppercase;
+  letter-spacing: .1em; margin-bottom: 10px; margin-top: 20px; padding-left: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label:first-of-type { margin-top: 0; }
+.section-pill { background: var(--warm-dark); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.tool-pair { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.tool-item {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+  border-bottom: 1px solid var(--border); text-decoration: none; color: inherit;
+  min-height: 68px; -webkit-user-select: none; user-select: none;
+}
+.tool-item:active { background: var(--gold-bg); }
+.tool-icon {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--gold-bg);
+  border: 1px solid var(--gold-border); display: flex; align-items: center;
+  justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.tool-info { flex: 1; min-width: 0; }
+.tool-name { font-size: 16px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; }
+.tool-desc { font-size: 13px; color: var(--light); margin-top: 3px; line-height: 1.4; }
+.tool-arrow { font-size: 20px; color: var(--light); flex-shrink: 0; font-weight: 300; }
+.obj-item {
+  display: flex; align-items: center; gap: 14px; padding: 13px 20px;
+  text-decoration: none; color: inherit; background: var(--bg2);
+  -webkit-user-select: none; user-select: none;
+}
+.obj-item:active { background: var(--gold-bg); }
+.obj-badge {
+  font-size: 10px; font-weight: 700; color: var(--gold-tag); background: var(--gold-bg);
+  border: 1px solid var(--gold-border); padding: 3px 9px; border-radius: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.obj-info { flex: 1; min-width: 0; }
+.obj-name { font-size: 14px; font-weight: 600; color: var(--mid); line-height: 1.3; }
+.obj-desc { font-size: 12px; color: var(--light); margin-top: 2px; }
+.obj-arrow { font-size: 18px; color: var(--light); flex-shrink: 0; }
+.lang-item {
+  display: flex; align-items: center; gap: 14px; padding: 13px 20px;
+  text-decoration: none; color: inherit; border-bottom: 1px solid var(--border);
+  background: var(--bg2); -webkit-user-select: none; user-select: none;
+}
+.lang-item:last-child { border-bottom: none; }
+.lang-item:active { background: var(--gold-bg); }
+.lang-flag {
+  font-size: 10px; font-weight: 700; color: var(--navy); background: #eef2fb;
+  border: 1px solid #c8d6f0; padding: 3px 9px; border-radius: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.lang-info { flex: 1; }
+.lang-name { font-size: 14px; font-weight: 600; color: var(--mid); }
+.lang-desc { font-size: 12px; color: var(--light); margin-top: 2px; }
+.method-item {
+  display: flex; align-items: flex-start; gap: 14px; padding: 13px 20px;
+  border-bottom: 1px solid var(--border); background: var(--white);
+  animation: fadeIn 0.2s ease both;
+  animation-delay: calc(var(--n) * 40ms);
+}
+.method-item.last { border-bottom: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.method-num {
+  min-width: 26px; height: 26px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.method-body { flex: 1; }
+.method-title-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.method-title { font-size: 14px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; flex: 1; }
+.method-desc { font-size: 12px; color: var(--mid); margin-top: 3px; line-height: 1.5; }
+#methods-toggle { cursor: pointer; }
+#methods-arrow { transition: transform 0.2s ease; display: inline-block; }
+#methods-arrow.open { transform: rotate(90deg); }
+.counter-btn {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  border: none; font-size: 16px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+.counter-btn:active { transform: scale(0.88); background: var(--warm-dark); }
+.counter-display {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  min-width: 16px; text-align: center; flex-shrink: 0;
+}
+.counter-reset {
+  font-size: 11px; color: var(--light); background: none; border: none;
+  cursor: pointer; padding: 4px 2px; text-decoration: underline;
+  -webkit-tap-highlight-color: transparent;
+}
+.method-time {
+  font-size: 11px; font-weight: 500; color: var(--light);
+  margin-left: 6px; white-space: nowrap;
+}
+.counter-time-display {
+  font-size: 11px; font-weight: 600; color: var(--gold-tag);
+  white-space: nowrap; flex-shrink: 0; min-width: 40px;
+}
+.total-time-display {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  letter-spacing: 0.02em;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">Listing Presentation EN</div>
+</header>
+
+<main>
+  <div class="section-label"><span class="section-pill">Listing</span> Presentation Flow</div>
+
+  <div class="tool-pair">
+    <!-- VOICE -->
+    <div class="tool-item" style="gap:16px; flex-direction:column; align-items:flex-start;">
+      <div style="display:flex; align-items:center; gap:16px; width:100%;">
+        <div class="tool-icon">🎙️</div>
+        <div class="tool-info">
+          <div class="tool-name">Voice</div>
+    <!-- Voice -->
+    <a class="lang-item" href="./lpen">
+      <span class="lang-flag" style="background:#eef6f0; border-color:#b8dfc8; color:#2a6e46;">WT</span>
+      <div class="lang-info">
+        <div class="lang-name">Presenting</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+    <!-- Fast Voice -->
+    <a class="lang-item" href="./flp">
+      <span class="lang-flag" style="background:#fff0e6; border-color:#f0c8a0; color:#a05820;">FV</span>
+      <div class="lang-info">
+        <div class="lang-name">Fast Voice</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+
+          <div id="audio-stats" style="font-size:12px; color:var(--light); margin-top:3px;">Loading stats…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WALKTHROUGH -->
+    <a class="lang-item" href="./wt">
+      <span class="lang-flag" style="background:#eef6f0; border-color:#b8dfc8; color:#2a6e46;">WT</span>
+      <div class="lang-info">
+        <div class="lang-name">Walkthrough</div>
+        <div class="lang-desc">Property walkthrough script</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+
+    <!-- DISCOVERY -->
+    <a class="lang-item" href="./dc">
+      <span class="lang-flag" style="background:#f0eef6; border-color:#c8b8df; color:#4a2a6e;">DC</span>
+      <div class="lang-info">
+        <div class="lang-name">Discovery</div>
+        <div class="lang-desc">Seller needs &amp; motivation discovery</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+
+    <!-- PLAN OF ACTION -->
+    <a class="lang-item" href="./poa">
+      <span class="lang-flag" style="background:#fdf6e3; border-color:#e8d5a0; color:#a07820;">POA</span>
+      <div class="lang-info">
+        <div class="lang-name">Plan of Action</div>
+        <div class="lang-desc">Marketing &amp; listing strategy presentation</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+
+    <!-- PRICE PRESENTATION -->
+    <a class="lang-item" href="./pp" style="border-bottom:none;">
+      <span class="lang-flag" style="background:#fef0f0; border-color:#f0c0c0; color:#8e2a2a;">PP</span>
+      <div class="lang-info">
+        <div class="lang-name">Price Presentation</div>
+        <div class="lang-desc">CMA &amp; pricing strategy discussion</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+  </div>
+
+
+  <!-- 11 METHODS SECTION -->
+  <div class="section-label" style="margin-top:28px;">
+    <span class="section-pill" style="background:var(--navy);">💡</span> Script Memory Methods
+  </div>
+
+  <div class="tool-pair" id="methods-card">
+    <!-- Toggle header -->
+    <div class="tool-item" id="methods-toggle" style="cursor:pointer;" onclick="toggleMethods()">
+      <div class="tool-icon" style="background:#eef2fb; border-color:#c8d6f0; font-size:22px;">🧠</div>
+      <div class="tool-info">
+        <div class="tool-name">11 Ways to Remember Scripts Fast</div>
+        <div class="tool-desc">Tap to expand your memory toolkit</div>
+      </div>
+      <span class="tool-arrow" id="methods-arrow">›</span>
+    </div>
+
+    <!-- Methods list (hidden by default) -->
+    <div id="methods-list" style="display:none;">
+      <div class="method-item" style="--n:1">
+        <div class="method-num">1</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Record and Listen<span class="method-time">3 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(1)">+</button>
+            <span class="counter-display" id="cnt-1">0</span>
+            <span class="counter-time-display" id="time-1">0 min</span>
+          </div>
+          <div class="method-desc">Record yourself reading the text at a normal, conversational pace. Listen to this audio on a constant loop while doing daily chores.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:2">
+        <div class="method-num">2</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Audio Shadow<span class="method-time">5 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(2)">+</button>
+            <span class="counter-display" id="cnt-2">0</span>
+            <span class="counter-time-display" id="time-2">0 min</span>
+          </div>
+          <div class="method-desc">Listen to a recording of your script and instantly repeat the words aloud. This method trains your ear and improves verbal rhythm.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:3">
+        <div class="method-num">3</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">First Letter Method<span class="method-time">5 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(3)">+</button>
+            <span class="counter-display" id="cnt-3">0</span>
+            <span class="counter-time-display" id="time-3">0 min</span>
+          </div>
+          <div class="method-desc">Write out the first letter of every single word in your script. Use this custom cheat sheet to force your brain to recall words.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:4">
+        <div class="method-num">4</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Anchors<span class="method-time">8 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(4)">+</button>
+            <span class="counter-display" id="cnt-4">0</span>
+            <span class="counter-time-display" id="time-4">0 min</span>
+          </div>
+          <div class="method-desc">Assign one powerful anchor word to summarize each paragraph. Recalling this single trigger word helps unlock the full block of text.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:5">
+        <div class="method-num">5</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Speed Through<span class="method-time">4 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(5)">+</button>
+            <span class="counter-display" id="cnt-5">0</span>
+            <span class="counter-time-display" id="time-5">0 min</span>
+          </div>
+          <div class="method-desc">Speak the entire text aloud as rapidly as you possibly can manage. This strips away acting and safely tests your pure memory recall.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:6">
+        <div class="method-num">6</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Que Words<span class="method-time">7 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(6)">+</button>
+            <span class="counter-display" id="cnt-6">0</span>
+            <span class="counter-time-display" id="time-6">0 min</span>
+          </div>
+          <div class="method-desc">Select a few key words from each paragraph to serve as memory triggers. These specific cues will guide you through the full text.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:7">
+        <div class="method-num">7</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Chunking<span class="method-time">10 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(7)">+</button>
+            <span class="counter-display" id="cnt-7">0</span>
+            <span class="counter-time-display" id="time-7">0 min</span>
+          </div>
+          <div class="method-desc">Break your massive script into much smaller, manageable sections. Master each tiny chunk perfectly before you move on to the next.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:8">
+        <div class="method-num">8</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Tie to Movement<span class="method-time">5 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(8)">+</button>
+            <span class="counter-display" id="cnt-8">0</span>
+            <span class="counter-time-display" id="time-8">0 min</span>
+          </div>
+          <div class="method-desc">Assign specific physical actions or walking paths to the script. Your muscle memory will naturally trigger the right words to say.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:9">
+        <div class="method-num">9</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Visualization<span class="method-time">7 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(9)">+</button>
+            <span class="counter-display" id="cnt-9">0</span>
+            <span class="counter-time-display" id="time-9">0 min</span>
+          </div>
+          <div class="method-desc">Vividly picture yourself giving the presentation in the actual space. Reciting the script while visualizing builds deep confidence.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:10">
+        <div class="method-num">10</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Strategic Sleep<span class="method-time">7 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(10)">+</button>
+            <span class="counter-display" id="cnt-10">0</span>
+            <span class="counter-time-display" id="time-10">0 min</span>
+          </div>
+          <div class="method-desc">Review your most difficult script sections right before you sleep. Your rested brain magically consolidates the memories overnight.</div>
+        </div>
+      </div>
+      <div class="method-item last" style="--n:11">
+        <div class="method-num">11</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Handwrite the Text<span class="method-time">15 min</span></div>
+            <button class="counter-btn" onclick="incrementCounter(11)">+</button>
+            <span class="counter-display" id="cnt-11">0</span>
+            <span class="counter-time-display" id="time-11">0 min</span>
+          </div>
+          <div class="method-desc">Copy your entire script by hand over and over using pen and paper. This physical action deeply engages the brain to lock in the text.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total minutes + reset -->
+    <div id="methods-footer" style="display:none; padding: 10px 20px 14px; border-top: 1px solid var(--border);">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="total-time-display" id="total-time">Total: 0 min</span>
+        <button class="counter-reset" onclick="resetAllCounters()" style="font-size:12px; color:var(--light);">Reset all session counts</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+
+<script>
+function toggleMethods() {
+  const list = document.getElementById('methods-list');
+  const footer = document.getElementById('methods-footer');
+  const arrow = document.getElementById('methods-arrow');
+  const toggle = document.getElementById('methods-toggle');
+  const isOpen = list.style.display !== 'none';
+  list.style.display = isOpen ? 'none' : 'block';
+  footer.style.display = isOpen ? 'none' : 'block';
+  arrow.classList.toggle('open', !isOpen);
+  toggle.querySelector('.tool-desc').textContent = isOpen ? 'Tap to expand your memory toolkit' : 'Tap to collapse';
+}
+</script>
+
+<script>
+(function () {
+  const STORE_KEY = 'lpen_stats';
+  const audio = document.getElementById('lpen-audio');
+  const statsEl = document.getElementById('audio-stats');
+
+  // Load persisted stats
+  let stats = JSON.parse(localStorage.getItem(STORE_KEY) || '{"plays":0,"totalSec":0}');
+  let sessionStart = null;   // when current play began
+  let lastSaved = 0;         // seconds already counted for this play segment
+
+  function fmtTime(sec) {
+    sec = Math.floor(sec);
+    if (sec < 60) return sec + 's';
+    const m = Math.floor(sec / 60), s = sec % 60;
+    if (m < 60) return m + 'm ' + (s ? s + 's' : '');
+    const h = Math.floor(m / 60), rm = m % 60;
+    return h + 'h ' + (rm ? rm + 'm' : '');
+  }
+
+  function renderStats() {
+    statsEl.textContent =
+      '▶ ' + stats.plays + (stats.plays === 1 ? ' play' : ' plays') +
+      ' · ⏱ ' + fmtTime(stats.totalSec) + ' total';
+  }
+
+  function save() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(stats));
+  }
+
+  // Count a new play when audio starts from paused/stopped
+  audio.addEventListener('play', () => {
+    stats.plays++;
+    sessionStart = Date.now();
+    lastSaved = 0;
+    save();
+    renderStats();
+  });
+
+  // Accumulate time while playing (fires every ~250 ms)
+  audio.addEventListener('timeupdate', () => {
+    if (sessionStart === null) return;
+    const elapsed = (Date.now() - sessionStart) / 1000;
+    const delta = elapsed - lastSaved;
+    if (delta >= 5) {           // save every 5 real-time seconds
+      stats.totalSec += delta;
+      lastSaved = elapsed;
+      save();
+      renderStats();
+    }
+  });
+
+  // Flush remaining time on pause / end
+  function flushTime() {
+    if (sessionStart === null) return;
+    const elapsed = (Date.now() - sessionStart) / 1000;
+    stats.totalSec += elapsed - lastSaved;
+    sessionStart = null;
+    lastSaved = 0;
+    save();
+    renderStats();
+  }
+  audio.addEventListener('pause', flushTime);
+  audio.addEventListener('ended', flushTime);
+
+  // Reset button
+  window.resetStats = function () {
+    if (!confirm('Reset play stats?')) return;
+    stats = { plays: 0, totalSec: 0 };
+    save();
+    renderStats();
+  };
+
+  renderStats();
+})();
+</script>
+<script>
+// Method session counters — persisted in localStorage
+// Minutes per count for each method (index 1–11)
+const METHOD_MINUTES = { 1:3, 2:5, 3:5, 4:8, 5:4, 6:7, 7:10, 8:5, 9:7, 10:7, 11:15 };
+const METHOD_COUNT = 11;
+const COUNTER_KEY = 'method_counters';
+
+function loadCounters() {
+  return JSON.parse(localStorage.getItem(COUNTER_KEY) || '{}');
+}
+
+function saveCounters(data) {
+  localStorage.setItem(COUNTER_KEY, JSON.stringify(data));
+}
+
+function renderCounters() {
+  const data = loadCounters();
+  let totalMin = 0;
+  for (let i = 1; i <= METHOD_COUNT; i++) {
+    const cnt = data[i] || 0;
+    const mins = cnt * METHOD_MINUTES[i];
+    totalMin += mins;
+    const el = document.getElementById('cnt-' + i);
+    if (el) el.textContent = cnt;
+    const timeEl = document.getElementById('time-' + i);
+    if (timeEl) timeEl.textContent = mins + ' min';
+  }
+  const totalEl = document.getElementById('total-time');
+  if (totalEl) totalEl.textContent = 'Total: ' + totalMin + ' min';
+}
+
+function incrementCounter(n) {
+  const data = loadCounters();
+  data[n] = (data[n] || 0) + 1;
+  saveCounters(data);
+  const el = document.getElementById('cnt-' + n);
+  if (el) {
+    el.textContent = data[n];
+    el.style.transition = 'transform 0.15s ease, color 0.15s ease';
+    el.style.transform = 'scale(1.4)';
+    el.style.color = 'var(--warm-dark)';
+    setTimeout(() => { el.style.transform = 'scale(1)'; el.style.color = 'var(--navy)'; }, 150);
+  }
+  // Update time for this method
+  const mins = data[n] * METHOD_MINUTES[n];
+  const timeEl = document.getElementById('time-' + n);
+  if (timeEl) {
+    timeEl.textContent = mins + ' min';
+    timeEl.style.transition = 'color 0.15s ease';
+    timeEl.style.color = 'var(--warm-dark)';
+    setTimeout(() => { timeEl.style.color = 'var(--gold-tag)'; }, 150);
+  }
+  // Update total
+  renderTotal();
+}
+
+function renderTotal() {
+  const data = loadCounters();
+  let totalMin = 0;
+  for (let i = 1; i <= METHOD_COUNT; i++) {
+    totalMin += (data[i] || 0) * METHOD_MINUTES[i];
+  }
+  const totalEl = document.getElementById('total-time');
+  if (totalEl) totalEl.textContent = 'Total: ' + totalMin + ' min';
+}
+
+function resetAllCounters() {
+  if (!confirm('Reset all 11 session counts?')) return;
+  saveCounters({});
+  for (let i = 1; i <= METHOD_COUNT; i++) {
+    const el = document.getElementById('cnt-' + i);
+    if (el) el.textContent = 0;
+    const timeEl = document.getElementById('time-' + i);
+    if (timeEl) timeEl.textContent = '0 min';
+  }
+  const totalEl = document.getElementById('total-time');
+  if (totalEl) totalEl.textContent = 'Total: 0 min';
+}
+
+// Init on load
+renderCounters();
+</script>
+</body>
+</html>

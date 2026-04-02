@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Strategies Comparison</title>
+    <style>
+        :root {
+            --primary-navy: #002349;
+            --accent-gold: #c5a059;
+            --soft-gold: #f4ece1;
+            --text-dark: #333333;
+            --white: #ffffff;
+            --danger-red: #b22222;
+            --success-green: #2e7d32;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: var(--white);
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid var(--accent-gold);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #999
+            padding-bottom: 20px;
+        }
+
+        h1 { 
+            color: var(--primary-navy); 
+            font-size: 1.75em;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-weight: bold;
+            color: var(--accent-gold);
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Table Styling */
+        .table-container { overflow-x: auto; margin-bottom: 50px; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+        }
+
+        th { 
+            background: var(--white); 
+            color: var(--accent-gold); 
+            padding: 15px; 
+            text-align: left;
+	    border: 2px solid var(--accent-gold);
+        }
+
+        td { 
+            padding: 15px; 
+            border: 1px solid #ccc; 
+            vertical-align: top; 
+        }
+
+        .row-header { 
+            background: var(--soft-gold); 
+            font-weight: bold; 
+            color: var(--primary-navy);
+            width: 20%;
+        }
+
+        /* Days on Market Cards */
+        .section-title {
+            color: var(--primary-navy);
+            padding-left: 15px;
+            margin: 40px 0 20px;
+            font-size: 1.5em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+
+        .card.sweet-spot { border-top: 5px solid var(--success-green); }
+        .card.standard { border-top: 5px solid var(--accent-gold); }
+        .card.danger-zone { border-top: 5px solid var(--danger-red); }
+
+        .card h3 { margin-top: 0; color: var(--primary-navy); }
+
+        /* Recommendation Box */
+        .recommendation {
+            background: var(--white);
+            color: primary-navy;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+            border-left: 10px solid var(--accent-gold);
+	    border: 2px solid var(--accent-gold);
+        }
+
+        .recommendation h2 { color: var(--accent-gold); margin-top: 0; }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Pricing Strategies Comparison</h1>
+    </header>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Strategy 1: Momentum Driven</th>
+                    <th>Strategy 2: Market Aligned</th>
+                    <th>Strategy 3: Test The Market</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="row-header">Listing Price</td>
+                    <td>Below Market</td>
+                    <td>Right at Current Value</td>
+                    <td>Above Market</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Primary Goal</td>
+                    <td>Create urgency, speed, and certainty.</td>
+                    <td>Take a balanced, safe approach.</td>
+                    <td>Try and squeeze out every last dollar.</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Buyer Psychology</td>
+                    <td><strong>Frenzy:</strong> Buyers see value and fear missing out.</td>
+                    <td><strong>Fair Deal:</strong> Buyers engage normally at accurate price.</td>
+                    <td><strong>Suspicion:</strong> Buyers hesitate; "What's wrong with it?"</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Negotiation</td>
+                    <td>Competition drives price <strong>UP</strong>.</td>
+                    <td>Settles near asking price.</td>
+                    <td>Buyers negotiate <strong>DOWN</strong>.</td>
+                </tr>
+                <tr>
+                    <td class="row-header">Net Outcome</td>
+                    <td>Sellers usually net more money with less stress.</td>
+                    <td>Generally results in a fair market price.</td>
+                    <td>Often results in a lower final price due to staleness.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title">Why Days on Market Matters</h2>
+    <div class="grid">
+        <div class="card sweet-spot">
+            <h3>Days 1-12</h3>
+            <p><strong>The Sweet Spot:</strong> Capitalizes on hot listing energy. Buyers perceive high value, leading to the best offers.</p>
+        </div>
+        <div class="card standard">
+            <h3>Days 13-30</h3>
+            <p><strong>Standard Window:</strong> Buyers think "It's been on a couple weeks" and begin negotiating harder.</p>
+        </div>
+        <div class="card danger-zone">
+            <h3>Days 31+</h3>
+            <p><strong>The Danger Zone:</strong> Listing becomes stale. Buyers assume flaws and enter low-ball territory.</p>
+        </div>
+    </div>
+
+    <div class="recommendation">
+        <h2>Strategic Recommendation</h2>
+        <p>9 out of 10 sellers who initially say they are not in a hurry still choose Strategy #1 or #2 because the data proves they net more money. Pricing even 3-5% too high at launch causes homes to sit and eventually sell for less than they should.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

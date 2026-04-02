@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three Pillars Plan of Action</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #0A192F; /* Deep trust and authority */
+            --accent-gold: #C5A059;  /* Luxury and success */
+            --text-charcoal: #333333; /* Modern readability */
+            --border-light: #E0E0E0;
+            --bg-offwhite: #FDFDFD;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            color: var(--text-charcoal);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* The "Paper" Container */
+        .page-container {
+            background-color: white;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 297mm;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--accent-gold);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26pt;
+            color: var(--primary-navy);
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Three Column Layout */
+        .pillar-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            align-items: start;
+            flex-grow: 1;
+        }
+
+        .pillar-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pillar Header Styling */
+        .pillar-title-box {
+            background-color: var(--white);
+            color: var(--accent-gold);
+            padding: 20px 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+	    border: 1px solid var(--accent-gold);
+        }
+
+        .pillar-label {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            color: var(--primary-navy);
+            font-weight: 700;
+        }
+
+        .pillar-main-text {
+            font-size: 13pt;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Section Headings */
+        .section-group {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            font-weight: 700;
+            font-size: 10pt;
+            color: var(--primary-navy);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Lists */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            font-size: 10.5pt;
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 18px;
+            line-height: 1.4;
+        }
+
+        li::before {
+            content: "•";
+            color: var(--accent-gold);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 14pt;
+            top: -2px;
+        }
+
+        /* Final Step - Full Width Bottom Section */
+        .final-step-container {
+            margin-top: 50px;
+            border: 2px solid var(--accent-gold);
+            border-radius: 4px;
+            background-color: var(--bg-offwhite);
+            padding: 30px;
+        }
+
+        .final-step-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 18pt;
+            color: var(--primary-navy);
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 10px;
+        }
+
+        .final-step-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* Responsive / Print Adjustments */
+        @media print {
+            body { background-color: white; padding: 0; }
+            .page-container { box-shadow: none; max-width: 100%; padding: 30px; }
+            .pillar-title-box { background-color: #0A192F !important; color: white !important; }
+            .final-step-container { border: 2px solid #C5A059 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <header>
+        <h1>Three Pillars Plan of Action Summary</h1>
+    </header>
+
+    <div class="pillar-row">
+        <div class="pillar-column">
+            <div class="pillar-title-box">
+                <span class="pillar-label">Pillar 1</span>
+                <span class="pillar-main-text">Prepare the Home for Maximum Appeal</span>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Stage 1: Enhance Value and Appeal</div>
+                <ul>
+                    <li>Free designer consultation</li>
+                    <li>Optional professional staging</li>
+                    <li>Free one-year home warranty included</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Stage 2: Highlight Key Features</div>
+                <ul>
+                    <li>In-home highlight cards</li>
+                    <li>Pre-showing feature sheets for agents</li>
+                    <li>Take-home feature sheets for buyers</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Stage 3: Create an Inviting Experience</div>
+                <ul>
+                    <li>Showing preparation checklist</li>
+                    <li>Soft classical background music</li>
+                    <li>Subtle citrus scent</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Stage 4: Professional Visuals</div>
+                <ul>
+                    <li>Stunning high-quality photos + twilight shots</li>
+                    <li>Cinematic virtual tours & video walkthroughs</li>
+                    <li>Drone aerial views (if applicable)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pillar-column">
+            <div class="pillar-title-box">
+                <span class="pillar-label">Pillar 2</span>
+                <span class="pillar-main-text">Market to the Maximum Number of Buyers</span>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Initiative 1: Proactive Marketing</div>
+                <ul>
+                    <li>32-point launch action plan</li>
+                    <li>24 different marketing channels</li>
+                    <li>Direct calls, texts & emails to agents & prospects</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Initiative 2: Capture Every Opportunity</div>
+                <ul>
+                    <li>Target hot, ready-to-buy purchasers first</li>
+                    <li>24/7 instant appointment scheduling</li>
+                    <li>Personally available 24/7 via phone</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Initiative 3: Safety & Feedback</div>
+                <ul>
+                    <li>Secure SentriLock electronic lockbox</li>
+                    <li>Immediate agent contact after every showing</li>
+                    <li>Weekly intelligence report with adjustments</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pillar-column">
+            <div class="pillar-title-box">
+                <span class="pillar-label">Pillar 3</span>
+                <span class="pillar-main-text">Negotiate the Highest Price & Best Terms</span>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Phase 1: Positioning</div>
+                <ul>
+                    <li>Discover buyer motivations</li>
+                    <li>Create data-driven market framing</li>
+                    <li>Set up leverage with timing & competition</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Phase 2: Exchange</div>
+                <ul>
+                    <li>Firm strategic opening counters</li>
+                    <li>Controlled concessions that always gain value</li>
+                    <li>Timed responses that show confidence</li>
+                </ul>
+            </div>
+
+            <div class="section-group">
+                <div class="section-header">Phase 3: Resolution</div>
+                <ul>
+                    <li>Final alignment - frame as a win</li>
+                    <li>Tighten language to remove risks</li>
+                    <li>Lock in commitment with clear closing steps</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="final-step-container">
+        <div class="final-step-header">Final Step: Appraisal Protection</div>
+        <div class="final-step-list">
+            <ul>
+                <li>Personally attend the appraisal</li>
+            </ul>
+            <ul>
+                <li>Deliver full-price justification package</li>
+            </ul>
+            <ul>
+                <li>Guarantee appraisal meets or exceeds contract price</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

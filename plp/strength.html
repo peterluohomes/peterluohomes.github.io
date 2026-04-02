@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Complete Property Strength Report · 123 ABC St, Richmond Hill</title>
+<style>
+  /* EXACT COLORS FROM PDF:
+     Navy title:  0.106 0.212 0.365 → #1b3660
+     Gold line:   0.77  0.65  0.35  → #c4a659
+     Gold SRS:    0.773 0.647 0.353 → #c5a55a
+     Body text:   ~#333  (dark gray from rendered image)
+     Section bg:  light gray ~#f0f0f0
+     Section left border: navy ~#1b3660
+     Check teal:  ~#2d7a6a
+     Bold label:  #1b3660 (navy)
+     Serif heading: Georgia
+  */
+  :root {
+    --navy:    #1b3660;
+    --gold:    #c4a659;
+    --teal:    #2d7a6a;
+    --body:    #2c2c2c;
+    --muted:   #555;
+    --sec-bg:  #f0eff0;
+    --divider: #d8d8d8;
+    --W:       612px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #d8d2c8;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 12px;
+    gap: 0;
+  }
+
+  /* ── PAGE SHELL ── */
+  .page {
+    width: var(--W);
+    background: #fff;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
+    padding: 0;
+    position: relative;
+  }
+  /* pages 2-5 share same footer but no cover header */
+  .page + .page { margin-top: 0; }
+
+  /* ── PAGE 1 COVER AREA ── */
+  .cover {
+    padding: 60px 34px 40px;
+    text-align: center;
+  }
+  .cover-title-1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--navy);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+  .cover-title-2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+  .cover-prop {
+    font-size: 11px;
+    color: var(--body);
+    margin-top: 14px;
+  }
+  .cover-prop strong { font-weight: bold; }
+  .cover-rule {
+    width: 380px;
+    height: 1px;
+    background: var(--divider);
+    margin: 20px auto 0;
+  }
+
+  /* ── SECTION BLOCK ── */
+  .sec {
+    margin: 16px 34px 0;
+  }
+  .sec-head {
+    background: var(--sec-bg);
+    border-left: 4px solid var(--navy);
+    padding: 8px 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .sec-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--navy);
+  }
+  .sec-count {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: normal;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  .sec-items { margin-top: 4px; }
+
+  /* ── ITEM ROW ── */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 0 9px 4px;
+    border-bottom: 1px solid var(--divider);
+    font-size: 9px;
+    line-height: 1.5;
+    color: var(--body);
+  }
+  .item:last-child { border-bottom: none; }
+  .check {
+    color: var(--teal);
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    line-height: 1;
+  }
+  .item-text { flex: 1; }
+  .item-text strong {
+    font-weight: bold;
+    color: var(--navy);
+  }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    margin-top: 20px;
+    padding: 16px 0 20px;
+    text-align: center;
+    border-top: 1.7px solid var(--gold);
+    width: 227px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .pf-name  { font-size: 10px; font-weight: bold; color: var(--navy); }
+  .pf-brok  { font-size: 8px;  color: var(--muted); margin-top: 2px; }
+  .pf-desig { font-size: 8px;  color: var(--gold);  font-weight: bold; margin-top: 2px; letter-spacing: 0.05em; }
+
+  .page-bottom-pad { height: 24px; }
+
+  @media(max-width:640px){
+    :root{ --W:100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1 ═══════════════ -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-title-1">The Complete Property</div>
+    <div class="cover-title-2">Strength Report</div>
+    <div class="cover-prop"><strong>Property:</strong> 123 ABC St, Richmond Hill ON L4E 0K6</div>
+    <div class="cover-rule"></div>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">1. Environmental &amp; Location Advantages</span>
+      <span class="sec-count">7 of 12 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Outside Flood Zones:</strong> Property is NOT located in a 100-year or 500-year floodplain — verified through conservation authority mapping, eliminating flood insurance requirements and buyer anxiety.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Landfill Proximity:</strong> No active or capped landfill sites within a significant radius — confirmed through municipal environmental records.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Clean Environmental History:</strong> No brownfield designation, no former industrial use, gas station, or dry cleaner contamination on or adjacent to the property.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Low Radon Levels:</strong> Radon testing completed with results well below Health Canada's guideline of 200 Bq/m³ — a proactive disclosure that builds buyer confidence.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Healthy Trees &amp; No Invasive Species:</strong> Mature trees in good health with no emerald ash borer damage or hazardous deadwood — trees add curb appeal, shade, and measurable property value.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Good Soil Quality / No Fill Issues:</strong> Property is built on stable, natural ground — not on filled land common in newer subdivisions where settling can cause foundation shifting and structural problems over time.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Sidewalk:</strong> Elimination of legal liability and physical maintenance, as you are no longer responsible for clearing snow, repairing cracked concrete, or being held liable for pedestrian slip-and-fall accidents.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">2. Structural, Mechanical &amp; Property Condition Strengths</span>
+      <span class="sec-count">14 of 15 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Solid Foundation:</strong> Professionally inspected or recently underpinned foundation with no signs of cracking, shifting, or water infiltration — a major confidence builder for buyers, especially in older GTA homes.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Upgraded Electrical Panel:</strong> 200-amp service panel with modern breakers — eliminates a common buyer objection and supports today's electrical demands without costly upgrades.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Dry Basement with No Mold History:</strong> No evidence of previous water damage, flooding, or mold — documented through inspection records or waterproofing receipts, removing a top buyer concern.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Proper Grading &amp; Drainage:</strong> Lot slopes away from the foundation with functional weeping tile, sump pump, or French drain system — a proactive selling point that prevents future water issues.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Newer Roof &amp; HVAC Systems:</strong> Roof, furnace, and/or A/C replaced within the last 5–10 years with documented receipts — saves the buyer $10,000–$25,000+ in near-term capital costs.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>All Mechanical Systems Operational:</strong> Every system (humidifier, fireplace, sump pump, etc.) is connected, functional, and demonstrable during showings — signals transparency and well-maintained ownership.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Healthy Sewer Lateral Line:</strong> Recent camera inspection confirms the sewer lateral is in good condition with no root intrusion or deterioration — especially valuable for older homes with clay pipes.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Pest or Insect Issues:</strong> No history of termites, carpenter ants, mice, or bats — or professionally documented treatment and clearance certificates on file.</span></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="pf-name">Prepared by Peter Luo</div>
+    <div class="pf-brok">RE/MAX Realtron Realty Inc., Brokerage</div>
+    <div class="pf-desig">SRS · MCNE · FRI</div>
+  </div>
+  <div class="page-bottom-pad"></div>
+</div>
+
+<!-- ═══════════════ PAGE 2 ═══════════════ -->
+<div class="page">
+  <div style="height:34px;"></div>
+
+  <!-- Section 2 continued -->
+  <div class="sec">
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Proper Attic Insulation &amp; Ventilation:</strong> Adequate attic insulation (R-50+) and soffit/ridge ventilation that prevents ice damming — a key durability factor in Canadian winters that informed buyers appreciate.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Water Heater Age &amp; Ownership:</strong> Water heater is relatively new, in good condition, and ideally owned (not rented) — eliminating a common closing surprise and ongoing rental cost for the buyer.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Quality Windows (Double/Triple Pane):</strong> Windows have been updated to double- or triple-pane, argon-filled glass — old single-pane windows signal $15,000–$30,000+ in replacement costs that deter buyers.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Confirmed Copper Plumbing Throughout:</strong> Plumbing is confirmed copper throughout — beyond simply "no Kitec/Poly-B," proactively verifying copper gives buyers maximum confidence in the system's longevity.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Backwater Valve Installed:</strong> A backwater valve is installed to prevent sewer backup during heavy storms — many GTA municipalities now require or subsidize these, and insurers increasingly ask about them.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Smoke/CO Detectors Compliant:</strong> Working smoke and carbon monoxide detectors are installed on every level as required by the Ontario Fire Code — confirmed compliance removes a common home inspection flag.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">4. Sensory &amp; Lifestyle Quality</span>
+      <span class="sec-count">9 of 10 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Low Noise Environment:</strong> Property is well-buffered from major highways, busy intersections, train tracks, and airport flight paths — a peaceful living environment that buyers will notice on first visit.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Clean Air &amp; No Odor Issues:</strong> Not downwind from sewage treatment plants, industrial farms, paper mills, or chemical factories — fresh air is an underrated selling advantage.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Light Pollution:</strong> Not adjacent to 24-hour gas stations, commercial parking lots, or sports stadiums — dark, restful nights are a genuine lifestyle benefit.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No High-Voltage Power Lines Nearby:</strong> No massive transmission towers near the property line — eliminating buzzing noise, visual impact, and EMF concerns that deter many buyers.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Cell Tower Proximity:</strong> No cell towers within close visual range — avoids the aesthetic and perceived health concerns that reduce buyer interest.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Wind Turbine Impact:</strong> For rural/semi-rural: no wind turbines causing noise, shadow flicker, or resale resistance in the immediate area.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Good Natural Light &amp; Lot Orientation:</strong> South- or west-facing backyard, generous window placement, and not boxed in by tall neighboring structures — natural light is one of the first things buyers feel when they walk in.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Privacy from Neighbors:</strong> Property is not directly overlooked by neighboring windows, balconies, or multi-story buildings — a genuine lifestyle differentiator that buyers value highly, especially in denser GTA neighborhoods.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Mature Street Trees / Tree-Lined Street:</strong> Located on a tree-lined street with mature canopy coverage — directly correlated with higher property values, beautiful photography, and an immediate positive emotional response from buyers.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">5. Modern &amp; Safe Building Systems</span>
+      <span class="sec-count">7 of 7 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Updated Wiring (No Knob-and-Tube):</strong> Electrical system has been fully updated from any knob-and-tube wiring — no insurance refusal risk, no premium surcharges, and full coverage availability.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Aluminum Wiring (or Professionally Pigtailed):</strong> Home has copper wiring throughout, or all aluminum connections have been professionally pigtailed — with documentation for insurance.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Vermiculite/Asbestos Insulation:</strong> Insulation has been tested or is known to be free of vermiculite/asbestos — removes a common deal-breaker for informed buyers.</span></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="pf-name">Prepared by Peter Luo</div>
+    <div class="pf-brok">RE/MAX Realtron Realty Inc., Brokerage</div>
+    <div class="pf-desig">SRS · MCNE · FRI</div>
+  </div>
+  <div class="page-bottom-pad"></div>
+</div>
+
+<!-- ═══════════════ PAGE 3 ═══════════════ -->
+<div class="page">
+  <div style="height:34px;"></div>
+
+  <!-- Section 5 continued -->
+  <div class="sec">
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No UFFI:</strong> Property has no Urea Formaldehyde Foam Insulation — eliminating a historical stigma that still affects insurability and buyer perception.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Kitec Plumbing:</strong> Plumbing system is free of Kitec (common in 1995–2007 GTA builds) — no failure risk, no insurance flags, and no expensive replacement needed.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Poly-B Piping:</strong> No polybutylene piping from the 1980s–90s — eliminating sudden leak risks and a well-known insurance concern.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Galvanized Steel Plumbing:</strong> Plumbing has been updated from galvanized steel — full water pressure and no internal corrosion concerns.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">6. Infrastructure, Zoning &amp; Development Advantages</span>
+      <span class="sec-count">14 of 19 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Favorable Zoning &amp; Protected Surroundings:</strong> Adjacent lots are zoned in ways that protect the property's value — no risk of surprise high-density development, commercial centers, or highway expansion next door.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Top-Tier School District:</strong> Located within a highly-rated school catchment area — historically one of the strongest and most durable drivers of property appreciation, even for buyers without children.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Excellent Accessibility &amp; Amenities:</strong> Close to grocery stores, high-speed internet, hospitals, and emergency services — the opposite of a "food desert" or isolated location.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Heritage Designation Restrictions:</strong> Property is not heritage-designated — giving the buyer full flexibility for renovations and upgrades without bureaucratic delays or added costs.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Clean Title — No Problematic Easements:</strong> No utility or municipal easements that restrict what the owner can build or use on their own land.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Full Municipal Services:</strong> Property is connected to municipal water and sewer — no septic system maintenance costs or well water concerns.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Hydro Corridor Backing:</strong> Property does not back onto a hydro corridor — no usage restrictions, no unauthorized foot traffic, and no associated resale discount.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Public Road Access:</strong> Property is accessed via a publicly maintained road — guaranteed municipal plowing, maintenance, and emergency access.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Railway Corridor Exposure:</strong> Not adjacent to active rail lines or planned GO Transit expansion corridors — no noise, vibration, or construction disruption risk.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Waste Facility Proximity:</strong> No garbage transfer stations, recycling depots, or composting facilities nearby — clean air and quiet streets.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Airport Zoning Restrictions:</strong> Property is outside airport vicinity zones — no height restrictions on structures or trees, and no land use limitations.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Proximity to Parks &amp; Green Space:</strong> Property is near quality parks, trails, or green space — studies consistently show a measurable price premium for homes within walking distance of well-maintained parks.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Strong Walkability &amp; Transit Score:</strong> High Walk Score, Transit Score, and/or bike infrastructure — increasingly important to younger buyers and a proven driver of long-term appreciation in urban GTA neighborhoods.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Fibre Internet Availability:</strong> Confirmed access to fibre internet (Bell Fibe, Rogers, etc.) — a dealmaker for the growing remote-work buyer pool who consider high-speed connectivity a non-negotiable.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 7 header + first 2 items -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">7. Financial &amp; Legal Strengths</span>
+      <span class="sec-count">8 of 20 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Clean Title with No Liens:</strong> Title search reveals no unresolved liens, boundary disputes, or encumbrances — a smooth, fast closing with no legal complications.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Easy Insurability:</strong> Property is in a zone with full access to affordable homeowner's insurance — no flood history, claims history, or building-age concerns that inflate premiums.</span></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="pf-name">Prepared by Peter Luo</div>
+    <div class="pf-brok">RE/MAX Realtron Realty Inc., Brokerage</div>
+    <div class="pf-desig">SRS · MCNE · FRI</div>
+  </div>
+  <div class="page-bottom-pad"></div>
+</div>
+
+<!-- ═══════════════ PAGE 4 ═══════════════ -->
+<div class="page">
+  <div style="height:34px;"></div>
+
+  <!-- Section 7 continued -->
+  <div class="sec">
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Stable Property Tax Assessment:</strong> MPAC assessment is current and aligned with market value — buyer won't face a surprise tax spike from reassessment.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Rental Equipment Contracts (or Minimal):</strong> Hot water tank, furnace, and other equipment are OWNED, not rented — buyer won't inherit costly long-term rental contracts or face surprise buyout fees at closing.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Vacant Possession Available:</strong> Property will be delivered with vacant possession — no existing tenancies, no LTB delays, and no inherited lease complications.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>No Conservation Authority Restrictions:</strong> Property is not under TRCA, CVC, or other conservation authority jurisdiction — full freedom to build additions, install pools, or modify landscaping without special permits.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Energy Efficiency &amp; Low Utility Costs:</strong> EnerGuide rating, recent energy upgrades (insulation, windows, smart thermostat), and/or documented low monthly utility bills — buyers increasingly factor ongoing costs into their purchasing decision.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Property Survey on File:</strong> A recent property survey is available — removes a common closing delay and saves the buyer $1,500–$3,000+ in survey costs, making the transaction smoother and faster.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 8 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">8. Neighborhood &amp; Community Strengths</span>
+      <span class="sec-count">8 of 14 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Low Crime Area:</strong> Neighborhood has low property crime and violent crime rates — verifiable through Toronto Police or local police data, and a strong selling point for families.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Well-Maintained Neighboring Properties:</strong> Adjacent homes are well-kept with no hoarding, unkempt yards, or problematic activity — strong curb appeal extends beyond your property line.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Quiet Residential Character:</strong> Not adjacent to late-night bars, clubs, or 24-hour drive-thrus — the street is genuinely residential and peaceful in the evening.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Stable Owner-Occupied Community:</strong> Area maintains a healthy ratio of owner-occupied homes vs. investor rentals — indicating pride of ownership and consistent property maintenance.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Strong Community Engagement:</strong> Active neighborhood association, community events, local social media groups, or BIA (Business Improvement Area) — signals a connected, desirable community where residents invest in their surroundings.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Diverse Dining &amp; Shopping Options:</strong> Variety of restaurants, cafés, specialty shops, and services within walking or short driving distance — this is what makes a neighborhood feel "liveable" and drives buyer demand.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Good Street Drainage / No Ponding:</strong> Street does not experience flooding or water ponding during heavy rainstorms — some GTA streets are known for this problem, but buyers who visit on a sunny day never see it.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Low Traffic Volume / Not a Cut-Through Street:</strong> Property is on a quiet street that is not used as a high-traffic cut-through route — measurably different in value and family appeal compared to busy connector streets.</span></div>
+    </div>
+  </div>
+
+  <!-- Section 9 -->
+  <div class="sec">
+    <div class="sec-head">
+      <span class="sec-title">9. Lifestyle &amp; Convenience Premiums</span>
+      <span class="sec-count">7 of 9 confirmed</span>
+    </div>
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Parking (Garage, Multiple Spaces):</strong> Property offers a garage, double garage, or additional parking pad — in Toronto especially, dedicated parking is a significant value-add that many competing listings lack.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Outdoor Living Space:</strong> Well-designed deck, patio, fenced yard, or mature landscaping — outdoor space is an emotional selling point that drives offers, especially post-pandemic when buyers prioritize private outdoor areas.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Storage &amp; Functional Layout:</strong> Ample closet space, usable basement storage, mudroom, or well-designed floor plan — practical features that buyers notice during walkthroughs and remember when comparing properties.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Smart Home Features:</strong> Smart locks, Nest/Ecobee thermostat, security cameras, smart lighting, or EV charger — signals a modern, move-in-ready home and appeals to tech-savvy buyers willing to pay more.</span></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="pf-name">Prepared by Peter Luo</div>
+    <div class="pf-brok">RE/MAX Realtron Realty Inc., Brokerage</div>
+    <div class="pf-desig">SRS · MCNE · FRI</div>
+  </div>
+  <div class="page-bottom-pad"></div>
+</div>
+
+<!-- ═══════════════ PAGE 5 ═══════════════ -->
+<div class="page">
+  <div style="height:34px;"></div>
+
+  <!-- Section 9 continued -->
+  <div class="sec">
+    <div class="sec-items">
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Rental Income Potential:</strong> Legal basement apartment, laneway suite, or zoning that permits a secondary dwelling unit — adds a compelling revenue-stream argument for buyers who want to offset mortgage costs.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Pet-Friendly Property:</strong> Fenced yard, proximity to off-leash parks, or pet-friendly condo rules — pet owners are a massive and growing buyer segment who will pay more for properties that accommodate their animals.</span></div>
+      <div class="item"><span class="check">✓</span><span class="item-text"><strong>Move-In Ready Condition:</strong> Freshly painted, updated fixtures, no deferred maintenance — in today's market, buyers increasingly pay a measurable premium to avoid renovation hassle and move in immediately.</span></div>
+    </div>
+  </div>
+
+  <div style="height: 400px;"></div><!-- empty space matches original -->
+
+  <div class="page-footer">
+    <div class="pf-name">Prepared by Peter Luo</div>
+    <div class="pf-brok">RE/MAX Realtron Realty Inc., Brokerage</div>
+    <div class="pf-desig">SRS · MCNE · FRI</div>
+  </div>
+  <div class="page-bottom-pad"></div>
+</div>
+
+</body>
+</html>

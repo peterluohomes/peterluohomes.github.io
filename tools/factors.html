@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factors Affecting a Transaction</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B3A6B;--navy2:#2A4F8C;--navy3:#0F2548;--gold:#B8952A;--gold2:#D4AF50;--gold3:#F5EDD5;--gold4:#FBF6E9;--cream:#FDFAF4;--g100:#F7F5F0;--g200:#EAE6DD;--g300:#D4CFC4;--g400:#B0A89A;--g500:#8C8678;--g700:#4A4540;--g900:#1E1C18;
+--deal-bg:#FEF2F2;--deal-border:#FCA5A5;--deal-text:#991B1B;
+--consid-bg:#EFF6FF;--consid-border:#93C5FD;--consid-text:#1E40AF;
+--timing-bg:#F0FDF4;--timing-border:#86EFAC;--timing-text:#166534;
+--pref-bg:#FDF4FF;--pref-border:#D8B4FE;--pref-text:#6B21A8;
+--comp-bg:#FFF7ED;--comp-border:#FDC97D;--comp-text:#92400E;
+--emotion-bg:#F0FDFA;--emotion-border:#99F6E4;--emotion-text:#134E4A;
+--prof-bg:#F8FAFC;--prof-border:#CBD5E1;--prof-text:#0F172A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--g900);font-size:13px;line-height:1.55;}
+
+/* COVER */
+.cover{background:var(--navy3);color:#fff;padding:2.8rem 3.5rem 2.2rem;position:relative;overflow:hidden;}
+.cover::before{content:'';position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;border:1px solid rgba(184,149,42,.12);}
+.cover::after{content:'';position:absolute;bottom:-50px;left:200px;width:250px;height:250px;border-radius:50%;border:1px solid rgba(184,149,42,.07);}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.6rem;}
+.badge{font-size:9.5px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(184,149,42,.35);padding:4px 12px;border-radius:2px;}
+.cover-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;line-height:1.1;margin-bottom:.35rem;}
+.cover-title em{color:var(--gold2);font-style:normal;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.55);margin-bottom:2rem;}
+.gold-rule{height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.8rem;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem 2rem;}
+.info-field label{display:block;font-size:8.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);margin-bottom:3px;opacity:.8;}
+.info-field input,.info-field select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.18);color:#fff;font-family:'DM Sans',sans-serif;font-size:12.5px;padding:3px 0;outline:none;transition:border-color .2s;}
+.info-field input::placeholder{color:rgba(255,255,255,.28);}
+.info-field input:focus,.info-field select:focus{border-bottom-color:var(--gold2);}
+.info-field select option{background:var(--navy3);}
+.span2{grid-column:span 2;}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:2px solid var(--gold3);padding:.6rem 3.5rem;display:flex;align-items:center;gap:.9rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 14px rgba(27,58,107,.07);}
+.topbar-label{font-family:'Cormorant Garamond',serif;font-size:.82rem;font-style:italic;color:var(--g500);flex:1;}
+.score-pill{background:var(--navy);color:#fff;font-size:10.5px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;}
+.score-pill b{color:var(--gold2);}
+.btn{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:3px;cursor:pointer;transition:all .18s;border:none;white-space:nowrap;}
+.btn-gold{background:var(--gold);color:#fff;}.btn-gold:hover{background:var(--gold2);}
+.btn-navy{background:var(--navy);color:#fff;}.btn-navy:hover{background:var(--navy2);}
+.btn-ghost{background:transparent;color:var(--g500);border:1px solid var(--g300);}.btn-ghost:hover{border-color:var(--g500);color:var(--g700);}
+
+/* MAIN */
+.main{padding:2rem 3.5rem 5rem;max-width:1300px;margin:0 auto;}
+
+/* LEGEND */
+.legend-bar{display:flex;flex-wrap:wrap;gap:.5rem .9rem;padding:.9rem 1.2rem;background:#fff;border:1px solid var(--g200);border-radius:5px;margin-bottom:1.5rem;align-items:center;}
+.legend-title{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g500);margin-right:.4rem;}
+.leg-tag{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;letter-spacing:.04em;border:1px solid;}
+
+/* PRIMARY SECTION */
+.primary-section{margin-bottom:2rem;}
+.primary-hdr{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;background:var(--navy);color:#fff;border-radius:5px 5px 0 0;cursor:pointer;user-select:none;}
+.primary-hdr:hover{background:var(--navy2);}
+.primary-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;letter-spacing:.02em;}
+.primary-right{display:flex;align-items:center;gap:.7rem;}
+.primary-count{font-size:9.5px;color:rgba(255,255,255,.45);}
+.chevron{color:rgba(255,255,255,.4);font-size:11px;transition:transform .2s;display:inline-block;}
+.collapsed .chevron{transform:rotate(-90deg);}
+.collapsed .primary-body{display:none;}
+
+/* SUB-SECTION */
+.sub-section{border:1px solid var(--g200);border-top:none;background:#fff;}
+.sub-section:last-child{border-radius:0 0 5px 5px;}
+.sub-hdr{background:var(--g100);border-bottom:1px solid var(--g200);padding:.55rem 1.4rem .55rem 2rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.sub-hdr:hover{background:var(--g200);}
+.sub-title{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--g700);}
+.sub-tag{font-size:9px;font-weight:600;padding:2px 9px;border-radius:20px;border:1px solid;letter-spacing:.04em;}
+.sub-count{font-size:9.5px;color:var(--g400);}
+.sub-chevron{color:var(--g400);font-size:10px;transition:transform .2s;display:inline-block;}
+.sub-collapsed .sub-chevron{transform:rotate(-90deg);}
+.sub-collapsed .sub-body{display:none;}
+
+/* FACTOR ROW */
+.factor-row{border-bottom:1px solid var(--g100);background:#fff;transition:background .12s;}
+.factor-row:last-child{border-bottom:none;}
+.factor-row:hover{background:var(--g100);}
+.factor-row.highlighted{background:var(--gold4);}
+.factor-inner{display:flex;align-items:stretch;gap:0;}
+
+/* HIGHLIGHT TOGGLE */
+.factor-toggle{width:36px;min-width:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-right:1px solid var(--g100);transition:background .12s;}
+.factor-toggle:hover{background:var(--gold3);}
+.toggle-box{width:16px;height:16px;border:1.5px solid var(--g300);border-radius:3px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:#fff;}
+.factor-row.highlighted .toggle-box{background:var(--gold);border-color:var(--gold);}
+.toggle-tick{display:none;color:#fff;font-size:9px;font-weight:700;}
+.factor-row.highlighted .toggle-tick{display:block;}
+
+/* FACTOR LABEL */
+.factor-label{flex:1;font-size:12.5px;color:var(--g700);padding:8px 12px;line-height:1.4;}
+.factor-row.highlighted .factor-label{color:var(--g900);font-weight:500;}
+
+/* NOTES AREA */
+.factor-note-wrap{display:none;padding:5px 14px 9px 50px;background:var(--gold4);border-top:1px dashed var(--g200);}
+.factor-note-wrap.open{display:block;}
+.factor-note{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g900);padding:5px 8px;resize:vertical;min-height:36px;background:#fff;outline:none;}
+.factor-note:focus{border-color:var(--gold);}
+.note-btn{font-size:9.5px;color:var(--g400);cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;border:none;background:none;padding:0;font-family:'DM Sans',sans-serif;}
+.note-btn:hover{color:var(--navy);}
+
+/* SUMMARY SECTION */
+.summary-section{background:#fff;border:1px solid var(--g200);border-radius:5px;overflow:hidden;margin-top:2rem;}
+.summary-hdr{background:var(--navy);color:#fff;padding:.65rem 1.2rem;display:flex;align-items:center;justify-content:space-between;}
+.summary-hdr-title{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;}
+.summary-body{padding:1.2rem;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.sum-card{border:1px solid var(--g200);border-radius:4px;padding:.8rem 1rem;}
+.sum-card-title{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--g500);margin-bottom:.5rem;}
+.sum-list{list-style:none;padding:0;}
+.sum-list li{font-size:11.5px;color:var(--g700);padding:2px 0;border-bottom:1px dashed var(--g100);}
+.sum-list li:last-child{border-bottom:none;}
+.overall-wrap{border-top:1px solid var(--g200);padding:1rem 1.2rem;background:var(--g100);}
+.overall-lbl{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--g500);margin-bottom:.4rem;}
+.overall-ta{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--g900);padding:7px 10px;resize:vertical;min-height:80px;background:#fff;outline:none;}
+.overall-ta:focus{border-color:var(--gold);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;font-size:12px;padding:10px 18px;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;z-index:999;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* TAG COLOR VARIANTS */
+.tag-deal{background:var(--deal-bg);border-color:var(--deal-border);color:var(--deal-text);}
+.tag-consid{background:var(--consid-bg);border-color:var(--consid-border);color:var(--consid-text);}
+.tag-timing{background:var(--timing-bg);border-color:var(--timing-border);color:var(--timing-text);}
+.tag-pref{background:var(--pref-bg);border-color:var(--pref-border);color:var(--pref-text);}
+.tag-comp{background:var(--comp-bg);border-color:var(--comp-border);color:var(--comp-text);}
+.tag-emotion{background:var(--emotion-bg);border-color:var(--emotion-border);color:var(--emotion-text);}
+.tag-prof{background:var(--prof-bg);border-color:var(--prof-border);color:var(--prof-text);}
+
+@media print{.topbar,.toast{display:none!important;}.main{padding:1rem;}}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-top">
+    <div class="badge">Confidential — Agent Use</div>
+  </div>
+  <div class="cover-title">Factors Affecting <em>a Transaction</em></div>
+  <div class="cover-sub">Real Estate Transaction Intelligence Framework · Pinnacle Listing System</div>
+  <div class="gold-rule"></div>
+  <div class="info-grid">
+    <div class="info-field span2"><label>Property Address</label><input type="text" id="f_address" placeholder="123 Main Street, Toronto, ON"></div>
+    <div class="info-field"><label>Client Name</label><input type="text" id="f_client" placeholder="Buyer / Seller Name"></div>
+    <div class="info-field"><label>Date</label><input type="date" id="f_date"></div>
+    <div class="info-field"><label>Transaction Type</label>
+      <select id="f_type">
+        <option value="">— Select —</option>
+        <option>Listing / Sale</option>
+        <option>Purchase / Offer</option>
+        <option>Negotiation</option>
+        <option>Consultation</option>
+      </select>
+    </div>
+    <div class="info-field"><label>List / Offer Price</label><input type="text" id="f_price" placeholder="$0,000,000"></div>
+    <div class="info-field"><label>Prepared By</label><input type="text" id="f_agent" value="Peter Luo"></div>
+    <div class="info-field"><label>MLS® / PIN</label><input type="text" id="f_mls" placeholder="C1234567"></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-label">Factors Affecting a Transaction</div>
+  <div class="score-pill">Highlighted: <b id="tb_highlighted">0</b> / <b id="tb_total">0</b></div>
+  <button class="btn btn-ghost" onclick="expandAll()">Expand All</button>
+  <button class="btn btn-ghost" onclick="collapseAll()">Collapse All</button>
+  <button class="btn btn-ghost" onclick="clearAll()" style="color:#c0736a;border-color:#e0d0d0;">🗑 Clear</button>
+  <button class="btn btn-navy" onclick="loadFile()">📂 Load JSON</button>
+  <button class="btn btn-gold" onclick="saveJSON()">💾 Save JSON</button>
+  <button class="btn btn-gold" style="background:var(--navy3);" onclick="savePDF()">📄 Save PDF</button>
+</div>
+
+<div class="main">
+  <div class="legend-bar">
+    <span class="legend-title">Sub-Category Key:</span>
+    <span class="leg-tag tag-consid">Consideration</span>
+    <span class="leg-tag tag-deal">Deal / No Deal</span>
+    <span class="leg-tag tag-timing">Market Timing</span>
+    <span class="leg-tag tag-pref">Preference</span>
+    <span class="leg-tag tag-comp">Compromise</span>
+    <span class="leg-tag tag-emotion">Emotional</span>
+    <span class="leg-tag tag-prof">Agent's Professionalism</span>
+  </div>
+
+  <div id="sections-container"></div>
+
+  <div class="summary-section">
+    <div class="summary-hdr">
+      <div class="summary-hdr-title">Consultation Summary &amp; Agent Notes</div>
+    </div>
+    <div class="overall-wrap">
+      <div class="overall-lbl">Overall Assessment / Key Factors Noted / Strategy Remarks</div>
+      <textarea class="overall-ta" id="overall_notes" placeholder="Summarize key factors, client concerns, negotiation strategy, market context, and any actionable items..."></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleLoad(event)">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const DATA = [
+  {
+    id: 'p1', title: 'Key Element of an Offer',
+    subs: [
+      { id: 'p1s1', label: 'Consideration', tagClass: 'tag-consid', factors: [
+        'CLOSING DATE','CONDITIONS','DEPOSIT','EXTRAS','PRICE'
+      ]}
+    ]
+  },
+  {
+    id: 'p2', title: 'Consideration',
+    subs: [
+      { id: 'p2s1', label: 'Deal / No Deal', tagClass: 'tag-deal', factors: [
+        'HISTORY: GROW HOUSE','POWER OF SALE','STIGMATIZED','TENANT NOT MOVE OUT',
+        'TITLE DEFECTS / DEFECTIVE TITLE','# OF OFFERS','1ST OFFER','DOM',
+        'MLS / EXCLUSIVE LISTING','NEW HOME PRICE','STAT CERT DEFECTS',
+        'TERMS AND CONDITIONS','WEATHER'
+      ]}
+    ]
+  },
+  {
+    id: 'p3', title: 'Market',
+    subs: [
+      { id: 'p3s1', label: 'Consideration: Timing', tagClass: 'tag-timing', factors: [
+        'BUILDING CODE','BUILDING COST','CURRENCY RATE','DEMAND AND SUPPLY',
+        'GOVERNMENT POLICY','INFLATION','INTEREST RATE','INVENTORY',
+        'MORTGAGE TREND','POLITICAL INSTABILITY','PUBLIC HEALTH ISSUE e.g. Covid',
+        'SEASONAL','UNEMPLOYMENT','VACANCY'
+      ]},
+      { id: 'p3s2', label: 'Deal / No Deal', tagClass: 'tag-deal', factors: [
+        'LAND TRANSFER TAX','MARKET TREND / POTENTIAL','RENTAL MARKET'
+      ]}
+    ]
+  },
+  {
+    id: 'p4', title: 'Personal',
+    subs: [
+      { id: 'p4s1', label: 'Compromise', tagClass: 'tag-comp', factors: [
+        'COMMISSION','FOREIGN BUYER','INSURANCE',"LAWYER'S REVIEW",
+        'LIEN ON PROPERTY','NO FOR SALE SIGN','NOISE','SHOWING TIME LIMITED'
+      ]},
+      { id: 'p4s2', label: 'Consideration', tagClass: 'tag-consid', factors: [
+        'FRIEND / RELATIVE COMMENT'
+      ]},
+      { id: 'p4s3', label: 'Deal / No Deal', tagClass: 'tag-deal', factors: [
+        'BUYER REMORSE (After winning a multiple offer)','CURB APPEAL',
+        'EMOTIONAL JUDGEMENT','EXPECTATION','HOME INSPECTION REPORT',
+        'MORTGAGE APPROVAL','SELLER DISCLOSER','ENJOYMENT OF OWNERSHIP'
+      ]},
+      { id: 'p4s4', label: 'Emotional', tagClass: 'tag-emotion', factors: [
+        'MOTIVATION OF SELLER / BUYER','NEED VS WANT'
+      ]},
+      { id: 'p4s5', label: "Agent's Professionalism", tagClass: 'tag-prof', factors: [
+        'A VALID OFFER',"AGENT DOS AND DON'TS",'COMPETENCE AND PRUDENT','ETHICAL',
+        'GOOD CLAUSES TO PROTECT CLIENTS','GOOD CONSULTATION','GOOD IN PROBLEM SOLVING',
+        'INFORMED CLIENT','MARKETING PLAN','MORE BUYERS / SHOWINGS / OFFERS',
+        'MORE SALEABLE','NEGOTIATION TACTICS','OFFER SKILLS','OPEN HOUSE',
+        'CARE ABOUT YOU / GOOD LISTENER','PR WITH OTHER AGENTS',
+        'PRESENT / EMAIL OFFER','PROCESS TIME',
+        'GUIDE TO RIGHT DIRECTION / RIGHT HOUSE',
+        'RIGHT PRICE / STRATEGY (FOR LISTING)','SHOWINGS FEED BACK',
+        'TAKE CONTROL / YES MAN','WORK FOR CLIENT\'S BEST INTEREST'
+      ]}
+    ]
+  },
+  {
+    id: 'p5', title: 'Property',
+    subs: [
+      { id: 'p5s1', label: 'Compromise', tagClass: 'tag-comp', factors: [
+        'ADDITION / PLANNING ACT',"BUILDER'S REPUTATION",'CLOSE TO STOP SIGN',
+        'EASEMENT / ENCROACHMENT','FIRE HYDRANT','FULL SIZED GARAGE','TRANSPORTATION'
+      ]},
+      { id: 'p5s2', label: 'Consideration', tagClass: 'tag-consid', factors: [
+        'PROPERTY AGE (ACTUAL Vs EFFECTIVE)','ECO / INSULATION','LEVY / LEVY CAP',
+        'LISTING PRICE','LIVING / SHOWING CONDITION','OWNER: POA, ESTATE, RACE',
+        'PLANNING / ZONING','RESALE VALUE','RENTAL INCOME RETURN',
+        'PROPERTY CONDITION','STAGING','VALUE ADDED FEATURES',
+        'WALK SCORE','WALL SPACE','WITH TENANT'
+      ]},
+      { id: 'p5s3', label: 'Deal / No Deal', tagClass: 'tag-deal', factors: [
+        'ILLEGAL ADDITION','APPRAISAL REPORT','MANAGEMENT FEE (Condo or POTL)'
+      ]},
+      { id: 'p5s4', label: 'Preference', tagClass: 'tag-pref', factors: [
+        'CLOSE TO AMENITIES','CLOSE TO E. ROOM, G. ROOM, ELEVATOR','COLOR',
+        'CORNER / INNER LOT','CUSTOM BUILT / SUB-DIVISION','DEMOGRAPHIC',
+        'DIRECTION','ENVIRONMENT, SURROUNDINGS','FEATURES','FRONTAGE, LOT SIZE',
+        'GARAGE TYPE: DETACHED, ATTACHED','2ND KITCHEN IN BSMT','LAYOUTS',
+        'LOCATION','LOWER FLOOR / HIGHER FLOOR','NEIGHBOURHOOD','PREMIUM LOT',
+        'SCHOOL ZONE','SEPARATE ENTRANCE','SIDE WALK','SQUARE FOOTAGE',
+        'STREET #','TH: END UNIT, INNER UNIT','TYPE / STYLE OF PROPERTY','VIEW'
+      ]}
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const S = { highlighted: {}, notes: {}, overall: '' };
+
+// ── BUILD DOM ─────────────────────────────────────────────────────────────────
+function buildAll() {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+  let totalFactors = 0;
+
+  DATA.forEach(primary => {
+    const pDiv = document.createElement('div');
+    pDiv.className = 'primary-section';
+    pDiv.id = 'primary_' + primary.id;
+
+    const factorCount = primary.subs.reduce((n, s) => n + s.factors.length, 0);
+    totalFactors += factorCount;
+
+    pDiv.innerHTML = `
+      <div class="primary-hdr" onclick="togglePrimary('${primary.id}')">
+        <div class="primary-title">${primary.title}</div>
+        <div class="primary-right">
+          <span class="primary-count">${factorCount} factors</span>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="primary-body" id="pbody_${primary.id}"></div>
+    `;
+    container.appendChild(pDiv);
+
+    const bodyEl = pDiv.querySelector('#pbody_' + primary.id);
+
+    primary.subs.forEach(sub => {
+      const sDiv = document.createElement('div');
+      sDiv.className = 'sub-section';
+      sDiv.id = 'sub_' + sub.id;
+
+      sDiv.innerHTML = `
+        <div class="sub-hdr" onclick="toggleSub('${sub.id}')">
+          <div class="sub-title">${sub.label}</div>
+          <div style="display:flex;align-items:center;gap:.6rem;">
+            <span class="sub-tag ${sub.tagClass}">${sub.label}</span>
+            <span class="sub-count">${sub.factors.length}</span>
+            <span class="sub-chevron">▾</span>
+          </div>
+        </div>
+        <div class="sub-body" id="sbody_${sub.id}"></div>
+      `;
+      bodyEl.appendChild(sDiv);
+
+      const sbodyEl = sDiv.querySelector('#sbody_' + sub.id);
+
+      sub.factors.forEach((factor, idx) => {
+        const fid = sub.id + '_' + idx;
+        const row = document.createElement('div');
+        row.className = 'factor-row';
+        row.id = 'row_' + fid;
+
+        row.innerHTML = `
+          <div class="factor-inner">
+            <div class="factor-toggle" onclick="toggleHighlight('${fid}')">
+              <div class="toggle-box"><span class="toggle-tick">✓</span></div>
+            </div>
+            <div class="factor-label">${factor}</div>
+            <div style="display:flex;align-items:center;padding:0 10px;">
+              <button class="note-btn" onclick="toggleNote('${fid}')">note</button>
+            </div>
+          </div>
+          <div class="factor-note-wrap" id="nwrap_${fid}">
+            <textarea class="factor-note" id="note_${fid}" placeholder="Add note for this factor..." rows="2"
+              oninput="saveNote('${fid}', this.value)"></textarea>
+          </div>
+        `;
+        sbodyEl.appendChild(row);
+      });
+    });
+  });
+
+  document.getElementById('tb_total').textContent = totalFactors;
+  updateCount();
+}
+
+function togglePrimary(pid) {
+  const el = document.getElementById('primary_' + pid);
+  el.classList.toggle('collapsed');
+}
+
+function toggleSub(sid) {
+  const el = document.getElementById('sub_' + sid);
+  el.classList.toggle('sub-collapsed');
+}
+
+function toggleHighlight(fid) {
+  const row = document.getElementById('row_' + fid);
+  const isOn = row.classList.toggle('highlighted');
+  S.highlighted[fid] = isOn;
+  updateCount();
+  autoSave();
+}
+
+function toggleNote(fid) {
+  const wrap = document.getElementById('nwrap_' + fid);
+  wrap.classList.toggle('open');
+  if (wrap.classList.contains('open')) document.getElementById('note_' + fid).focus();
+}
+
+function saveNote(fid, val) { S.notes[fid] = val; autoSave(); }
+
+function updateCount() {
+  const count = Object.values(S.highlighted).filter(Boolean).length;
+  document.getElementById('tb_highlighted').textContent = count;
+}
+
+function expandAll() {
+  document.querySelectorAll('.primary-section').forEach(el => el.classList.remove('collapsed'));
+  document.querySelectorAll('.sub-section').forEach(el => el.classList.remove('sub-collapsed'));
+}
+
+function collapseAll() {
+  document.querySelectorAll('.primary-section').forEach(el => el.classList.add('collapsed'));
+}
+
+function clearAll() {
+  if (!confirm('Clear all data, highlights, notes, and form fields?\nThis will also wipe saved data from IndexedDB. Cannot be undone.')) return;
+  // Clear highlights and notes
+  document.querySelectorAll('.factor-row').forEach(el => el.classList.remove('highlighted'));
+  document.querySelectorAll('.factor-note').forEach(el => el.value = '');
+  document.querySelectorAll('.factor-note-wrap').forEach(el => el.classList.remove('open'));
+  document.getElementById('overall_notes').value = '';
+  Object.keys(S.highlighted).forEach(k => S.highlighted[k] = false);
+  Object.keys(S.notes).forEach(k => S.notes[k] = '');
+  S.overall = '';
+  // Clear form fields
+  ['address','client','date','type','price','agent','mls'].forEach(k => {
+    const el = document.getElementById('f_'+k);
+    if (el) { if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = ''; }
+  });
+  updateCount();
+  // Wipe IndexedDB
+  if (_db) { dbClearStore().catch(e => console.error('Clear error:', e)); }
+  toast('Cleared.');
+}
+
+// ── JSON SAVE / LOAD ──────────────────────────────────────────────────────────
+function getFormData() {
+  const ids = ['address','client','date','type','price','agent','mls'];
+  const out = {};
+  ids.forEach(k => { const el = document.getElementById('f_'+k); if(el) out[k] = el.value; });
+  return out;
+}
+
+function saveJSON() {
+  const state = {
+    form: getFormData(),
+    highlighted: S.highlighted,
+    notes: S.notes,
+    overall: S.overall
+  };
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const addr = document.getElementById('f_address').value.replace(/[^a-zA-Z0-9]/g, '_') || '';
+  a.download = 'mapper' + (addr ? '_' + addr : '') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON saved!');
+}
+
+function loadFile() { document.getElementById('fileInput').click(); }
+
+function handleLoad(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      restoreState(data);
+      autoSave();
+      toast('Loaded successfully.');
+    } catch(err) {
+      alert('Invalid JSON file.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function restoreState(data) {
+  if (data.form) Object.entries(data.form).forEach(([k,v]) => { const el = document.getElementById('f_'+k); if(el) el.value = v; });
+  if (data.highlighted) {
+    Object.entries(data.highlighted).forEach(([fid, on]) => {
+      if (on) {
+        const row = document.getElementById('row_' + fid);
+        if (row) row.classList.add('highlighted');
+        S.highlighted[fid] = true;
+      }
+    });
+  }
+  if (data.notes) {
+    Object.entries(data.notes).forEach(([fid, val]) => {
+      if (val) {
+        const el = document.getElementById('note_' + fid);
+        if (el) { el.value = val; document.getElementById('nwrap_' + fid)?.classList.add('open'); }
+        S.notes[fid] = val;
+      }
+    });
+  }
+  if (data.overall) {
+    document.getElementById('overall_notes').value = data.overall;
+    S.overall = data.overall;
+  }
+  updateCount();
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────────────
+function savePDF() {
+  if (!window.jspdf) { toast('PDF library loading…'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'letter' });
+  const PW = 215.9, PH = 279.4, ML = 14, MR = 14;
+  const usableW = PW - ML - MR;
+  const NAVY = [15, 37, 72], GOLD = [184, 149, 42], WHITE = [255, 255, 255];
+  const GRAY = [74, 69, 64], LGRAY = [212, 207, 196], LITE = [247, 245, 240];
+  const HI = [251, 246, 233];
+
+  let y = 0;
+  function checkY(h) {
+    if (y + h > PH - 14) { doc.addPage(); y = 14; }
+  }
+
+  // Cover band
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, PW, 42, 'F');
+  doc.setFontSize(18); doc.setTextColor(...WHITE); doc.setFont('helvetica', 'bold');
+  doc.text('Factors Affecting a Transaction', ML, 16);
+  doc.setFontSize(9); doc.setTextColor(...GOLD); doc.setFont('helvetica', 'italic');
+  doc.text('Pinnacle Listing System  ·  Real Estate Transaction Intelligence', ML, 23);
+
+  // Form fields
+  doc.setFontSize(7.5); doc.setTextColor(180, 175, 165); doc.setFont('helvetica', 'normal');
+  const form = getFormData();
+  const fields = [
+    ['Address', form.address], ['Client', form.client], ['Date', form.date],
+    ['Type', form.type], ['Price', form.price], ['Agent', form.agent], ['MLS', form.mls]
+  ];
+  let fx = ML;
+  fields.forEach(([lbl, val]) => {
+    if (val) {
+      doc.setTextColor(...GOLD); doc.text(lbl.toUpperCase(), fx, 31);
+      doc.setTextColor(...WHITE); doc.text(String(val).substring(0, 28), fx, 36);
+      fx += 28;
+    }
+  });
+
+  doc.setFillColor(...GOLD); doc.rect(0, 42, PW, 0.7, 'F');
+  y = 52;
+
+  // Sections
+  DATA.forEach(primary => {
+    checkY(14);
+    doc.setFillColor(...NAVY);
+    doc.rect(ML, y, usableW, 8, 'F');
+    doc.setFontSize(10); doc.setTextColor(...WHITE); doc.setFont('helvetica', 'bold');
+    doc.text(primary.title.toUpperCase(), ML + 3, y + 5.5);
+    y += 10;
+
+    primary.subs.forEach(sub => {
+      // Count highlighted in this sub
+      const highlighted = [];
+      sub.factors.forEach((factor, idx) => {
+        const fid = sub.id + '_' + idx;
+        if (S.highlighted[fid]) highlighted.push({ factor, note: S.notes[fid] || '' });
+      });
+
+      checkY(8);
+      doc.setFillColor(235, 230, 221);
+      doc.rect(ML, y, usableW, 6, 'F');
+      doc.setFontSize(7.5); doc.setTextColor(74, 69, 64); doc.setFont('helvetica', 'bold');
+      doc.text(sub.label.toUpperCase(), ML + 3, y + 4.2);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(140, 134, 120);
+      doc.text(`${highlighted.length} of ${sub.factors.length} highlighted`, PW - MR - 3, y + 4.2, 'right');
+      y += 7;
+
+      sub.factors.forEach((factor, idx) => {
+        const fid = sub.id + '_' + idx;
+        const isOn = S.highlighted[fid];
+        const note = S.notes[fid] || '';
+        const noteLines = note ? doc.splitTextToSize(note, usableW - 10) : [];
+        const rowH = Math.max(6, noteLines.length * 3.5 + (note ? 8 : 0));
+
+        checkY(rowH);
+
+        if (isOn) {
+          doc.setFillColor(...HI);
+          doc.rect(ML, y, usableW, rowH, 'F');
+        }
+        doc.setDrawColor(...LGRAY);
+        doc.rect(ML, y, usableW, rowH, 'S');
+
+        if (isOn) {
+          doc.setFillColor(...GOLD);
+          doc.rect(ML, y, 2.5, rowH, 'F');
+          doc.setFontSize(8.5); doc.setTextColor(...GRAY); doc.setFont('helvetica', 'bold');
+        } else {
+          doc.setFontSize(8); doc.setTextColor(140, 134, 120); doc.setFont('helvetica', 'normal');
+        }
+        doc.text(factor, ML + 5, y + 4.2);
+
+        if (note && noteLines.length) {
+          doc.setFontSize(7); doc.setTextColor(120, 115, 105); doc.setFont('helvetica', 'italic');
+          doc.text(noteLines, ML + 5, y + 8);
+        }
+        y += rowH + 0.5;
+      });
+      y += 2;
+    });
+    y += 3;
+  });
+
+  // Overall notes
+  const overall = document.getElementById('overall_notes').value;
+  if (overall) {
+    checkY(14);
+    const onLines = doc.splitTextToSize(overall, usableW - 8);
+    const onH = onLines.length * 3.8 + 9;
+    doc.setFillColor(...LITE);
+    doc.roundedRect(ML, y, usableW, onH, 1.5, 1.5, 'F');
+    doc.setFontSize(7); doc.setTextColor(...GOLD); doc.setFont('helvetica', 'bold');
+    doc.text('CONSULTATION SUMMARY / AGENT NOTES', ML + 3, y + 5);
+    doc.setFontSize(8); doc.setTextColor(...GRAY); doc.setFont('helvetica', 'normal');
+    doc.text(onLines, ML + 3, y + 9);
+    y += onH + 4;
+  }
+
+  // Footer on all pages
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFillColor(...NAVY); doc.rect(0, PH - 8, PW, 8, 'F');
+    doc.setFontSize(6.5); doc.setTextColor(180, 175, 165); doc.setFont('helvetica', 'normal');
+    doc.text('Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage', ML, PH - 3.5);
+    doc.setTextColor(...GOLD);
+    doc.text('Page ' + i + ' of ' + totalPages, PW - MR, PH - 3.5, 'right');
+  }
+
+  const addr = (document.getElementById('f_address').value || '').replace(/[^a-zA-Z0-9]/g, '_');
+  doc.save('factors' + (addr ? '_' + addr : '') + '.pdf');
+  toast('PDF saved!');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── IndexedDB STORAGE LAYER ──────────────────────────────────────────────────
+const DB_NAME = 'plFactorsDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'factors';
+const DB_KEY = 'factorsState';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+function dbGet(key) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(key, val) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    const req = tx.objectStore(STORE_NAME).put(val, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbClearStore() {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ── Auto-save (debounced) ────────────────────────────────────────────────────
+let _saveTimer = null;
+function autoSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (_db) {
+      const state = {
+        form: getFormData(),
+        highlighted: S.highlighted,
+        notes: S.notes,
+        overall: S.overall
+      };
+      dbPut(DB_KEY, state).catch(e => console.error('IndexedDB save error:', e));
+    }
+  }, 400);
+}
+
+// ── Attach auto-save to cover form fields and overall notes ──────────────────
+['f_address','f_client','f_date','f_type','f_price','f_agent','f_mls'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) { el.addEventListener('input', autoSave); el.addEventListener('change', autoSave); }
+});
+document.getElementById('overall_notes').addEventListener('input', function() { S.overall = this.value; autoSave(); });
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+buildAll();
+
+openDB().then(() => dbGet(DB_KEY)).then(saved => {
+  if (saved && typeof saved === 'object' && (saved.form || saved.highlighted || saved.notes)) {
+    restoreState(saved);
+  }
+}).catch(err => {
+  console.error('IndexedDB init failed:', err);
+});
+</script>
+</body>
+</html>

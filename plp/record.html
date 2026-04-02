@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My References & Reviews</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --midnight-blue: #0F1A2E;
+      --metallic-gold: #C5A059;
+      --soft-white: #F4F6F9;
+      --text-dark: #1f2933;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--midnight-blue);
+      margin-bottom: 16px;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      max-width: 720px;
+      margin: 0 auto;
+      color: #555;
+    }
+
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 36px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 44px 36px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--metallic-gold);
+      margin-bottom: 14px;
+    }
+
+    .card p {
+      font-size: 1rem;
+      margin-bottom: 28px;
+      color: #555;
+    }
+
+    .btn {
+      align-self: center;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.4px;
+      background-color: var(--midnight-blue);
+      color: #ffffff;
+      border: 1px solid var(--midnight-blue);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #ffffff;
+      color: var(--midnight-blue);
+    }
+
+    .btn.gold {
+      background-color: var(--metallic-gold);
+      border-color: var(--metallic-gold);
+      color: #111;
+    }
+
+    .btn.gold:hover {
+      background-color: #ffffff;
+      color: var(--metallic-gold);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 100px;
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>My References & Reviews</h1>
+      <p>
+        Access trusted references and verified client reviews — all in one place.
+      </p>
+    </div>
+
+    <div class="sections">
+
+      <!-- Section 1: Reference PDF -->
+      <div class="card">
+        <div>
+          <h2>Professional Reference</h2>
+          <p>
+            View my professional reference document, outlining experience, approach, and proven results.
+          </p>
+        </div>
+        <a class="btn gold" href="./references.html" target="_blank" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer">
+          Open Reference
+        </a>
+      </div>
+
+      <!-- Section 2: Google Reviews -->
+      <div class="card">
+        <div>
+          <h2>Client Reviews</h2>
+          <p>
+            Read verified Google reviews from clients who have experienced my service firsthand.
+          </p>
+        </div>
+        <a class="btn gold" href="https://share.google/GvFXf5pnI8IxH2EV6" target="_blank" rel="noopener noreferrer">
+          View Google Reviews
+        </a>
+      </div>
+
+    </div>
+
+    <footer>
+      © 2026 · All rights reserved
+    </footer>
+  </div>
+
+</body>
+</html>

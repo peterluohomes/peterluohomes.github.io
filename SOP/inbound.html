@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Inbound Call — Peter Luo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #f7f5f0;
+  --white: #ffffff;
+  --black: #222222;
+  --dark: #444444;
+  --mid: #777777;
+  --light: #aaaaaa;
+  --border: #e0dbd0;
+  --bg2: #eeebe3;
+  --red: #c0392b;
+  --gold-bg: #fdf6e3;
+  --gold-border: #e8d5a0;
+  --gold-tag: #a07820;
+  --gold-text: #4a3800;
+  --gold-strong: #7a5c00;
+  --step-active: #5a4a2a;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg);
+  color: var(--black);
+  min-height: 100vh;
+  padding-bottom: calc(60px + var(--safe-bottom));
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.topbar-row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.app-title { font-size: 17px; font-weight: 700; color: var(--black); }
+.app-sub { font-size: 11px; color: var(--light); margin-top: 1px; }
+
+.top-actions { display: flex; gap: 8px; }
+.icon-btn {
+  background: var(--bg2);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+}
+.icon-btn:active { opacity: .6; }
+
+.lang-row { display: flex; gap: 8px; }
+.lang-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mid);
+  cursor: pointer;
+  text-align: center;
+}
+.lang-btn.active { background: var(--step-active); color: var(--white); border-color: var(--step-active); }
+
+/* ── RECORD STRIP ── */
+.rec-strip {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rec-label { font-size: 11px; color: var(--light); text-transform: uppercase; letter-spacing: .08em; }
+
+.rbtn {
+  padding: 9px 16px;
+  border-radius: 20px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  -webkit-appearance: none;
+}
+.rbtn:active { opacity: .7; }
+#btnRecord { background: var(--red); color: #fff; }
+#btnRecord.recording { animation: rpulse 1.2s infinite; }
+#btnPause { background: var(--bg2); color: var(--dark); border: 1px solid var(--border); display: none; }
+#recTimer { font-size: 13px; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; display: none; min-width: 38px; }
+#recStatus { font-size: 11px; color: var(--light); flex: 1; }
+
+@keyframes rpulse { 0%,100%{box-shadow:0 0 0 0 rgba(211,47,47,.5)} 50%{box-shadow:0 0 0 7px rgba(211,47,47,0)} }
+
+/* ── PROGRESS ── */
+.progress-bar-wrap {
+  background: var(--white);
+  padding: 9px 16px 11px;
+  border-bottom: 1px solid var(--border);
+}
+.progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--light); margin-bottom: 6px; }
+.progress-track { height: 3px; background: var(--bg2); border-radius: 2px; }
+.progress-fill { height: 100%; background: var(--step-active); border-radius: 2px; transition: width .3s ease; width: 0%; }
+
+/* ── MAIN ── */
+main { padding: 12px 14px; max-width: 500px; margin: 0 auto; }
+
+/* ── CARDS ── */
+.meta-card, .step-card, .sum-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.step-card.done { opacity: .75; }
+.step-card.active { border-color: var(--step-active); border-width: 2px; }
+
+.card-inner { padding: 14px; }
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--light);
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: 10px;
+}
+
+/* ── FIELDS ── */
+.frow { display: grid; gap: 10px; margin-bottom: 10px; }
+.frow.c1 { grid-template-columns: 1fr; }
+.frow.c2 { grid-template-columns: 1fr 1fr; }
+.frow.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.frow:last-child { margin-bottom: 0; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--mid); font-weight: 600; }
+.field input, .field select, .field textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--black);
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: 44px;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--gold-tag); background: var(--white);
+}
+.field textarea { resize: vertical; min-height: 80px; }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px;
+}
+
+/* ── STEP HEAD ── */
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  background: var(--white);
+}
+.step-card.active .step-head { background: var(--step-active); }
+.step-card.done .step-head { background: var(--bg); }
+
+.step-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--bg2); color: var(--dark);
+  font-size: 15px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-card.active .step-num { background: rgba(255,255,255,.25); color: #fff; }
+.step-card.done .step-num { background: var(--dark); color: var(--white); }
+
+.step-label { flex: 1; }
+.step-title { font-size: 15px; font-weight: 600; color: var(--black); }
+.step-card.active .step-title { color: #fff; }
+.step-card.done .step-title { color: var(--mid); }
+.step-dur { font-size: 11px; color: var(--light); margin-top: 2px; }
+.step-card.active .step-dur { color: rgba(255,255,255,.6); }
+
+.step-chevron { font-size: 13px; color: var(--light); transition: transform .25s; }
+.step-card.active .step-chevron { color: rgba(255,255,255,.7); }
+.step-card.open .step-chevron { transform: rotate(180deg); }
+
+.step-body { display: none; padding: 14px; border-top: 1px solid var(--border); }
+.step-card.open .step-body { display: block; }
+
+/* ── SCRIPT BLOCKS ── */
+.script-block {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.script-tag {
+  font-size: 11px; font-weight: 700; color: var(--gold-tag);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px;
+}
+.script-text {
+  font-size: 14px; color: var(--gold-text); line-height: 1.6; font-style: italic;
+}
+.script-text strong { color: var(--gold-strong); font-style: normal; }
+
+.script-note {
+  font-size: 13px; color: var(--mid);
+  border-left: 3px solid var(--gold-border);
+  padding: 7px 10px; margin: 8px 0;
+  background: var(--gold-bg); border-radius: 0 6px 6px 0;
+}
+
+/* ── BRANCH ── */
+.branch { display: flex; gap: 8px; margin: 8px 0; }
+.branch-box {
+  flex: 1; border-radius: 8px; padding: 10px 12px;
+  font-size: 13px; line-height: 1.5;
+  border: 1px solid var(--border); background: var(--bg);
+}
+.branch-label { font-size: 11px; font-weight: 700; color: var(--mid); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+
+/* ── STEP FIELDS SECTION ── */
+.step-fields { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── NEXT BTN ── */
+.next-btn {
+  width: 100%; margin-top: 16px; padding: 15px;
+  background: var(--step-active); color: var(--white);
+  border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; min-height: 52px;
+}
+.next-btn:active { opacity: .7; }
+
+/* ── SUMMARY ── */
+#summaryPanel { display: none; margin-top: 4px; }
+.sum-card .card-inner { padding: 16px; }
+.sum-title { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 14px; }
+.sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sum-item label { font-size: 11px; color: var(--light); display: block; }
+.sum-item p { font-size: 14px; color: var(--black); font-weight: 500; margin-top: 2px; }
+.sum-notes-box {
+  margin-top: 12px; background: var(--bg); border-radius: 8px;
+  padding: 12px; font-size: 13px; color: var(--dark);
+  line-height: 1.6; white-space: pre-wrap;
+}
+
+/* ── SAVE BUTTONS ── */
+.save-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.save-btn {
+  width: 100%; padding: 15px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; min-height: 52px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.save-btn:active { opacity: .7; }
+.save-btn.warm { background: #7a5c00; color: #fff; }
+.save-btn.warm-outline { background: var(--gold-bg); color: var(--gold-strong); border: 2px solid var(--gold-border); }
+.save-btn.grey { background: var(--bg2); color: var(--mid); border: 1px solid var(--border); }
+.save-btn:disabled, .save-btn[disabled] { background: var(--bg2); color: var(--light); border: 1px solid var(--border); cursor: not-allowed; opacity: .6; }
+
+/* ── LANG ── */
+[data-lang="ch"] { display: none; }
+body.lang-ch [data-lang="en"] { display: none; }
+body.lang-ch [data-lang="ch"] { display: block; }
+span[data-lang="ch"], button span[data-lang="ch"] { display: none; }
+body.lang-ch span[data-lang="en"], body.lang-ch button span[data-lang="en"] { display: none; }
+body.lang-ch span[data-lang="ch"], body.lang-ch button span[data-lang="ch"] { display: inline; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: calc(26px + var(--safe-bottom));
+  left: 50%; transform: translateX(-50%);
+  background: var(--black); color: #fff;
+  padding: 10px 22px; border-radius: 20px;
+  font-size: 13px; font-weight: 600; z-index: 999;
+  opacity: 0; transition: opacity .25s; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ── LOAD MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.45); z-index: 500;
+  align-items: flex-end;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--white); width: 100%;
+  border-radius: 18px 18px 0 0;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  max-height: 72vh; overflow-y: auto;
+}
+.modal-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 0 auto 16px;
+}
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.saved-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+}
+.saved-item:last-child { border-bottom: none; }
+.saved-item:active { opacity: .6; }
+.saved-name { font-size: 15px; font-weight: 600; }
+.saved-meta { font-size: 12px; color: var(--light); margin-top: 2px; }
+.del-btn {
+  color: var(--red); font-size: 13px; font-weight: 700;
+  padding: 8px 12px; background: none; border: none; cursor: pointer; flex-shrink: 0;
+}
+.modal-close {
+  width: 100%; padding: 14px; background: var(--bg2); border: none;
+  border-radius: 10px; font-size: 15px; font-weight: 700;
+  color: var(--dark); cursor: pointer; margin-top: 14px;
+}
+.empty-state { text-align: center; color: var(--light); font-size: 14px; padding: 32px 0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row1">
+    <div>
+      <div class="app-title">Inbound Call</div>
+      <div class="app-sub">Pinnacle Listing System · Peter Luo</div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="openLoadModal()">📂 Load</button>
+    </div>
+  </div>
+  <div class="lang-row">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnCH" onclick="setLang('ch')">中文</button>
+  </div>
+</div>
+
+<!-- RECORD STRIP -->
+<div class="rec-strip">
+  <span class="rec-label">Rec</span>
+  <button class="rbtn" id="btnRecord" onclick="toggleRecord()">
+    <span>⏺</span><span id="recLabel">Record</span>
+  </button>
+  <button class="rbtn" id="btnPause" onclick="togglePause()">⏸ Pause</button>
+  <span id="recTimer">0:00</span>
+  <span id="recStatus">Ready</span>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span data-lang="en">Progress</span>
+    <span data-lang="ch">进度</span>
+    <span id="progressText">0 / 5</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- CALL META -->
+<div class="meta-card">
+  <div class="card-inner">
+    <div class="card-title" data-lang="en">Call Info</div>
+    <div class="card-title" data-lang="ch">通话信息</div>
+    <div class="frow c3">
+      <div class="field">
+        <label data-lang="en">Date</label>
+        <label data-lang="ch">日期</label>
+        <input type="date" id="callDate">
+      </div>
+      <div class="field">
+        <label data-lang="en">Time</label>
+        <label data-lang="ch">时间</label>
+        <input type="time" id="callTime">
+      </div>
+      <div class="field">
+        <label data-lang="en">Source</label>
+        <label data-lang="ch">来源</label>
+        <input type="text" id="callSource" placeholder="Kijiji…" autocomplete="off">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-card open active" id="step1">
+  <div class="step-head" onclick="toggleStep('step1')">
+    <div class="step-num">1</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Greeting & Get Name</div>
+      <div class="step-title" data-lang="ch">问候 · 确认姓名</div>
+      <div class="step-dur">~15 sec</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Opening</div>
+      <div class="script-tag" data-lang="ch">开场白</div>
+      <div class="script-text" data-lang="en">"Hi, this is Peter Luo with Re/Max — how can I help you today?"</div>
+      <div class="script-text" data-lang="ch">"Hi, this is Peter Luo with Re/Max — how can I help you today?"</div>
+    </div>
+    <div class="script-note" data-lang="en">→ Let them explain, then…</div>
+    <div class="script-note" data-lang="ch">→ 让对方先说，然后……</div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">What they said — caller's opening info</label>
+          <label data-lang="ch">来电者说的内容</label>
+          <textarea id="callerOpening" placeholder="e.g. They want to sell, mentioned 3-bed house in Markham, moving to condo…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Get Their Name</div>
+      <div class="script-tag" data-lang="ch">了解姓名</div>
+      <div class="script-text" data-lang="en">"Thank you for calling! You've called the right person. Who do I have the pleasure of speaking with? … Great to meet you, <strong>[Name]</strong>."</div>
+      <div class="script-text" data-lang="ch">"感谢您的来电！您找对人了。请问怎么称呼您？……<strong>[姓名]</strong>，很高兴认识您。"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Client Name</label>
+          <label data-lang="ch">客户姓名</label>
+          <input type="text" id="clientName" placeholder="e.g. Mike Chen" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step1');openStep('step2')">
+      <span data-lang="en">Next →</span>
+      <span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-card" id="step2">
+  <div class="step-head" onclick="toggleStep('step2')">
+    <div class="step-num">2</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Set the Agenda</div>
+      <div class="step-title" data-lang="ch">设定议程</div>
+      <div class="step-dur">~20 sec</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Value Pitch</div>
+      <div class="script-tag" data-lang="ch">价值主张</div>
+      <div class="script-text" data-lang="en">"<strong>[Name]</strong>, I help sellers get top dollar without the stress — my clients typically net <strong>3–8% more</strong> than the neighbourhood average. Let me ask a few quick questions so I can give you real insight. Should only take a couple of minutes. Fair?"</div>
+      <div class="script-text" data-lang="ch">"<strong>[姓名]</strong>，我的专长是帮卖家省心卖出高价——我的客户通常比周边平均成交价多卖 <strong>3–8%</strong>。我想问几个简单问题给您一些实际建议，大概两三分钟，可以吗？"</div>
+    </div>
+    <div class="script-note" data-lang="en">→ Wait for "yes" then proceed</div>
+    <div class="script-note" data-lang="ch">→ 等对方说可以，再继续</div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Client Energy</label>
+          <label data-lang="ch">对方反应</label>
+          <select id="clientEnergy">
+            <option value="">— Select —</option>
+            <option>Warm & Engaged</option>
+            <option>Neutral</option>
+            <option>In a Hurry</option>
+            <option>Skeptical</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step2');openStep('step3')">
+      <span data-lang="en">Next →</span>
+      <span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-card" id="step3">
+  <div class="step-head" onclick="toggleStep('step3')">
+    <div class="step-num">3</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Gather Key Info</div>
+      <div class="step-title" data-lang="ch">收集关键信息</div>
+      <div class="step-dur">~2 min</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Property Details</div>
+      <div class="script-tag" data-lang="ch">房产信息</div>
+      <div class="script-text" data-lang="en">"What's the address? … And how many bedrooms and baths?"</div>
+      <div class="script-text" data-lang="ch">"房子地址是？……几室几卫？"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Property Address</label>
+          <label data-lang="ch">房产地址</label>
+          <input type="text" id="propAddress" placeholder="123 Main St, Toronto" autocomplete="off">
+        </div>
+      </div>
+      <div class="frow c3">
+        <div class="field">
+          <label data-lang="en">Bedrooms</label>
+          <label data-lang="ch">卧室</label>
+          <select id="propBeds">
+            <option value="">—</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Bathrooms</label>
+          <label data-lang="ch">卫生间</label>
+          <select id="propBaths">
+            <option value="">—</option>
+            <option>1</option><option>1.5</option><option>2</option>
+            <option>2.5</option><option>3</option><option>3.5</option><option>4+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Type</label>
+          <label data-lang="ch">类型</label>
+          <select id="propType">
+            <option value="">—</option>
+            <option>Detached</option>
+            <option>Semi-Det.</option>
+            <option>Townhouse</option>
+            <option>Condo</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-block" style="margin-top:14px;">
+      <div class="script-tag" data-lang="en">Motivation</div>
+      <div class="script-tag" data-lang="ch">卖房动机</div>
+      <div class="script-text" data-lang="en">"What's prompting the move?"</div>
+      <div class="script-text" data-lang="ch">"是什么原因让您考虑卖房？"</div>
+    </div>
+    <div class="branch">
+      <div class="branch-box">
+        <div class="branch-label" data-lang="en">✅ Positive</div>
+        <div class="branch-label" data-lang="ch">✅ 积极原因</div>
+        <span data-lang="en" style="font-size:13px;">"That's exciting — congratulations!"</span>
+        <span data-lang="ch" style="font-size:13px;">"太棒了——恭喜您！"</span>
+      </div>
+      <div class="branch-box">
+        <div class="branch-label" data-lang="en">⚠️ Difficult</div>
+        <div class="branch-label" data-lang="ch">⚠️ 困难原因</div>
+        <span data-lang="en" style="font-size:13px;">"I've helped many through similar situations."</span>
+        <span data-lang="ch" style="font-size:13px;">"这类情况我帮过很多客户。"</span>
+      </div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Motivation</label>
+          <label data-lang="ch">动机</label>
+          <select id="motivation">
+            <option value="">— Select —</option>
+            <option>Upsizing</option>
+            <option>Downsizing</option>
+            <option>Relocation</option>
+            <option>Divorce</option>
+            <option>Financial</option>
+            <option>Estate</option>
+            <option>Investment</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Urgency</label>
+          <label data-lang="ch">紧迫程度</label>
+          <select id="urgency">
+            <option value="">— Select —</option>
+            <option>ASAP</option>
+            <option>Within 3 months</option>
+            <option>3–6 months</option>
+            <option>6+ months</option>
+            <option>Just Exploring</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Motivation — their exact words</label>
+          <label data-lang="ch">动机备注（对方原话）</label>
+          <textarea id="motivationNotes" placeholder="Their exact words…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-block" style="margin-top:14px;">
+      <div class="script-tag" data-lang="en">Timeline & Destination</div>
+      <div class="script-tag" data-lang="ch">时间与去向</div>
+      <div class="script-text" data-lang="en">"When would you ideally like to be settled? … Staying local or heading somewhere new?"</div>
+      <div class="script-text" data-lang="ch">"您理想的搬入时间是？……之后留在本地还是搬去别处？"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Target Move Date</label>
+          <label data-lang="ch">目标搬家时间</label>
+          <input type="text" id="moveDate" placeholder="e.g. Summer 2025">
+        </div>
+        <div class="field">
+          <label data-lang="en">Destination</label>
+          <label data-lang="ch">目的地</label>
+          <input type="text" id="destination" placeholder="Local / Newmarket…">
+        </div>
+      </div>
+    </div>
+
+    <div class="script-block" style="margin-top:14px;">
+      <div class="script-tag" data-lang="en">Price Expectation</div>
+      <div class="script-tag" data-lang="ch">价格预期</div>
+      <div class="script-text" data-lang="en">"Have you thought about what you'd like to get for it?"</div>
+      <div class="script-text" data-lang="ch">"您心里对价格有没有大概的预期？"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Their Price Expectation</label>
+          <label data-lang="ch">卖方心理预期</label>
+          <input type="text" id="priceExpectation" placeholder="e.g. $1.2M">
+        </div>
+        <div class="field">
+          <label data-lang="en">Market Knowledge</label>
+          <label data-lang="ch">市场了解程度</label>
+          <select id="mktKnowledge">
+            <option value="">— Select —</option>
+            <option>Well Informed</option>
+            <option>Some Knowledge</option>
+            <option>Limited</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Property Notes (renovations, features, issues)</label>
+          <label data-lang="ch">房产信息（装修、特点、问题）</label>
+          <textarea id="propNotes" placeholder="Renovated kitchen, new roof 2022, basement suite…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button class="next-btn" onclick="markDone('step3');openStep('step4')">
+      <span data-lang="en">Next →</span>
+      <span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-card" id="step4">
+  <div class="step-head" onclick="toggleStep('step4')">
+    <div class="step-num">4</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Build Curiosity & Book Appt</div>
+      <div class="step-title" data-lang="ch">制造好奇心 · 预约面谈</div>
+      <div class="step-dur">Two-Choice Close</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Curiosity Hook</div>
+      <div class="script-tag" data-lang="ch">好奇心钩子</div>
+      <div class="script-text" data-lang="en">"<strong>[Name]</strong>, based on what you've told me, homes like yours are in strong demand — a couple of things you mentioned could really add to the value."</div>
+      <div class="script-text" data-lang="ch">"<strong>[姓名]</strong>，根据您分享的情况，您这类房子现在市场需求很强——您提到的几个特点确实能大幅提升价值。"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">The Hook</div>
+      <div class="script-tag" data-lang="ch">钩子话术</div>
+      <div class="script-text" data-lang="en">"I can't give an exact number until I see the property. But most sellers walk away saying: <em>'I had no idea we could get that much.'</em>"</div>
+      <div class="script-text" data-lang="ch">"不亲自看房我没法给您确切数字。但大多数卖家最后都说：<em>'没想到能卖这么多！'</em>"</div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Two-Choice Close</div>
+      <div class="script-tag" data-lang="ch">二选一收尾</div>
+      <div class="script-text" data-lang="en">"Best next step: I come by for <strong>45 min — no obligation</strong>. Later this week or early next week?" → <em>"Thursday at 5:30, or Friday at 11:00?"</em></div>
+      <div class="script-text" data-lang="ch">"最好是我上门45分钟，<strong>完全免费</strong>。这周晚些还是下周初？" → <em>"周四5:30，还是周五11:00？"</em></div>
+    </div>
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Decision-Maker Check</div>
+      <div class="script-tag" data-lang="ch">决策人确认</div>
+      <div class="script-text" data-lang="en">"Who else should be there so we can make decisions together and only do this once?"</div>
+      <div class="script-text" data-lang="ch">"还有谁需要一起参与决定？最好大家到齐，一次搞定。"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Appt Date</label>
+          <label data-lang="ch">预约日期</label>
+          <input type="date" id="apptDate">
+        </div>
+        <div class="field">
+          <label data-lang="en">Appt Time</label>
+          <label data-lang="ch">预约时间</label>
+          <select id="apptTime">
+            <option value="">— Select —</option>
+            <option>9:00 AM</option><option>9:30 AM</option>
+            <option>10:00 AM</option><option>10:30 AM</option>
+            <option>11:00 AM</option><option>11:30 AM</option>
+            <option>12:00 PM</option><option>12:30 PM</option>
+            <option>1:00 PM</option><option>1:30 PM</option>
+            <option>2:00 PM</option><option>2:30 PM</option>
+            <option>3:00 PM</option><option>3:30 PM</option>
+            <option>4:00 PM</option><option>4:30 PM</option>
+            <option>5:00 PM</option><option>5:30 PM</option>
+            <option>6:00 PM</option><option>6:30 PM</option>
+            <option>7:00 PM</option><option>7:30 PM</option>
+            <option>8:00 PM</option><option>8:30 PM</option>
+            <option>9:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Decision Makers</label>
+          <label data-lang="ch">参与决策人</label>
+          <input type="text" id="decisionMakers" placeholder="Mike + spouse">
+        </div>
+        <div class="field">
+          <label data-lang="en">Confirmed?</label>
+          <label data-lang="ch">是否确认？</label>
+          <select id="apptConfirmed">
+            <option value="">— Select —</option>
+            <option>Yes</option>
+            <option>Callback Needed</option>
+            <option>Not Yet</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step4');openStep('step5')">
+      <span data-lang="en">Next →</span>
+      <span data-lang="ch">下一步 →</span>
+    </button>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-card" id="step5">
+  <div class="step-head" onclick="toggleStep('step5')">
+    <div class="step-num">5</div>
+    <div class="step-label">
+      <div class="step-title" data-lang="en">Confident Close</div>
+      <div class="step-title" data-lang="ch">自信收尾</div>
+      <div class="step-dur">~15 sec</div>
+    </div>
+    <span class="step-chevron">▼</span>
+  </div>
+  <div class="step-body">
+    <div class="script-block">
+      <div class="script-tag" data-lang="en">Wrap Up</div>
+      <div class="script-tag" data-lang="ch">结束语</div>
+      <div class="script-text" data-lang="en">"I'll send you a quick confirmation with my contact info. <strong>[Name]</strong>, I'm looking forward to showing you what's possible — I think you're going to be pleasantly surprised." … "Any questions? Perfect. Talk to you <strong>[day]</strong> — have a great day!"</div>
+      <div class="script-text" data-lang="ch">"我马上发短信确认，附上我的联系方式。<strong>[姓名]</strong>，我很期待让您看看有哪些可能——相信您会有惊喜的。" … "还有什么问题吗？好的，<strong>[日期]</strong>见——祝您愉快！"</div>
+    </div>
+    <div class="step-fields">
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Client Phone</label>
+          <label data-lang="ch">客户电话</label>
+          <input type="tel" id="clientPhone" placeholder="(416) 333-3333" maxlength="14" oninput="formatPhone(this)">
+        </div>
+        <div class="field">
+          <label data-lang="en">Extension</label>
+          <label data-lang="ch">分机号</label>
+          <input type="text" id="clientPhoneExt" placeholder="e.g. 102" inputmode="numeric" maxlength="6">
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Client Email</label>
+          <label data-lang="ch">客户电邮</label>
+          <input type="email" id="clientEmail" placeholder="mike@email.com">
+        </div>
+      </div>
+      <div class="frow c2">
+        <div class="field">
+          <label data-lang="en">Confirm Via</label>
+          <label data-lang="ch">确认方式</label>
+          <select id="confirmVia">
+            <option value="">— Select —</option>
+            <option>Text</option>
+            <option>Email</option>
+            <option>Both</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-lang="en">Lead Rating</label>
+          <label data-lang="ch">潜在客户评级</label>
+          <select id="callRating">
+            <option value="">— Select —</option>
+            <option>🔥 Hot</option>
+            <option>☀️ Warm</option>
+            <option>❄️ Cool</option>
+            <option>🌱 Nurture</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c1">
+        <div class="field">
+          <label data-lang="en">Follow-Up Notes / Objections</label>
+          <label data-lang="ch">跟进备注 / 异议</label>
+          <textarea id="followUpNotes" placeholder="Objections raised, tone, reminders…"></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="markDone('step5');showSummary()">
+      <span data-lang="en">✓ Complete Call</span>
+      <span data-lang="ch">✓ 完成通话</span>
+    </button>
+  </div>
+</div>
+
+<!-- SAVE BUTTONS — always visible after call completes -->
+<div id="savePanel" style="display:none;">
+  <div class="save-row">
+    <button class="save-btn warm" onclick="saveAllData()">
+      <span>💾</span>
+      <span data-lang="en">Save Call Record</span>
+      <span data-lang="ch">保存通话记录</span>
+    </button>
+    <button class="save-btn warm-outline" id="btnSaveRec" onclick="saveRecording()" disabled>
+      <span>🎙</span>
+      <span data-lang="en">Save Voice Recording</span>
+      <span data-lang="ch">保存录音文件</span>
+    </button>
+    <div style="font-size:12px;color:#aaa;text-align:center;margin-top:-4px;padding:0 4px;" data-lang="en">File saves to your iPhone's Downloads folder (Files app → Downloads)</div>
+    <div style="font-size:12px;color:#aaa;text-align:center;margin-top:-4px;padding:0 4px;" data-lang="ch">文件保存至 iPhone「文件」App → 下载文件夹</div>
+    <button class="save-btn grey" onclick="resetForm()">
+      <span>🔄</span>
+      <span data-lang="en">New Call</span>
+      <span data-lang="ch">新的来电</span>
+    </button>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summaryPanel">
+  <div class="sum-card">
+    <div class="card-inner">
+      <div class="sum-title" data-lang="en">📋 Call Summary</div>
+      <div class="sum-title" data-lang="ch">📋 通话摘要</div>
+      <div class="sum-grid" id="summaryGrid"></div>
+      <div class="sum-notes-box" id="summaryNotes"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- LOAD MODAL -->
+<div class="modal-overlay" id="loadModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span data-lang="en">📂 Saved Calls</span><span data-lang="ch">📂 已保存通话</span></div>
+    <div id="savedList"></div>
+    <button class="modal-close" onclick="closeLoadModal()"><span data-lang="en">Close</span><span data-lang="ch">关闭</span></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const FIELDS = ['callDate','callTime','callSource','clientName','callerOpening','clientPhone','clientPhoneExt','clientEmail',
+  'clientEnergy','propAddress','propBeds','propBaths','propType','motivation','urgency',
+  'motivationNotes','moveDate','destination','priceExpectation','mktKnowledge',
+  'propNotes','apptDate','apptTime','decisionMakers','apptConfirmed','confirmVia',
+  'callRating','followUpNotes'];
+
+// ── Language data ──
+const langText = {
+  en: {
+    clientEnergy:    ['— Select —', 'Warm & Engaged', 'Neutral', 'In a Hurry', 'Skeptical'],
+    motivation:      ['— Select —', 'Upsizing', 'Downsizing', 'Relocation', 'Divorce', 'Financial', 'Estate', 'Investment', 'Other'],
+    urgency:         ['— Select —', 'ASAP', 'Within 3 months', '3–6 months', '6+ months', 'Just Exploring'],
+    mktKnowledge:    ['— Select —', 'Well Informed', 'Some Knowledge', 'Limited'],
+    apptConfirmed:   ['— Select —', 'Yes', 'Callback Needed', 'Not Yet'],
+    confirmVia:      ['— Select —', 'Text', 'Email', 'Both'],
+    callRating:      ['— Select —', '🔥 Hot', '☀️ Warm', '❄️ Cool', '🌱 Nurture'],
+    propType:        ['—', 'Detached', 'Semi-Det.', 'Townhouse', 'Condo', 'Other'],
+  },
+  ch: {
+    clientEnergy:    ['— 请选择 —', '热情配合', '平淡', '较匆忙', '有疑虑'],
+    motivation:      ['— 请选择 —', '换大房', '换小房', '异地搬迁', '离婚', '经济原因', '遗产', '投资变现', '其他'],
+    urgency:         ['— 请选择 —', '尽快', '3个月内', '3–6个月', '半年以上', '只是了解'],
+    mktKnowledge:    ['— 请选择 —', '很了解', '有一定了解', '了解不多'],
+    apptConfirmed:   ['— 请选择 —', '已确认', '需回电', '未确认'],
+    confirmVia:      ['— 请选择 —', '短信', '电邮', '两种'],
+    callRating:      ['— 请选择 —', '🔥 热', '☀️ 一般', '❄️ 冷淡', '🌱 跟进'],
+    propType:        ['—', '独立屋', '半独立屋', '联排', '公寓', '其他'],
+  }
+};
+
+const langPlaceholders = {
+  en: {
+    callSource:        'Kijiji…',
+    callerOpening:     'e.g. They want to sell, mentioned 3-bed house in Markham, moving to condo…',
+    clientName:        'e.g. Mike Chen',
+    propAddress:       '123 Main St, Toronto',
+    motivationNotes:   'Their exact words…',
+    moveDate:          'e.g. Summer 2025',
+    destination:       'Local / Newmarket…',
+    priceExpectation:  'e.g. $1.2M',
+    propNotes:         'Renovated kitchen, new roof 2022, basement suite…',
+    decisionMakers:    'Mike + spouse',
+    clientPhoneExt:    'e.g. 102',
+    clientEmail:       'mike@email.com',
+    followUpNotes:     'Objections raised, tone, reminders…',
+  },
+  ch: {
+    callSource:        '例如：Kijiji、朋友介绍…',
+    callerOpening:     '例如：想卖房，提到万锦市3房，准备换公寓…',
+    clientName:        '例如：陈先生',
+    propAddress:       '例如：123 Main St, Toronto',
+    motivationNotes:   '对方原话…',
+    moveDate:          '例如：2025年夏',
+    destination:       '本地 / 万锦…',
+    priceExpectation:  '例如：$120万',
+    propNotes:         '例如：新厨房、屋顶2022年换新、地下室套间…',
+    decisionMakers:    '例如：Mike + 配偶',
+    clientPhoneExt:    '例如：102',
+    clientEmail:       'mike@email.com',
+    followUpNotes:     '异议、通话氛围、跟进提醒…',
+  }
+};
+
+// ── Language ──
+function setLang(lang) {
+  document.body.classList.toggle('lang-ch', lang === 'ch');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnCH').classList.toggle('active', lang === 'ch');
+
+  // Swap select options
+  const texts = langText[lang];
+  Object.keys(texts).forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const cur = sel.value;
+    const opts = texts[selId];
+    sel.innerHTML = opts.map((t, i) => `<option value="${i === 0 ? '' : t}">${t}</option>`).join('');
+    // try to restore prior selection
+    Array.from(sel.options).forEach(o => { if (o.value === cur) sel.value = o.value; });
+  });
+
+  // Swap placeholders
+  const phs = langPlaceholders[lang];
+  Object.keys(phs).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = phs[id];
+  });
+}
+
+// ── Steps ──
+const totalSteps = 5;
+let doneSteps = new Set();
+
+function toggleStep(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+function openStep(id) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('open','active'));
+  const card = document.getElementById(id);
+  card.classList.add('open','active');
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
+}
+function markDone(id) {
+  const card = document.getElementById(id);
+  card.classList.add('done');
+  card.classList.remove('active','open');
+  doneSteps.add(parseInt(id.replace('step','')));
+  updateProgress();
+}
+function updateProgress() {
+  const pct = (doneSteps.size / totalSteps) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = doneSteps.size + ' / ' + totalSteps;
+}
+
+// ── Helper ──
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// ── Summary ──
+function showSummary() {
+  document.getElementById('savePanel').style.display = 'block';
+  const panel = document.getElementById('summaryPanel');
+  panel.style.display = 'block';
+  const items = [
+    {l:'Client',       v: v('clientName')},
+    {l:'Opening Info', v: v('callerOpening')},
+    {l:'Phone',        v: v('clientPhone') + (v('clientPhoneExt') ? ' x' + v('clientPhoneExt') : '')},
+    {l:'Email',        v: v('clientEmail')},
+    {l:'Date',         v: v('callDate')},
+    {l:'Time',         v: v('callTime')},
+    {l:'Source',       v: v('callSource')},
+    {l:'Address',      v: v('propAddress')},
+    {l:'Type',         v: v('propType')},
+    {l:'Bedrooms',     v: v('propBeds')},
+    {l:'Bathrooms',    v: v('propBaths')},
+    {l:'Motivation',   v: v('motivation')},
+    {l:'Urgency',      v: v('urgency')},
+    {l:'Move Date',    v: v('moveDate')},
+    {l:'Destination',  v: v('destination')},
+    {l:'Price Expect', v: v('priceExpectation')},
+    {l:'Appointment',  v: v('apptDate') + ' ' + v('apptTime')},
+    {l:'Who present',  v: v('decisionMakers')},
+    {l:'Confirmed',    v: v('apptConfirmed')},
+    {l:'Rating',       v: v('callRating')},
+  ];
+  document.getElementById('summaryGrid').innerHTML = items
+    .filter(i => i.v.trim())
+    .map(i => `<div class="sum-item"><label>${i.l}</label><p>${i.v}</p></div>`)
+    .join('');
+  const notes = [v('motivationNotes'), v('propNotes'), v('followUpNotes')].filter(Boolean).join('\n\n─────\n\n');
+  document.getElementById('summaryNotes').textContent = notes || '—';
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth' }), 80);
+}
+
+// ── Filename builder: Inbound_{Name}.YYYY_MM_DD_HH(AM/PM)_MM ──
+function buildFilename() {
+  const clientName = (v('clientName') || 'Unknown').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\u4e00-\u9fff]/g, '');
+  const now = new Date();
+  const YYYY = now.getFullYear();
+  const MM   = String(now.getMonth() + 1).padStart(2, '0');
+  const DD   = String(now.getDate()).padStart(2, '0');
+  let   HH   = now.getHours();
+  const min  = String(now.getMinutes()).padStart(2, '0');
+  const ampm = HH >= 12 ? 'PM' : 'AM';
+  HH = HH % 12 || 12;
+  const HHstr = String(HH).padStart(2, '0');
+  return `Inbound_${clientName}.${YYYY}_${MM}_${DD}_${HHstr}${ampm}_${min}`;
+}
+
+// ── Save (JSON to device + localStorage) ──
+function saveAllData() {
+  const data = { savedAt: new Date().toISOString(), clientNameSnapshot: v('clientName') || 'Unknown' };
+  FIELDS.forEach(id => { data[id] = v(id); });
+
+  // Save to localStorage
+  const all = JSON.parse(localStorage.getItem('pinnacle_calls') || '[]');
+  all.unshift(data);
+  if (all.length > 30) all.splice(30);
+  localStorage.setItem('pinnacle_calls', JSON.stringify(all));
+
+  // Download JSON file
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const filename = buildFilename() + '.json';
+  a.download = filename;
+  a.click();
+  showToast('Saved: ' + filename);
+}
+
+// ── Load modal ──
+function openLoadModal() {
+  renderSavedList();
+  document.getElementById('loadModal').classList.add('open');
+}
+function closeLoadModal() {
+  document.getElementById('loadModal').classList.remove('open');
+}
+document.getElementById('loadModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('loadModal')) closeLoadModal();
+});
+
+function renderSavedList() {
+  const all = JSON.parse(localStorage.getItem('pinnacle_calls') || '[]');
+  const el = document.getElementById('savedList');
+  if (!all.length) {
+    el.innerHTML = '<div class="empty-state">No saved calls yet</div>';
+    return;
+  }
+  el.innerHTML = all.map((c, i) => {
+    const d = c.savedAt ? new Date(c.savedAt).toLocaleDateString() : '—';
+    return `<div class="saved-item" onclick="loadCall(${i})">
+      <div>
+        <div class="saved-name">${c.clientNameSnapshot || 'Unknown'}</div>
+        <div class="saved-meta">${c.callDate || '—'} · ${c.callSource || '—'} · Saved ${d}</div>
+      </div>
+      <button class="del-btn" onclick="event.stopPropagation();deleteCall(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function loadCall(index) {
+  const all = JSON.parse(localStorage.getItem('pinnacle_calls') || '[]');
+  const data = all[index];
+  if (!data) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el && data[id] !== undefined) el.value = data[id]; });
+  doneSteps.clear();
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('done','active','open'));
+  document.getElementById('step1').classList.add('open');
+  updateProgress();
+  document.getElementById('summaryPanel').style.display = 'none';
+  closeLoadModal();
+  showToast('Loaded ✓');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function deleteCall(index) {
+  if (!confirm('Delete this saved call?')) return;
+  const all = JSON.parse(localStorage.getItem('pinnacle_calls') || '[]');
+  all.splice(index, 1);
+  localStorage.setItem('pinnacle_calls', JSON.stringify(all));
+  renderSavedList();
+}
+
+// ── Reset ──
+function resetForm() {
+  if (!confirm('Start a new call? Current data will be cleared.')) return;
+  FIELDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  doneSteps.clear();
+  updateProgress();
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('done','active','open'));
+  document.getElementById('step1').classList.add('open','active');
+  document.getElementById('summaryPanel').style.display = 'none';
+  document.getElementById('savePanel').style.display = 'none';
+  stopRecording();
+  setToday();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Phone formatter (###) 333-3333 ──
+function formatPhone(input) {
+  let digits = input.value.replace(/\D/g, '').slice(0, 10);
+  let formatted = '';
+  if (digits.length === 0) { formatted = ''; }
+  else if (digits.length <= 3) { formatted = '(' + digits; }
+  else if (digits.length <= 6) { formatted = '(' + digits.slice(0,3) + ') ' + digits.slice(3); }
+  else { formatted = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6); }
+  input.value = formatted;
+}
+
+// ── Date/Time ──
+function setToday() {
+  const now = new Date();
+  document.getElementById('callDate').value = now.toISOString().split('T')[0];
+  document.getElementById('callTime').value = now.toTimeString().slice(0,5);
+}
+setToday();
+
+// ── Recording ──
+let mediaRecorder = null, audioChunks = [], recordedBlob = null;
+let timerInterval = null, elapsedSec = 0;
+
+async function toggleRecord() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+                     : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        recordedBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        document.getElementById('btnSaveRec').removeAttribute('disabled');
+        document.getElementById('recStatus').textContent = 'Done — tap Save Recording';
+      };
+      mediaRecorder.start(500);
+      elapsedSec = 0;
+      startTimer();
+      document.getElementById('btnRecord').classList.add('recording');
+      document.getElementById('recLabel').textContent = 'Stop';
+      document.getElementById('btnPause').style.display = 'flex';
+      document.getElementById('recTimer').style.display = 'inline';
+      document.getElementById('recStatus').textContent = '● Recording…';
+    } catch(e) {
+      alert('Microphone access denied.\nPlease allow microphone access in Safari → Settings → Safari → Microphone.');
+    }
+  } else {
+    stopRecording();
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream?.getTracks().forEach(t => t.stop());
+  }
+  clearInterval(timerInterval);
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('recLabel').textContent = 'Record';
+  document.getElementById('btnPause').style.display = 'none';
+}
+
+function togglePause() {
+  if (!mediaRecorder) return;
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+    clearInterval(timerInterval);
+    document.getElementById('btnPause').textContent = '▶ Resume';
+    document.getElementById('recStatus').textContent = '⏸ Paused';
+  } else if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+    startTimer();
+    document.getElementById('btnPause').textContent = '⏸ Pause';
+    document.getElementById('recStatus').textContent = '● Recording…';
+  }
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    const m = Math.floor(elapsedSec / 60);
+    const s = String(elapsedSec % 60).padStart(2,'0');
+    document.getElementById('recTimer').textContent = m + ':' + s;
+  }, 1000);
+}
+
+function saveRecording() {
+  if (!recordedBlob) return;
+  const filename = buildFilename() + '.m4a';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(recordedBlob);
+  a.download = filename;
+  a.click();
+  showToast('📁 Saved: ' + filename);
+}
+</script>
+</body>
+</html>

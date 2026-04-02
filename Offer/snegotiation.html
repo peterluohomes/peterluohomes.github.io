@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Offer Check, Seller Communication and Negotiation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2b4a;--gold:#c9a84c;--gold2:#e0c070;--cream:#faf6ee;--cream2:#f0e8d5;--border:#ddd3bc;--text:#2c2c2c;--muted:#888;--orange:#e07a20;--red:#c0392b;--tap:44px;--green:#27ae60}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);font-size:15px}
+.page-header{background:var(--navy);border-bottom:3px solid var(--gold);padding:16px 20px;text-align:center}
+.page-header h1{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
+.page-header p{font-size:11px;color:#aaa;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}
+.container{max-width:800px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-header{background:var(--navy);color:var(--gold);font-family:'Playfair Display',serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.card-header.collapsible{cursor:pointer}
+.card-header .toggle-arrow{font-size:14px;transition:transform 0.2s}
+.card-header .toggle-arrow.collapsed{transform:rotate(-90deg)}
+.card-body{padding:16px}
+.card-body.collapsed-body{display:none}
+.fg{display:grid;gap:12px}.fg2{grid-template-columns:1fr 1fr}.fg3{grid-template-columns:1fr 1fr 1fr}.fg4{grid-template-columns:1fr 1fr 1fr 1fr}
+.flex-row{display:flex;gap:12px}
+.field label{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:9px 10px;min-height:38px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--cream);outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);background:#fff}
+.field textarea{resize:vertical;min-height:60px;font-size:13px}
+.field input[type="date"],.field select.time-sel{font-family:'DM Mono',monospace;font-size:13px}
+.field input.mono{font-family:'DM Mono',monospace}
+.words-box{font-size:13px;color:var(--muted);padding:9px 10px;min-height:38px;background:var(--cream);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;word-break:break-word}
+.divider{height:1px;background:var(--cream2);margin:12px 0}
+.cond-table{width:100%;border-collapse:collapse}
+.cond-table th{text-align:left;font-size:10px;font-weight:600;color:var(--muted);padding:6px 8px;border-bottom:2px solid var(--border)}
+.cond-table td{padding:5px 8px;border-bottom:1px solid var(--cream2)}
+.cond-table .cond-num{width:28px;font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);font-weight:600;text-align:center}
+.cond-table input{width:100%;border:1px solid var(--border);border-radius:5px;padding:7px 8px;font-size:13px;color:var(--text);background:var(--cream);outline:none;min-height:36px}
+.cond-table .days-inp{width:50px;text-align:center;font-family:'DM Mono',monospace}
+.cond-table .date-inp{font-family:'DM Mono',monospace;font-size:12px}
+.clause-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream2)}
+.clause-row:last-child{border-bottom:none}
+.clause-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);font-weight:600;min-width:24px;text-align:center}
+.clause-row textarea{flex:1;border:1px solid var(--border);border-radius:5px;padding:7px 8px;font-size:13px;color:var(--text);background:var(--cream);outline:none;min-height:36px;resize:vertical}
+/* Reference clause styles */
+.ref-clause{padding:10px 0;border-bottom:1px solid var(--cream2)}
+.ref-clause:last-child{border-bottom:none}
+.ref-clause-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ref-clause-id{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);font-weight:600;white-space:nowrap}
+.ref-clause-title{font-size:13px;font-weight:600;color:var(--navy)}
+.ref-clause-text{font-size:12px;line-height:1.55;color:var(--text);margin-top:4px;padding-left:0}
+.ref-clause .note-btn{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--gold);cursor:pointer;min-height:24px;line-height:1;white-space:nowrap;margin-left:auto}
+.ref-clause .note-btn:hover{background:var(--gold);color:var(--navy)}
+.ref-clause .note-btn.has-note{background:var(--gold2);color:var(--navy);border-color:var(--gold)}
+.ref-clause .ref-note{width:100%;margin-top:8px;border:1px solid var(--gold2);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;outline:none;resize:vertical;min-height:34px;line-height:1.4}
+.ref-clause .ref-note:focus{border-color:var(--gold);background:#fffef8}
+.ref-clause .ref-note.note-hidden{display:none}
+.toolbar{display:flex;gap:8px;justify-content:center;padding:12px 0 24px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 18px;min-height:var(--tap);border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.btn-outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
+.btn-primary{background:var(--gold);color:var(--navy)}
+.save-indicator{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;padding:0 8px}
+.save-indicator.saved{color:#2ecc71}
+.page-footer{border-top:2px solid var(--gold);padding:12px 20px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);background:var(--cream2)}
+.page-footer strong{color:var(--navy)}
+#debug{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.85);color:#0f0;font-family:monospace;font-size:11px;padding:6px 10px;z-index:9999;max-height:80px;overflow:auto;display:none}
+
+/* ===== INLINE CHECKLIST STYLES ===== */
+.inline-checks{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:12px}
+.inline-checks .ck-title{font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.inline-checks .ck-title .progress-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none}
+.checklist{list-style:none;padding:0;margin:0}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--cream2);font-size:13px;line-height:1.5}
+.checklist li:last-child{border-bottom:none}
+.checklist li input[type="checkbox"]{flex-shrink:0;width:20px;height:20px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
+.checklist li.checked-item .ck-label{color:var(--muted);text-decoration:line-through}
+.checklist li .ck-label{flex:1}
+.checklist li .note-btn{flex-shrink:0;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--gold);cursor:pointer;min-height:24px;line-height:1;white-space:nowrap;align-self:center}
+.checklist li .note-btn:hover{background:var(--gold);color:var(--navy)}
+.checklist li .note-btn.has-note{background:var(--gold2);color:var(--navy);border-color:var(--gold)}
+.checklist li .item-note{width:100%;margin-top:6px;border:1px solid var(--gold2);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;outline:none;resize:vertical;min-height:34px;line-height:1.4}
+.checklist li .item-note:focus{border-color:var(--gold);background:#fffef8}
+.checklist li .item-note.note-hidden{display:none}
+.checklist li .note-wrap{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;flex:1}
+.checklist li .note-wrap .ck-label{flex:1;min-width:0}
+
+/* Collapsible checklist sections */
+.section-label{font-size:11px;font-weight:600;color:var(--navy);letter-spacing:0.8px;text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--gold2);display:flex;justify-content:space-between;align-items:center}
+.section-label:first-child{margin-top:0}
+.section-label .progress-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none}
+.card-header .header-progress{font-family:'DM Mono',monospace;font-size:10px;color:#aaa;font-weight:400;letter-spacing:0;text-transform:none;margin-right:8px}
+.notes-box{background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.6;color:var(--text);margin-top:8px}
+.notes-box strong{color:var(--navy)}
+.notes-box .tip{color:var(--muted);font-style:italic}
+
+@media(max-width:500px){.fg2,.fg3,.fg4{grid-template-columns:1fr 1fr}.flex-row{flex-wrap:wrap}.field input,.field select,.field textarea{font-size:16px}}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{background:#fff;font-size:11px}
+  .page-header{padding:10px 16px}
+  .page-header h1{font-size:16px}
+  .toolbar,#debug,.btn{display:none!important}
+  .container{padding:8px}
+  .card{margin-bottom:8px;box-shadow:none;page-break-inside:avoid}
+  .card-header{padding:6px 12px;font-size:10px}
+  .card-body{padding:10px 12px}
+  .card-body.collapsed-body{display:block!important}
+  .toggle-arrow{display:none!important}
+  .divider{margin:6px 0}
+  .field input,.field select,.field textarea,.words-box{min-height:unset;padding:4px 6px;font-size:11px;border-color:#ccc}
+  .fg,.fg2,.fg3,.fg4{gap:6px}
+  .flex-row{gap:6px}
+  .clause-row{padding:3px 0}
+  .clause-row textarea{min-height:unset;padding:3px 6px;font-size:11px}
+  .ref-clause{padding:5px 0}
+  .ref-clause-header{margin-bottom:2px}
+  .ref-clause-id{font-size:9px}
+  .ref-clause-title{font-size:10px}
+  .ref-clause-text{font-size:9px;line-height:1.4}
+  .ref-clause .note-btn{display:none!important}
+  .ref-clause .ref-note{font-size:9px;min-height:unset;padding:3px 6px;margin-top:3px}
+  .ref-clause .ref-note.note-hidden{display:none!important}
+  .cond-table td{padding:3px 6px}
+  .cond-table input{padding:3px 6px;font-size:11px;min-height:unset}
+  .page-footer{padding:8px 16px;font-size:10px}
+  .print-hide{display:none!important}
+  .checklist li{padding:4px 0;font-size:10px}
+  .checklist li input[type="checkbox"]{width:14px;height:14px}
+  .checklist li .note-btn{display:none!important}
+  .checklist li .item-note{font-size:9px;min-height:unset;padding:3px 6px;margin-top:3px}
+  .checklist li .item-note:empty{display:none!important}
+  .checklist li .item-note.note-hidden{display:none!important}
+  .inline-checks{padding:6px 8px;margin-top:6px}
+  .inline-checks .ck-title{font-size:9px;margin-bottom:3px}
+  .section-label{margin:8px 0 4px;font-size:9px}
+  .notes-box{padding:6px 8px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="page-header"><h1>Offer Check, Seller Communication and Negotiation</h1><p>Pinnacle Listing System</p></div>
+<div class="container">
+
+  <!-- ===== PROPERTY & SELLER — with Info Check blended in ===== -->
+  <div class="card"><div class="card-header">🏠 Property &amp; Seller</div><div class="card-body">
+    <div class="flex-row">
+      <div class="field" style="flex:1"><label>Property Address</label><input type="text" id="f-property" placeholder="123 Main St, Toronto"></div>
+      <div class="field" style="flex:0 0 160px"><label>Size (Front × Depth)</label>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="text" id="f-frontage" class="mono" placeholder="###.##" maxlength="6" style="width:65px;text-align:center"> × <input type="text" id="f-depth" class="mono" placeholder="###.##" maxlength="6" style="width:65px;text-align:center">
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fg">
+      <div class="field"><label>Seller Name</label><input type="text" id="f-seller" placeholder="Seller name(s)" maxlength="80"></div>
+    </div>
+    <!-- BLENDED: Information Check + Critical Items -->
+    <div class="inline-checks">
+      <div class="ck-title"><span>✅ Verify</span><span class="progress-badge" id="pg-verify"></span></div>
+      <ul class="checklist" data-group="verify">
+        <li><input type="checkbox" data-ck="r01"><span class="ck-label">Names, Address, Postal Code are correct?</span></li>
+        <li><input type="checkbox" data-ck="r06"><span class="ck-label">Are the sellers non-residents? (tax implications)</span></li>
+        <li><input type="checkbox" data-ck="r17"><span class="ck-label">Are the Lot size (include Irreg.) correct?</span></li>
+        <li><input type="checkbox" data-ck="r18"><span class="ck-label">Are Front On, Street Name correct?</span></li>
+      </ul>
+    </div>
+  </div></div>
+
+  <!-- ===== OFFER INFORMATION — with Info Check items blended in ===== -->
+  <div class="card"><div class="card-header">📋 Offer Information</div><div class="card-body">
+    <div class="fg fg3">
+      <div class="field"><label>Agent Name</label><input type="text" id="f-agent"></div>
+      <div class="field"><label>Agent Phone</label><input type="tel" id="f-agent-phone" maxlength="12"></div>
+      <div class="field"><label>Agent Email</label><input type="text" id="f-agent-email"></div>
+    </div><div class="divider"></div>
+    <div class="fg fg2">
+      <div class="field"><label>Co-Op Brokerage</label><input type="text" id="f-coop"></div>
+      <div class="field"><label>Co-Op Comm</label><input type="text" id="f-coop-comm" placeholder="e.g. 2.5%"></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:1"><label>Buyers</label><input type="text" id="f-buyers"></div>
+      <div class="field" style="flex:0 0 140px"><label>Offer Date</label><input type="date" id="f-offer-date"></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:0 0 150px"><label>Price</label><input type="text" id="f-price" class="mono" placeholder="0.00"></div>
+      <div class="field" style="flex:1"><label>Price in Words</label><div id="price-words" class="words-box">—</div></div>
+    </div><div class="divider"></div>
+    <div class="flex-row">
+      <div class="field" style="flex:0 0 120px"><label>Deposit</label><input type="text" id="f-deposit" class="mono" placeholder="0.00"></div>
+      <div class="field" style="flex:1"><label>Deposit in Words</label><div id="deposit-words" class="words-box">—</div></div>
+    </div><div class="divider"></div>
+    <div class="fg fg3">
+      <div class="field"><label>Deposit Submit</label><select id="f-deposit-submit"><option value="">—</option><option>Herewith</option><option>Upon Acceptance</option><option>As Otherwise</option></select></div>
+      <div class="field"><label>Deposit %</label><div id="deposit-pct" class="words-box" style="font-family:'DM Mono',monospace;font-size:14px">—</div></div>
+    </div>
+    <!-- BLENDED: Co-op & deposit checks -->
+    <div class="inline-checks">
+      <div class="ck-title"><span>✅ Verify</span><span class="progress-badge" id="pg-offer-verify"></span></div>
+      <ul class="checklist" data-group="offer-verify">
+        <li><input type="checkbox" data-ck="r03"><span class="ck-label">Co-op commission is correct</span></li>
+        <li><input type="checkbox" data-ck="r08"><span class="ck-label">Can deposit amount be increased?</span></li>
+        <li><input type="checkbox" data-ck="r13"><span class="ck-label">Change "negotiable cheque" → <strong>certified cheque</strong></span></li>
+      </ul>
+    </div>
+  </div></div>
+
+  <!-- ===== IRREVOCABLE & CLOSING — with date checks blended in ===== -->
+  <div class="card"><div class="card-header">⏰ Irrevocable &amp; Closing</div><div class="card-body">
+    <div class="fg fg4">
+      <div class="field"><label>Irrevocable Date</label><input type="date" id="f-irrv-date"></div>
+      <div class="field"><label>Irrevocable Time</label><select id="f-irrv-time" class="time-sel"></select></div>
+      <div class="field"><label>Irrevocable Party</label><select id="f-irrv-party"><option value="">—</option><option>Buyer</option><option>Seller</option></select></div>
+      <div class="field"><label>Accept Party</label><select id="f-accept-party"><option value="">—</option><option>Buyer</option><option>Seller</option></select></div>
+    </div><div class="divider"></div>
+    <div class="fg fg4">
+      <div class="field"><label>Accept Date</label><input type="date" id="f-accept-date"></div>
+      <div class="field"><label>Accept Time</label><select id="f-accept-time" class="time-sel"></select></div>
+      <div class="field"><label>Closing Date</label><input type="date" id="f-closing-date"></div>
+      <div class="field"><label>Title Search Date</label><input type="date" id="f-title-search"></div>
+    </div>
+    <!-- BLENDED: Date negotiation checks -->
+    <div class="inline-checks">
+      <div class="ck-title"><span>✅ Verify</span><span class="progress-badge" id="pg-date-verify"></span></div>
+      <ul class="checklist" data-group="date-verify">
+        <li><input type="checkbox" data-ck="r04"><span class="ck-label">Closing date and title search date are correct?</span></li>
+        <li><input type="checkbox" data-ck="r09"><span class="ck-label">Can the closing date move forward / backward?</span></li>
+        <li><input type="checkbox" data-ck="r19"><span class="ck-label">Is Accepted Date/Time within the Irrevocable Date/Time Window?</span></li>
+        <li><input type="checkbox" data-ck="r20"><span class="ck-label">Are the Irrevocable Party different from Accept Party?</span></li>
+        <li><input type="checkbox" data-ck="r21"><span class="ck-label">Is Closing Date / Title Search Date on a Holiday?</span></li>
+      </ul>
+    </div>
+  </div></div>
+
+  <!-- ===== INCLUSIONS & EXCLUSIONS ===== -->
+  <div class="card"><div class="card-header">📦 Inclusions &amp; Exclusions</div><div class="card-body">
+    <div class="field"><label>Inclusions</label><textarea id="f-incl"></textarea></div><div class="divider"></div>
+    <div class="field"><label>Exclusions</label><textarea id="f-excl"></textarea></div>
+    <div class="inline-checks">
+      <div class="ck-title"><span>✅ Verify</span><span class="progress-badge" id="pg-incl-verify"></span></div>
+      <ul class="checklist" data-group="incl-verify">
+        <li><input type="checkbox" data-ck="r02"><span class="ck-label">Inclusions / exclusions are clear?</span></li>
+        <li><input type="checkbox" data-ck="r05"><span class="ck-label">Check for rental items — are they assumable?</span></li>
+        <li><input type="checkbox" data-ck="r07"><span class="ck-label">Is anything listed in "as is" condition?</span></li>
+      </ul>
+    </div>
+  </div></div>
+
+  <!-- ===== CONDITIONS — with negotiable items blended in ===== -->
+  <div class="card"><div class="card-header">📝 Conditions</div><div class="card-body" style="padding:10px 12px">
+    <table class="cond-table"><thead><tr><th style="width:28px">#</th><th>Condition</th><th style="width:60px">Days</th><th style="width:130px">Date</th></tr></thead>
+    <tbody id="cond-body">
+      <tr><td class="cond-num">1</td><td><input type="text" placeholder="e.g. Financing"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">2</td><td><input type="text" placeholder="e.g. Home Inspection"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">3</td><td><input type="text" placeholder="e.g. Status Certificate"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">4</td><td><input type="text"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+      <tr><td class="cond-num">5</td><td><input type="text"></td><td><input type="text" class="days-inp"></td><td><input type="date" class="date-inp"></td></tr>
+    </tbody></table>
+    <!-- BLENDED: Condition negotiation checks -->
+    <div class="inline-checks" style="margin-top:10px">
+      <div class="ck-title"><span>✅ Negotiate</span><span class="progress-badge" id="pg-cond-neg"></span></div>
+      <ul class="checklist" data-group="cond-neg">
+        <li><input type="checkbox" data-ck="r10"><span class="ck-label">Can buyer provide pre-approval letter?</span></li>
+        <li><input type="checkbox" data-ck="r11"><span class="ck-label">Can condition(s) be removed?</span></li>
+        <li><input type="checkbox" data-ck="r12"><span class="ck-label">Can condition period be reduced?</span></li>
+        <li><input type="checkbox" data-ck="r14"><span class="ck-label">Change "survive and not merge" → <strong>survive 2 days (or 7 days) and not merge</strong>, applies only to property's state at closing</span></li>
+        <li><input type="checkbox" data-ck="r15"><span class="ck-label">Inspection clause → pertains to <strong>major deficiency</strong> (costs over $5,000 / $15,000)</span></li>
+        <li><input type="checkbox" data-ck="r16"><span class="ck-label">If sale of buyer's home contingency → add <strong>kick-out clause</strong></span></li>
+      </ul>
+      <div class="notes-box" style="margin-top:8px">
+        <strong>Kick-Out Clause Key Elements:</strong><br>
+        <span class="tip">• Time frame: how many hours buyer has to respond (24 / 48 / 72 hrs)<br>
+        • Proof of funds: whether buyer must prove they can afford without their sale<br>
+        • Seller continues to market and accept backup offers<br>
+        • Buyer's deposit returned if kicked out<br>
+        • Consider requiring buyer to also waive financing contingency if they waive home sale</span>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- ===== CLAUSES — with clause strengthening blended in ===== -->
+  <div class="card"><div class="card-header">📄 Clauses</div><div class="card-body" id="clause-body">
+    <div class="clause-row"><span class="clause-num">1</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">2</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">3</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">4</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">5</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">6</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">7</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">8</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">9</span><textarea></textarea></div>
+    <div class="clause-row"><span class="clause-num">10</span><textarea></textarea></div>
+
+    <!-- Reference Clauses (Schedule A1) -->
+    <div class="divider" style="margin:14px 0 8px"></div>
+    <div style="font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">📋 Reference Clauses — Schedule A1</div>
+
+    <div class="ref-clause" data-ref="a1-1">
+      <div class="ref-clause-header">
+        <span class="ref-clause-id">A1-1:1</span>
+        <span class="ref-clause-title">Deposit Delivery (Certified Cheque/Bank Draft)</span>
+        <button type="button" class="note-btn" data-ref-note="a1-1">+note</button>
+      </div>
+      <div class="ref-clause-text">The Buyer hereby acknowledges and agrees to deliver the Deposit as mentioned in this Agreement of Purchase and Sale by Bank Draft or Certified cheque to the Deposit Holder within 24 hours of the acceptance of this Agreement.</div>
+      <textarea class="ref-note note-hidden" data-ref-key="a1-1" placeholder="Add note…"></textarea>
+    </div>
+
+    <div class="ref-clause" data-ref="a1-2">
+      <div class="ref-clause-header">
+        <span class="ref-clause-id">A1-1:2</span>
+        <span class="ref-clause-title">Deposit Timeline &amp; Default Remedy</span>
+        <button type="button" class="note-btn" data-ref-note="a1-2">+note</button>
+      </div>
+      <div class="ref-clause-text">Buyer agrees to deliver the above-mentioned Deposit to the Listing Brokerage's office within 24 hours of the time stated in the "Confirmation of Acceptance" section of this Agreement of Purchase and Sale. TIME IS OF THE ESSENCE with respect to this obligation. In the event that the Listing Brokerage does not receive the said Deposit within this period, the Seller may, at their sole and absolute discretion, declare this Agreement terminated due to Buyer's default. Upon such termination, the Seller shall be at liberty to immediately re-list the property for sale and to accept another offer, and the Seller reserves all rights to pursue any and all legal remedies against the Buyer, including, but not limited to, a claim for damages.</div>
+      <textarea class="ref-note note-hidden" data-ref-key="a1-2" placeholder="Add note…"></textarea>
+    </div>
+
+    <div class="ref-clause" data-ref="a1-3">
+      <div class="ref-clause-header">
+        <span class="ref-clause-id">A1-1:3</span>
+        <span class="ref-clause-title">No Warranty on Chattels</span>
+        <button type="button" class="note-btn" data-ref-note="a1-3">+note</button>
+      </div>
+      <div class="ref-clause-text">The Seller(s) and Buyer acknowledge and agree that there is no express or implied warranty on the condition of the chattels which are included in this Agreement of Purchase and Sale.</div>
+      <textarea class="ref-note note-hidden" data-ref-key="a1-3" placeholder="Add note…"></textarea>
+    </div>
+
+    <div class="ref-clause" data-ref="a1-4">
+      <div class="ref-clause-header">
+        <span class="ref-clause-id">A1-1+2:4</span>
+        <span class="ref-clause-title">Seller's Right to Adjust Completion Date</span>
+        <button type="button" class="note-btn" data-ref-note="a1-4">+note</button>
+      </div>
+      <div class="ref-clause-text">All parties acknowledge and agree that notwithstanding the completion date set out in this offer, the Seller(s) has the right to advance or postpone the completion date of the transaction by not more than 45 days once, by giving written notice of the amended completion date to the Buyer or his solicitor at least 30 days in advance of the earlier of the completion date set out therein and the amended completion date. All parties also acknowledge and agree that the Title Search Date will be changed to 10 business days before the amended completion date accordingly.</div>
+      <textarea class="ref-note note-hidden" data-ref-key="a1-4" placeholder="Add note…"></textarea>
+    </div>
+
+  </div></div>
+
+  <!-- ===== DOC 2: SELLER COMMUNICATION STRATEGIES (renamed) ===== -->
+  <div class="card" id="card-protect">
+    <div class="card-header collapsible" onclick="toggleCard('protect')">
+      <span>🛡 Seller Communication Strategies <span class="header-progress" id="hp-protect"></span></span>
+      <span class="toggle-arrow" id="arrow-protect">▼</span>
+    </div>
+    <div class="card-body" id="body-protect">
+      <div class="section-label"><span>Transparent Communication</span><span class="progress-badge" id="pg-protect-comm"></span></div>
+      <ul class="checklist" data-group="protect-comm">
+        <li><input type="checkbox" data-ck="p01"><span class="ck-label">Present every offer promptly with written net proceeds summary, not just headline price</span></li>
+        <li><input type="checkbox" data-ck="p02"><span class="ck-label">Explain recommended counter-strategy before acting</span></li>
+        <li><input type="checkbox" data-ck="p03"><span class="ck-label">Never let seller feel surprised — they know what's coming before it happens</span></li>
+      </ul>
+
+      <div class="section-label"><span>Data-Driven Advice</span><span class="progress-badge" id="pg-protect-data"></span></div>
+      <ul class="checklist" data-group="protect-data">
+        <li><input type="checkbox" data-ck="p04"><span class="ck-label">Pull comparable sales to anchor seller's expectations and justify counter position</span></li>
+        <li><input type="checkbox" data-ck="p05"><span class="ck-label">Show days-on-market trends to contextualize urgency (or lack thereof)</span></li>
+        <li><input type="checkbox" data-ck="p06"><span class="ck-label">Present net sheet with every scenario so they see financial reality clearly</span></li>
+      </ul>
+
+      <div class="section-label"><span>Pace Control</span><span class="progress-badge" id="pg-protect-pace"></span></div>
+      <ul class="checklist" data-group="protect-pace">
+        <li><input type="checkbox" data-ck="p07"><span class="ck-label">Don't rush back to buyer — measured response signals confidence and strength</span></li>
+        <li><input type="checkbox" data-ck="p08"><span class="ck-label">Use irrevocable expiry times strategically to create urgency without desperation</span></li>
+        <li><input type="checkbox" data-ck="p09"><span class="ck-label">If multiple offers: manage process so seller feels empowered, not pressured</span></li>
+      </ul>
+
+      <div class="section-label"><span>Probe Buyer's Position</span><span class="progress-badge" id="pg-protect-probe"></span></div>
+      <ul class="checklist" data-group="protect-probe">
+        <li><input type="checkbox" data-ck="p10"><span class="ck-label">Ask buyer's agent: financing status, closing flexibility, competing properties</span></li>
+        <li><input type="checkbox" data-ck="p11"><span class="ck-label">Use intelligence to advise seller on how hard to push and where to hold firm</span></li>
+      </ul>
+
+      <div class="section-label"><span>Clear Recommendations</span><span class="progress-badge" id="pg-protect-rec"></span></div>
+      <ul class="checklist" data-group="protect-rec">
+        <li><input type="checkbox" data-ck="p12"><span class="ck-label">Give firm recommendation, not just options — sellers hire you for judgment</span></li>
+        <li><input type="checkbox" data-ck="p13"><span class="ck-label">Explain the risk of each path (e.g. "if we counter at X, they may walk")</span></li>
+        <li><input type="checkbox" data-ck="p14"><span class="ck-label">Document advice in writing so seller sees diligence</span></li>
+      </ul>
+
+      <div class="section-label"><span>Emotional Management</span><span class="progress-badge" id="pg-protect-emot"></span></div>
+      <ul class="checklist" data-group="protect-emot">
+        <li><input type="checkbox" data-ck="p15"><span class="ck-label">Acknowledge emotional weight, then redirect to strategy and numbers</span></li>
+        <li><input type="checkbox" data-ck="p16"><span class="ck-label">Your composure itself signals you have control of the situation</span></li>
+      </ul>
+
+      <div class="section-label"><span>Highlight What You Fought For</span><span class="progress-badge" id="pg-protect-fight"></span></div>
+      <ul class="checklist" data-group="protect-fight">
+        <li><input type="checkbox" data-ck="p17"><span class="ck-label">After sign-back, explicitly tell seller what you pushed back on and why</span></li>
+        <li><input type="checkbox" data-ck="p18"><span class="ck-label">Sellers don't realize what happened behind the scenes unless you tell them</span></li>
+      </ul>
+
+      <div class="notes-box" style="margin-top:14px">
+        <strong>Core Principle:</strong> Sellers feel protected when they feel <strong>informed, consulted, and never surprised</strong>. Every move must feel deliberate and in their interest — not reactive.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DOC 3: NEGOTIATION PLAYBOOK ===== -->
+  <div class="card" id="card-negot">
+    <div class="card-header collapsible" onclick="toggleCard('negot')">
+      <span>🤝 Negotiation Playbook <span class="header-progress" id="hp-negot"></span></span>
+      <span class="toggle-arrow" id="arrow-negot">▼</span>
+    </div>
+    <div class="card-body" id="body-negot">
+
+      <div class="section-label"><span>1 · Preparation &amp; Research</span><span class="progress-badge" id="pg-negot-prep"></span></div>
+      <ul class="checklist" data-group="negot-prep">
+        <li><input type="checkbox" data-ck="n01"><span class="ck-label">Market analysis: current conditions, recent comps, inventory levels</span></li>
+        <li><input type="checkbox" data-ck="n02"><span class="ck-label">Property valuation: CMA, appraisal, unique features considered</span></li>
+        <li><input type="checkbox" data-ck="n03"><span class="ck-label">Buyer profile research: motivations, financial situation, timeline</span></li>
+        <li><input type="checkbox" data-ck="n04"><span class="ck-label">Financial preparedness: bottom line, desired price, all costs mapped</span></li>
+        <li><input type="checkbox" data-ck="n05"><span class="ck-label">Contingency planning: anticipate inspection findings, financing delays</span></li>
+        <li><input type="checkbox" data-ck="n06"><span class="ck-label">Documentation gathered: deeds, surveys, disclosures, repair records</span></li>
+      </ul>
+
+      <div class="section-label"><span>2 · Objectives &amp; Strategy</span><span class="progress-badge" id="pg-negot-obj"></span></div>
+      <ul class="checklist" data-group="negot-obj">
+        <li><input type="checkbox" data-ck="n07"><span class="ck-label">Goals defined: highest price, quickest sale, specific closing date, minimize repairs</span></li>
+        <li><input type="checkbox" data-ck="n08"><span class="ck-label">Priorities ranked: non-negotiables vs. flexible items</span></li>
+        <li><input type="checkbox" data-ck="n09"><span class="ck-label">Strategy outlined: initial ask, counter-offer ranges, limits</span></li>
+        <li><input type="checkbox" data-ck="n10"><span class="ck-label">Strengths and weaknesses of property identified</span></li>
+        <li><input type="checkbox" data-ck="n11"><span class="ck-label">Walk-away point determined</span></li>
+      </ul>
+
+      <div class="section-label"><span>3 · Communication &amp; Presentation</span><span class="progress-badge" id="pg-negot-comm"></span></div>
+      <ul class="checklist" data-group="negot-comm">
+        <li><input type="checkbox" data-ck="n12"><span class="ck-label">Clear, concise, professional communication — verbal and written</span></li>
+        <li><input type="checkbox" data-ck="n13"><span class="ck-label">Highlight property value and unique selling points effectively</span></li>
+        <li><input type="checkbox" data-ck="n14"><span class="ck-label">Active listening: understand buyer's needs, concerns, perspective</span></li>
+        <li><input type="checkbox" data-ck="n15"><span class="ck-label">Maintain professionalism and composure throughout</span></li>
+        <li><input type="checkbox" data-ck="n16"><span class="ck-label">Timely responses to maintain momentum</span></li>
+        <li><input type="checkbox" data-ck="n17"><span class="ck-label">Use agent as liaison and buffer</span></li>
+      </ul>
+
+      <div class="section-label"><span>4 · Concession &amp; Compromise</span><span class="progress-badge" id="pg-negot-conc"></span></div>
+      <ul class="checklist" data-group="negot-conc">
+        <li><input type="checkbox" data-ck="n18"><span class="ck-label">Identify areas for flexibility: price, closing date, minor repairs, appliances</span></li>
+        <li><input type="checkbox" data-ck="n19"><span class="ck-label">Assess perceived value of concessions from buyer's perspective</span></li>
+        <li><input type="checkbox" data-ck="n20"><span class="ck-label">Plan trade-offs: what to gain in exchange (e.g. higher price for quicker close)</span></li>
+        <li><input type="checkbox" data-ck="n21"><span class="ck-label">Evaluate and prioritize buyer's demands by criticality</span></li>
+        <li><input type="checkbox" data-ck="n22"><span class="ck-label">Aim for "win-win" — both parties feel they achieved favorable outcome</span></li>
+      </ul>
+
+      <div class="section-label"><span>5 · Handling Objections</span><span class="progress-badge" id="pg-negot-obj2"></span></div>
+      <ul class="checklist" data-group="negot-obj2">
+        <li><input type="checkbox" data-ck="n23"><span class="ck-label">Anticipated potential buyer concerns (price, condition, market trends)</span></li>
+        <li><input type="checkbox" data-ck="n24"><span class="ck-label">Prepared factual, well-reasoned responses to common objections</span></li>
+        <li><input type="checkbox" data-ck="n25"><span class="ck-label">Address concerns professionally without becoming defensive</span></li>
+        <li><input type="checkbox" data-ck="n26"><span class="ck-label">Open to creative solutions to overcome obstacles</span></li>
+        <li><input type="checkbox" data-ck="n27"><span class="ck-label">Leverage market data or property features to counter objections</span></li>
+        <li><input type="checkbox" data-ck="n28"><span class="ck-label">Emotional intelligence: manage emotions (yours and the buyer's)</span></li>
+      </ul>
+
+      <div class="section-label"><span>6 · Closing the Deal</span><span class="progress-badge" id="pg-negot-close"></span></div>
+      <ul class="checklist" data-group="negot-close">
+        <li><input type="checkbox" data-ck="n29"><span class="ck-label">Draft and review all agreements carefully with agent/lawyer</span></li>
+        <li><input type="checkbox" data-ck="n30"><span class="ck-label">Meet all stipulated deadlines: inspections, financing, documents</span></li>
+        <li><input type="checkbox" data-ck="n31"><span class="ck-label">Address and fulfill all conditions/contingencies</span></li>
+        <li><input type="checkbox" data-ck="n32"><span class="ck-label">All agreed terms accurately reflected in final contract</span></li>
+        <li><input type="checkbox" data-ck="n33"><span class="ck-label">Post-negotiation follow-up: maintain communication until closing</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="card">
+    <div class="card-header">🗒 Notes</div>
+    <div class="card-body">
+      <div class="field"><textarea id="f-notes" style="min-height:100px" placeholder="Free-form notes about this offer..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear</button>
+    <button class="btn btn-outline" onclick="exportJSON()">📤 Export JSON</button>
+    <button class="btn btn-outline" onclick="document.getElementById('load-input').click()">📂 Import JSON</button>
+    <input type="file" id="load-input" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="btn btn-primary" onclick="prepPrint()">🖨 Print</button>
+    <span class="save-indicator" id="save-status">●  Auto-save off</span>
+  </div>
+</div>
+<div class="page-footer"><span><strong>Peter Luo</strong> · RE/MAX Realtron Realty Inc., Brokerage</span><span>647-824-3718</span></div>
+<div id="debug"></div>
+
+<script>
+/* ===== IndexedDB Layer ===== */
+var DB_NAME='PinnacleOffers';
+var DB_VERSION=2;
+var STORE_NAME='singleOffer';
+var RECORD_KEY='current';
+var db=null;
+var saveTimer=null;
+
+function openDB(){return new Promise(function(resolve,reject){var req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=function(e){var d=e.target.result;if(!d.objectStoreNames.contains('multiOffers')){d.createObjectStore('multiOffers');}if(!d.objectStoreNames.contains(STORE_NAME)){d.createObjectStore(STORE_NAME);}};req.onsuccess=function(e){db=e.target.result;resolve(db);};req.onerror=function(e){console.error('IndexedDB error',e);reject(e);};});}
+function dbPut(key,value){return new Promise(function(resolve,reject){if(!db){reject('DB not open');return;}var tx=db.transaction(STORE_NAME,'readwrite');var store=tx.objectStore(STORE_NAME);var req=store.put(value,key);req.onsuccess=function(){resolve();};req.onerror=function(e){reject(e);};});}
+function dbGet(key){return new Promise(function(resolve,reject){if(!db){reject('DB not open');return;}var tx=db.transaction(STORE_NAME,'readonly');var store=tx.objectStore(STORE_NAME);var req=store.get(key);req.onsuccess=function(){resolve(req.result);};req.onerror=function(e){reject(e);};});}
+function dbDelete(key){return new Promise(function(resolve,reject){if(!db){reject('DB not open');return;}var tx=db.transaction(STORE_NAME,'readwrite');var store=tx.objectStore(STORE_NAME);var req=store.delete(key);req.onsuccess=function(){resolve();};req.onerror=function(e){reject(e);};});}
+
+function showSaveStatus(msg,ok){var el=document.getElementById('save-status');el.textContent='● '+msg;el.className='save-indicator'+(ok?' saved':'');}
+function autoSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(function(){var data=gatherData();dbPut(RECORD_KEY,data).then(function(){showSaveStatus('Saved',true);}).catch(function(e){showSaveStatus('Save failed',false);console.error('Auto-save error:',e);});},400);}
+function dbg(msg){var el=document.getElementById('debug');el.style.display='block';el.textContent=msg;}
+
+/* ===== TIME DROPDOWN ===== */
+function buildTimeOptions(){var html='<option value="">—</option>';for(var totalMin=0;totalMin<1440;totalMin+=15){var h24=Math.floor(totalMin/60);var mm=totalMin%60;var ap=h24<12?'AM':'PM';var h12=h24%12;if(h12===0)h12=12;var label=h12+':'+String(mm).padStart(2,'0')+ap;var val24=String(h24).padStart(2,'0')+':'+String(mm).padStart(2,'0');html+='<option value="'+val24+'">'+label+'</option>';}html+='<option value="23:59">11:59PM</option>';html+='<option value="11:59">11:59AM</option>';return html;}
+document.getElementById('f-irrv-time').innerHTML=buildTimeOptions();
+document.getElementById('f-accept-time').innerHTML=buildTimeOptions();
+document.getElementById('f-irrv-time').value='23:59';
+document.getElementById('f-accept-time').value='23:00';
+
+/* ===== NUMBER TO WORDS ===== */
+var ONES=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+var TENS=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function ck(n){if(n===0)return'';if(n<20)return ONES[n];if(n<100)return TENS[Math.floor(n/10)]+(n%10?' '+ONES[n%10]:'');return ONES[Math.floor(n/100)]+' Hundred'+(n%100?' '+ck(n%100):'');}
+function numberToWords(n){if(!n||isNaN(n)||n<=0)return'—';var w=Math.floor(n),c=Math.round((n-w)*100),r='';if(w>=1e6){r+=ck(Math.floor(w/1e6))+' Million';w%=1e6;if(w>0)r+=' ';}if(w>=1e3){r+=ck(Math.floor(w/1e3))+' Thousand';w%=1e3;if(w>0)r+=' ';}if(w>0)r+=ck(w);if(!r)r='Zero';r+=' Dollars';if(c>0)r+=' and '+ck(c)+' Cents';return r;}
+
+/* ===== MONEY ===== */
+function parseMoney(s){if(!s)return 0;var v=parseFloat(s.replace(/[^0-9.]/g,''));return isNaN(v)?0:v;}
+function toMoney(n){if(!n||isNaN(n))return'';return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function mkDT(dateId,timeId){var dv=document.getElementById(dateId).value;var tv=document.getElementById(timeId).value;if(!dv||!tv)return null;return new Date(dv+'T'+tv+':00');}
+function warn(ids,color){for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(!el)continue;el.style.color=color||'';el.style.borderColor=color||'';el.style.fontWeight=color?'700':'';}}
+
+function updPrice(){var v=parseMoney(document.getElementById('f-price').value);document.getElementById('price-words').textContent=v>0?numberToWords(v):'—';}
+function updDeposit(){var v=parseMoney(document.getElementById('f-deposit').value);document.getElementById('deposit-words').textContent=v>0?numberToWords(v):'—';}
+function updPct(){var p=parseMoney(document.getElementById('f-price').value),d=parseMoney(document.getElementById('f-deposit').value);var el=document.getElementById('deposit-pct'),di=document.getElementById('f-deposit');if(p>0&&d>0){var pct=d/p*100;el.textContent=pct.toFixed(2)+'%';var lo=pct<5;el.style.color=lo?'var(--orange)':'';el.style.fontWeight=lo?'600':'';di.style.color=lo?'var(--orange)':'';di.style.fontWeight=lo?'600':'';} else{el.textContent='—';el.style.color='';el.style.fontWeight='';di.style.color='';di.style.fontWeight='';}}
+
+function chkIrrv(){var dt=mkDT('f-irrv-date','f-irrv-time');if(!dt){warn(['f-irrv-date','f-irrv-time']);return;}var hrs=(dt.getTime()-Date.now())/3600000;var color=null;if(hrs<0)color='#c0392b';else if(hrs<=2)color='#e07a20';warn(['f-irrv-date','f-irrv-time'],color);dbg('IRRV: '+dt.toLocaleString()+' | hrs='+hrs.toFixed(2)+' | '+(hrs<0?'RED-past':hrs<=2?'ORANGE-urgent':'OK'));}
+function chkAccept(){var irr=mkDT('f-irrv-date','f-irrv-time');var acc=mkDT('f-accept-date','f-accept-time');if(!irr||!acc){warn(['f-accept-date','f-accept-time']);return;}var late=acc.getTime()>irr.getTime();warn(['f-accept-date','f-accept-time'],late?'#c0392b':null);dbg('ACCEPT: irr='+irr.toLocaleString()+' acc='+acc.toLocaleString()+' late='+late);}
+function chkParty(){var a=document.getElementById('f-irrv-party'),b=document.getElementById('f-accept-party');var bad=a.value&&b.value&&a.value===b.value;a.style.color=bad?'#c0392b':'';a.style.borderColor=bad?'#c0392b':'';a.style.fontWeight=bad?'700':'';b.style.color=bad?'#c0392b':'';b.style.borderColor=bad?'#c0392b':'';b.style.fontWeight=bad?'700':'';}
+function calcTS(){var cv=document.getElementById('f-closing-date').value,el=document.getElementById('f-title-search');if(!cv){el.value='';chkTS();return;}var d=new Date(cv+'T12:00:00');d.setDate(d.getDate()-7);el.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');chkTS();}
+function chkTS(){var cv=document.getElementById('f-closing-date').value,tv=document.getElementById('f-title-search').value;if(!cv||!tv){warn(['f-title-search']);return;}var diff=Math.round((new Date(cv+'T12:00:00')-new Date(tv+'T12:00:00'))/86400000);warn(['f-title-search'],(diff<7||diff>14)?'#e07a20':null);}
+function chkClose(){var el=document.getElementById('f-closing-date');if(!el.value){warn(['f-closing-date']);return;}var today=new Date();today.setHours(0,0,0,0);var diff=Math.round((new Date(el.value+'T12:00:00')-today)/86400000);if(diff<5)warn(['f-closing-date'],'#c0392b');else if(diff>120)warn(['f-closing-date'],'#e07a20');else warn(['f-closing-date']);}
+function fmtPh(inp){var d=inp.value.replace(/\D/g,'').slice(0,10),o='';if(d.length>0)o=d.slice(0,3);if(d.length>=4)o+='-'+d.slice(3,6);if(d.length>=7)o+='-'+d.slice(6,10);inp.value=o;}
+
+/* ===== COLLAPSIBLE CARDS ===== */
+function toggleCard(id){var body=document.getElementById('body-'+id);var arrow=document.getElementById('arrow-'+id);var isCollapsed=body.classList.toggle('collapsed-body');arrow.classList.toggle('collapsed',isCollapsed);autoSave();}
+
+/* ===== CHECKLIST PROGRESS ===== */
+function updateProgress(){
+  /* Per-group progress badges */
+  document.querySelectorAll('[data-group]').forEach(function(list){
+    var group=list.getAttribute('data-group');
+    var badge=document.getElementById('pg-'+group);
+    if(!badge)return;
+    var cbs=list.querySelectorAll('input[type="checkbox"]');
+    var checked=list.querySelectorAll('input[type="checkbox"]:checked').length;
+    badge.textContent=checked+'/'+cbs.length;
+    badge.style.color=checked===cbs.length&&cbs.length>0?'var(--green)':'';
+  });
+  /* Per-card header progress (collapsible cards only) */
+  ['protect','negot'].forEach(function(cardId){
+    var card=document.getElementById('card-'+cardId);
+    if(!card)return;
+    var all=card.querySelectorAll('input[type="checkbox"]');
+    var done=card.querySelectorAll('input[type="checkbox"]:checked').length;
+    var hp=document.getElementById('hp-'+cardId);
+    if(hp){hp.textContent='('+done+'/'+all.length+')';hp.style.color=done===all.length&&all.length>0?'#7dcea0':'';}
+  });
+}
+
+/* ===== CHECKLIST EVENTS ===== */
+document.querySelectorAll('.checklist input[type="checkbox"]').forEach(function(cb){
+  cb.addEventListener('change',function(){
+    var li=this.closest('li');
+    if(this.checked)li.classList.add('checked-item');else li.classList.remove('checked-item');
+    updateProgress();autoSave();
+  });
+});
+
+/* ===== +NOTE BUTTONS for all checklist items ===== */
+(function(){
+  document.querySelectorAll('.checklist li').forEach(function(li){
+    var cb = li.querySelector('input[type="checkbox"]');
+    if(!cb) return;
+    var ckKey = cb.getAttribute('data-ck');
+    /* Wrap existing ck-label + button in a note-wrap div */
+    var label = li.querySelector('.ck-label');
+    var wrap = document.createElement('div');
+    wrap.className = 'note-wrap';
+    li.insertBefore(wrap, label);
+    wrap.appendChild(label);
+    /* Create +note button */
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'note-btn';
+    btn.textContent = '+note';
+    btn.setAttribute('data-note-for', ckKey);
+    wrap.appendChild(btn);
+    /* Create hidden textarea */
+    var ta = document.createElement('textarea');
+    ta.className = 'item-note note-hidden';
+    ta.setAttribute('data-note-key', ckKey);
+    ta.placeholder = 'Add note…';
+    wrap.appendChild(ta);
+    /* Toggle */
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var isHidden = ta.classList.toggle('note-hidden');
+      if(!isHidden) ta.focus();
+      updateNoteBtn(btn, ta);
+    });
+    /* Auto-save on note input */
+    ta.addEventListener('input', function(){
+      updateNoteBtn(btn, ta);
+      autoSave();
+    });
+  });
+})();
+
+function updateNoteBtn(btn, ta){
+  var hasText = ta.value.trim().length > 0;
+  btn.classList.toggle('has-note', hasText);
+  btn.textContent = hasText ? '✎ note' : '+note';
+}
+
+/* Show note fields that have content (after data load) */
+function showSavedNotes(){
+  document.querySelectorAll('.item-note').forEach(function(ta){
+    var btn = ta.closest('.note-wrap').querySelector('.note-btn');
+    if(ta.value.trim()){
+      ta.classList.remove('note-hidden');
+      if(btn) updateNoteBtn(btn, ta);
+    } else {
+      ta.classList.add('note-hidden');
+      if(btn) updateNoteBtn(btn, ta);
+    }
+  });
+  /* Also handle ref-clause notes */
+  document.querySelectorAll('.ref-note').forEach(function(ta){
+    var key = ta.getAttribute('data-ref-key');
+    var btn = document.querySelector('[data-ref-note="'+key+'"]');
+    if(ta.value.trim()){
+      ta.classList.remove('note-hidden');
+      if(btn) updateNoteBtn(btn, ta);
+    } else {
+      ta.classList.add('note-hidden');
+      if(btn) updateNoteBtn(btn, ta);
+    }
+  });
+}
+
+/* ===== Wire ref-clause +note buttons ===== */
+document.querySelectorAll('.ref-clause .note-btn').forEach(function(btn){
+  var key = btn.getAttribute('data-ref-note');
+  var ta = document.querySelector('.ref-note[data-ref-key="'+key+'"]');
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    var isHidden = ta.classList.toggle('note-hidden');
+    if(!isHidden) ta.focus();
+    updateNoteBtn(btn, ta);
+  });
+  ta.addEventListener('input', function(){
+    updateNoteBtn(btn, ta);
+    autoSave();
+  });
+});
+
+/* ===== WIRE EVENTS ===== */
+document.getElementById('f-price').addEventListener('input',function(){updPrice();updPct();autoSave();});
+document.getElementById('f-price').addEventListener('blur',function(){var v=parseMoney(this.value);if(v>0)this.value=toMoney(v);updPrice();updPct();autoSave();});
+document.getElementById('f-deposit').addEventListener('input',function(){updDeposit();updPct();autoSave();});
+document.getElementById('f-deposit').addEventListener('blur',function(){var v=parseMoney(this.value);if(v>0)this.value=toMoney(v);updDeposit();updPct();autoSave();});
+document.getElementById('f-agent-phone').addEventListener('input',function(){fmtPh(this);autoSave();});
+document.getElementById('f-irrv-date').addEventListener('change',function(){chkIrrv();chkAccept();autoSave();});
+document.getElementById('f-irrv-time').addEventListener('change',function(){chkIrrv();chkAccept();autoSave();});
+document.getElementById('f-accept-date').addEventListener('change',function(){chkAccept();autoSave();});
+document.getElementById('f-accept-time').addEventListener('change',function(){chkAccept();autoSave();});
+document.getElementById('f-irrv-party').addEventListener('change',function(){chkParty();autoSave();});
+document.getElementById('f-accept-party').addEventListener('change',function(){chkParty();autoSave();});
+document.getElementById('f-closing-date').addEventListener('change',function(){calcTS();chkClose();autoSave();});
+document.getElementById('f-title-search').addEventListener('change',function(){chkTS();autoSave();});
+
+['f-property','f-frontage','f-depth','f-seller','f-buyers','f-agent','f-agent-email','f-offer-date','f-coop','f-coop-comm','f-deposit-submit','f-incl','f-excl','f-notes'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('input',autoSave);
+  if(el) el.addEventListener('change',autoSave);
+});
+
+document.querySelectorAll('#cond-body input').forEach(function(inp){inp.addEventListener('input',autoSave);inp.addEventListener('change',autoSave);});
+document.querySelectorAll('#clause-body textarea').forEach(function(ta){ta.addEventListener('input',autoSave);});
+document.querySelectorAll('#cond-body .date-inp').forEach(function(inp){inp.addEventListener('change',function(){chkCondDates();autoSave();});});
+
+setInterval(function(){chkIrrv();chkAccept();chkClose();chkCondDates();},60000);
+
+function chkCondDates(){var today=new Date();today.setHours(0,0,0,0);var tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);var sevenDays=new Date(today);sevenDays.setDate(sevenDays.getDate()+7);document.querySelectorAll('#cond-body .date-inp').forEach(function(inp){if(!inp.value){inp.style.color='';inp.style.borderColor='';return;}var cd=new Date(inp.value+'T12:00:00');var bad=cd<tomorrow||cd>sevenDays;inp.style.color=bad?'#e07a20':'';inp.style.borderColor=bad?'#e07a20':'';inp.style.fontWeight=bad?'600':'';});}
+
+/* ===== GATHER / APPLY DATA ===== */
+var FF=['f-property','f-frontage','f-depth','f-seller','f-buyers','f-agent','f-agent-phone','f-agent-email','f-offer-date','f-coop','f-coop-comm','f-price','f-deposit','f-deposit-submit','f-irrv-date','f-irrv-time','f-irrv-party','f-accept-party','f-accept-date','f-accept-time','f-closing-date','f-title-search','f-incl','f-excl','f-notes'];
+
+function gatherData(){
+  var d={};FF.forEach(function(id){var e=document.getElementById(id);d[id]=e?e.value:'';});
+  d.conditions=[];document.querySelectorAll('#cond-body tr').forEach(function(tr){var i=tr.querySelectorAll('input');d.conditions.push({text:i[0]?i[0].value:'',days:i[1]?i[1].value:'',date:i[2]?i[2].value:''});});
+  d.clauses=[];document.querySelectorAll('#clause-body textarea').forEach(function(t){d.clauses.push(t.value);});
+  d.checks={};document.querySelectorAll('.checklist input[type="checkbox"]').forEach(function(cb){d.checks[cb.getAttribute('data-ck')]=cb.checked;});
+  d.itemNotes={};document.querySelectorAll('.item-note').forEach(function(ta){var key=ta.getAttribute('data-note-key');if(key&&ta.value.trim())d.itemNotes[key]=ta.value;});
+  d.refNotes={};document.querySelectorAll('.ref-note').forEach(function(ta){var key=ta.getAttribute('data-ref-key');if(key&&ta.value.trim())d.refNotes[key]=ta.value;});
+  d.collapsed={};['protect','negot'].forEach(function(id){var body=document.getElementById('body-'+id);if(body)d.collapsed[id]=body.classList.contains('collapsed-body');});
+  return d;
+}
+
+function applyData(d){
+  FF.forEach(function(id){var e=document.getElementById(id);if(e&&d[id]!==undefined)e.value=d[id];});
+  if(d.conditions){var rows=document.querySelectorAll('#cond-body tr');d.conditions.forEach(function(c,i){if(!rows[i])return;var inp=rows[i].querySelectorAll('input');if(inp[0])inp[0].value=c.text||'';if(inp[1])inp[1].value=c.days||'';if(inp[2])inp[2].value=c.date||'';});}
+  if(d.clauses){var tas=document.querySelectorAll('#clause-body textarea');d.clauses.forEach(function(c,i){if(tas[i])tas[i].value=c;});}
+  if(d.checks){document.querySelectorAll('.checklist input[type="checkbox"]').forEach(function(cb){var key=cb.getAttribute('data-ck');if(d.checks[key]){cb.checked=true;cb.closest('li').classList.add('checked-item');}else{cb.checked=false;cb.closest('li').classList.remove('checked-item');}});}
+  if(d.itemNotes){document.querySelectorAll('.item-note').forEach(function(ta){var key=ta.getAttribute('data-note-key');ta.value=d.itemNotes[key]||'';});}
+  if(d.refNotes){document.querySelectorAll('.ref-note').forEach(function(ta){var key=ta.getAttribute('data-ref-key');ta.value=d.refNotes[key]||'';});}
+  if(d.collapsed){['protect','negot'].forEach(function(id){var body=document.getElementById('body-'+id);var arrow=document.getElementById('arrow-'+id);if(body&&d.collapsed[id]){body.classList.add('collapsed-body');if(arrow)arrow.classList.add('collapsed');}});}
+  updPrice();updDeposit();updPct();calcTS();chkParty();chkIrrv();chkAccept();chkClose();chkCondDates();updateProgress();showSavedNotes();
+}
+
+/* ===== EXPORT / IMPORT ===== */
+function exportJSON(){var d=gatherData();var addr=(d['f-property']||'property').replace(/[^a-z0-9]/gi,'_').slice(0,30);var agent=(d['f-agent']||'agent').replace(/[^a-z0-9]/gi,'_').slice(0,20);var odate=d['f-offer-date']||'nodate';var fname=addr+'_'+agent+'_'+odate+'.json';var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download=fname;a.click();}
+function importJSON(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{applyData(JSON.parse(e.target.result));autoSave();}catch(err){alert('Could not load.');}ev.target.value='';};r.readAsText(f);}
+
+function clearForm(){
+  if(!confirm('Clear all fields?'))return;
+  document.querySelectorAll('input[type="text"],input[type="tel"],input[type="date"],textarea').forEach(function(e){e.value='';});
+  document.querySelectorAll('select').forEach(function(e){e.selectedIndex=0;});
+  document.querySelectorAll('.checklist input[type="checkbox"]').forEach(function(cb){cb.checked=false;cb.closest('li').classList.remove('checked-item');});
+  document.querySelectorAll('.item-note').forEach(function(ta){ta.value='';ta.classList.add('note-hidden');});
+  document.querySelectorAll('.note-btn').forEach(function(btn){btn.classList.remove('has-note');btn.textContent='+note';});
+  document.querySelectorAll('.ref-note').forEach(function(ta){ta.value='';ta.classList.add('note-hidden');});
+  document.getElementById('deposit-pct').textContent='—';document.getElementById('deposit-pct').style.color='';document.getElementById('deposit-pct').style.fontWeight='';
+  document.getElementById('price-words').textContent='—';document.getElementById('deposit-words').textContent='—';
+  document.getElementById('f-deposit').style.color='';document.getElementById('f-deposit').style.fontWeight='';
+  chkParty();chkIrrv();chkAccept();chkTS();chkClose();chkCondDates();updateProgress();
+  dbDelete(RECORD_KEY).then(function(){showSaveStatus('Cleared',false);});
+}
+
+/* ===== PRINT ===== */
+function prepPrint(){
+  document.querySelectorAll('#clause-body .clause-row').forEach(function(row){var ta=row.querySelector('textarea');row.classList.toggle('print-hide',!ta||!ta.value.trim());});
+  document.querySelectorAll('#cond-body tr').forEach(function(tr){var inputs=tr.querySelectorAll('input');var hasData=false;for(var i=0;i<inputs.length;i++){if(inputs[i].value.trim()){hasData=true;break;}}tr.classList.toggle('print-hide',!hasData);});
+  var incl=document.getElementById('f-incl');var excl=document.getElementById('f-excl');
+  if(incl)incl.closest('.field').classList.toggle('print-hide',!incl.value.trim());
+  if(excl)excl.closest('.field').classList.toggle('print-hide',!excl.value.trim());
+  /* Hide unchecked checklist items for print */
+  document.querySelectorAll('.checklist li').forEach(function(li){var cb=li.querySelector('input[type="checkbox"]');li.classList.toggle('print-hide',!cb||!cb.checked);});
+  /* Hide empty inline-check blocks */
+  document.querySelectorAll('.inline-checks').forEach(function(block){var anyChecked=block.querySelectorAll('input[type="checkbox"]:checked').length>0;block.classList.toggle('print-hide',!anyChecked);});
+  /* Hide empty sections */
+  document.querySelectorAll('.section-label').forEach(function(label){var next=label.nextElementSibling;if(next&&next.tagName==='UL'){var anyVisible=false;next.querySelectorAll('li').forEach(function(li){if(!li.classList.contains('print-hide'))anyVisible=true;});label.classList.toggle('print-hide',!anyVisible);}});
+  document.querySelectorAll('.notes-box').forEach(function(nb){var parent=nb.closest('.inline-checks')||nb.closest('.card');if(parent){var anyChecked=parent.querySelectorAll('input[type="checkbox"]:checked').length>0;nb.classList.toggle('print-hide',!anyChecked);}});
+  document.querySelectorAll('.card-body .divider').forEach(function(d){var next=d.nextElementSibling;var prev=d.previousElementSibling;if((next&&next.classList.contains('print-hide'))||(prev&&prev.classList.contains('print-hide'))){d.classList.add('print-hide');}});
+  setTimeout(function(){window.print();setTimeout(function(){document.querySelectorAll('.print-hide').forEach(function(el){el.classList.remove('print-hide');});},500);},100);
+}
+
+/* ===== INIT ===== */
+openDB().then(function(){return dbGet(RECORD_KEY);}).then(function(data){
+  if(data){applyData(data);}
+  updateProgress();showSavedNotes();
+  showSaveStatus('Auto-save on',true);
+}).catch(function(e){console.error('DB init error:',e);showSaveStatus('Auto-save off',false);});
+</script>
+</body>
+</html>

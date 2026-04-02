@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Feature Report · 123 ABC St., Richmond Hill</title>
+<style>
+  /* EXACT COLORS FROM PDF RAW STREAM:
+     Navy   0.11 0.23 0.42 → #1c3b6b
+     Gold   0.72 0.58 0.16 → #b89429
+     Gold2  0.831 0.686 0.314 → #d4af50
+     Green  0.176 0.416 0.31 → #2d6a4f
+     Label  0.29 0.271 0.251 → #4a4540
+     Divider 0.83 0.81 0.77 → #d4cfc4
+     Page bg 0.99 0.98 0.96 → #fcfaf5
+     Footer text 0.706 0.686 0.647 → #b4ae9f
+  */
+  :root {
+    --navy:    #1c3b6b;
+    --gold:    #b89429;
+    --gold2:   #d4af50;
+    --green:   #2d6a4f;
+    --label:   #4a4540;
+    --divider: #d4cfc4;
+    --pagebg:  #fcfaf5;
+    --footertxt: #b4ae9f;
+    --W: 612px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #d8d2c8;
+    font-family: Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 12px;
+    gap: 24px;
+  }
+  .page {
+    width: var(--W);
+    background: var(--pagebg);
+    box-shadow: 0 2px 18px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── PAGE 1 HEADER ── */
+  .hdr1 { background: var(--navy); padding: 14px 39.7px 0; }
+  .hdr1 .h1-title { font-size: 22px; font-weight: bold; color: #fff; line-height: 1.15; padding-bottom: 5px; }
+  .hdr1 .h1-sub   { font-size: 10px; color: var(--gold2); padding-bottom: 12px; }
+  .gold-bar { height: 1.7px; background: var(--gold); }
+
+  /* ── SUBSEQUENT PAGE HEADER ── */
+  .hdrN { background: var(--navy); padding: 5px 39.7px; display:flex; justify-content:space-between; }
+  .hdrN span { font-size: 7px; color: var(--gold2); letter-spacing: 0.04em; }
+
+  /* ── SUMMARY BOX ── */
+  .sumbox {
+    margin: 14px 39.7px 10px;
+    border: 0.8px solid var(--divider);
+    border-radius: 5px;
+    background: var(--pagebg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .sc { padding: 6px 8px 5px 10px; }
+  .sc-lbl { font-size: 6.5px; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .sc-val { font-size: 8px; color: var(--label); }
+
+  /* ── SECTION HEADER ── */
+  .sh { background: var(--navy); margin: 6px 39.7px 0; padding: 5px 8px; }
+  .sh span { font-size: 9px; font-weight: bold; color: #fff; }
+  .sh-bar { height: 1.4px; background: var(--gold); margin: 0 39.7px; }
+
+  /* ── DATA TABLE ── */
+  .rows { margin: 0 39.7px; }
+  .row {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 0.5px solid var(--divider);
+    padding: 5px 14px 4.5px;
+    min-height: 17px;
+  }
+  .row:last-child { border-bottom: none; }
+  .lbl { font-size: 8px; color: var(--label); flex: 0 0 295px; line-height: 1.35; }
+  .val { font-size: 8px; font-weight: bold; color: var(--green); flex: 1; line-height: 1.35; }
+  .solo { font-size: 8px; color: var(--label); flex: 1; line-height: 1.35; }
+
+  /* ── PAGE BODY ── */
+  .body { flex: 1; padding-bottom: 6px; }
+
+  /* ── FOOTER ── */
+  .foot {
+    background: var(--navy);
+    padding: 4px 39.7px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+  .foot .fl { font-size: 6.5px; color: var(--footertxt); }
+  .foot .fr { font-size: 6.5px; color: var(--gold2); }
+
+  @media(max-width:640px){
+    :root{ --W:100%; }
+    .lbl{ flex:0 0 45%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="hdr1">
+    <div class="h1-title">Property Feature Report</div>
+    <div class="h1-sub">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc.</div>
+  </div>
+  <div class="gold-bar"></div>
+  <div class="body">
+    <div class="sumbox">
+      <div class="sc"><div class="sc-lbl">ADDRESS</div><div class="sc-val">123 ABC St., Richmond Hill L4E 0K6</div></div>
+      <div class="sc"><div class="sc-lbl">LIST PRICE</div><div class="sc-val">1,798,000</div></div>
+      <div class="sc"><div class="sc-lbl">TYPE</div><div class="sc-val">Detached</div></div>
+      <div class="sc"><div class="sc-lbl">BEDROOMS</div><div class="sc-val">4 + 1</div></div>
+      <div class="sc"><div class="sc-lbl">BATHROOMS</div><div class="sc-val">5</div></div>
+      <div class="sc"><div class="sc-lbl">SQ FT</div><div class="sc-val">3160</div></div>
+      <div class="sc"><div class="sc-lbl">YEAR BUILT</div><div class="sc-val">2010</div></div>
+      <div class="sc"><div class="sc-lbl">LOT SIZE</div><div class="sc-val">45 X 89 Ft</div></div>
+      <div class="sc"><div class="sc-lbl">MLS® / PIN</div><div class="sc-val">N12260002</div></div>
+      <div class="sc"><div class="sc-lbl">DATE</div><div class="sc-val">2026-03-13</div></div>
+    </div>
+
+    <div class="sh"><span>1.  Lot &amp; Site</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Lot Size</span><span class="val">Frontage: 45 ft × Depth: 90 ft  Total: 4020 sq ft</span></div>
+      <div class="row"><span class="lbl">Lot Shape</span><span class="val">Regular, Greenbelt</span></div>
+      <div class="row"><span class="solo">Lot Topography — Ravine lot</span></div>
+      <div class="row"><span class="lbl">Side Yard(s)</span><span class="val">Left: 5 ft  Right: 6 ft</span></div>
+      <div class="row"><span class="lbl">Rear Yard Depth</span><span class="val">50 ft</span></div>
+      <div class="row"><span class="lbl">Lot Orientation (backyard faces)</span><span class="val">South</span></div>
+      <div class="row"><span class="lbl">Neighbouring Land Use</span><span class="val">Park / Green space, School, Residential, Ravine / Nature</span></div>
+      <div class="row"><span class="lbl">Driveway</span><span class="val">Private, Interlock, Double-wide</span></div>
+      <div class="row"><span class="lbl">Parking Spaces</span><span class="val">Driveway: 2  Garage: 2  Total: 4</span></div>
+      <div class="row"><span class="lbl">Street Type</span><span class="val">Traffic calming, Quiet residential</span></div>
+      <div class="row"><span class="lbl">Fencing</span><span class="val">Full</span></div>
+      <div class="row"><span class="solo">Mature trees / landscaping</span></div>
+      <div class="row"><span class="solo">Garden beds / vegetable garden</span></div>
+      <div class="row"><span class="solo">Irrigation / sprinkler system</span></div>
+      <div class="row"><span class="lbl">Outdoor Lighting</span><span class="val">Landscape, Path lights, Motion sensor</span></div>
+      <div class="row"><span class="lbl">Swimming Pool</span><span class="val">None</span></div>
+      <div class="row"><span class="lbl">Deck</span><span class="val">Wood, With permit</span></div>
+      <div class="row"><span class="lbl">Patio</span><span class="val">Interlock</span></div>
+      <div class="row"><span class="lbl">Porch / Veranda</span><span class="val">Covered porch</span></div>
+      <div class="row"><span class="lbl">Privacy Screening</span><span class="val">Hedges, Mature trees, Fence</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>2.  Exterior &amp; Structure</span></div><div class="sh-bar"></div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 1 of 8</span></div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 2</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Property Type</span><span class="val">Detached</span></div>
+      <div class="row"><span class="lbl">Storeys</span><span class="val">2-Storey</span></div>
+      <div class="row"><span class="lbl">Year Built</span><span class="val">2010</span></div>
+      <div class="row"><span class="lbl">Architectural Style</span><span class="val">Traditional</span></div>
+      <div class="row"><span class="lbl">Exterior Cladding</span><span class="val">Brick, Stone</span></div>
+      <div class="row"><span class="lbl">Exterior Condition</span><span class="val">Excellent</span></div>
+      <div class="row"><span class="lbl">Foundation Type</span><span class="val">Poured concrete</span></div>
+      <div class="row"><span class="solo">Window wells (basement) — covered, drained, good size</span></div>
+      <div class="row"><span class="lbl">Roof Type</span><span class="val">Gable</span></div>
+      <div class="row"><span class="lbl">Roof Material</span><span class="val">Asphalt shingle</span></div>
+      <div class="row"><span class="lbl">Roof Last Replaced</span><span class="val">Year: 2021</span></div>
+      <div class="row"><span class="solo">Eavestroughs &amp; downspouts — good condition / leaf guards</span></div>
+      <div class="row"><span class="solo">Soffits &amp; fascia — good condition</span></div>
+      <div class="row"><span class="solo">Soffit ventilation (continuous / baffles — attic moisture management)</span></div>
+      <div class="row"><span class="lbl">Windows</span><span class="val">Double pane, Energy Star</span></div>
+      <div class="row"><span class="lbl">Exterior Doors</span><span class="val">Solid wood, Smart lock ready</span></div>
+      <div class="row"><span class="lbl">Garage Door</span><span class="val">Smart opener, Recently replaced</span></div>
+      <div class="row"><span class="lbl">Walkway / Front Steps</span><span class="val">Interlock, Good condition</span></div>
+      <div class="row"><span class="lbl">Exterior Lighting</span><span class="val">Front entrance, Motion sensor</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>3.  Garage &amp; Parking</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Garage Type</span><span class="val">Attached</span></div>
+      <div class="row"><span class="lbl">Garage Size</span><span class="val">Double</span></div>
+      <div class="row"><span class="lbl">Garage Interior Finish</span><span class="val">Drywalled</span></div>
+      <div class="row"><span class="lbl">Garage Floor</span><span class="val">Epoxy coated</span></div>
+      <div class="row"><span class="solo">Garage storage / built-in shelving</span></div>
+      <div class="row"><span class="solo">Smart garage door opener with app access</span></div>
+      <div class="row"><span class="lbl">EV Charger</span><span class="val">Level 2 installed</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>4.  Entry &amp; Main Floor Layout</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Foyer / Entry</span><span class="val">Grand / impressive, Hardwood</span></div>
+      <div class="row"><span class="solo">Coat closet at entry</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 2 of 8</span></div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 3</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Main Floor Ceiling Height</span><span class="val">10 ft</span></div>
+      <div class="row"><span class="solo">Coffered / tray / barrel ceilings (specific rooms)</span></div>
+      <div class="row"><span class="lbl">Main Floor Natural Light</span><span class="val">Excellent — all directions</span></div>
+      <div class="row"><span class="lbl">Layout Style</span><span class="val">Open concept</span></div>
+      <div class="row"><span class="solo">Excellent kitchen / dining / living flow (entertaining)</span></div>
+      <div class="row"><span class="solo">Home office suitability (dedicated room / natural light / closeable door)</span></div>
+      <div class="row"><span class="solo">Formal living room</span></div>
+      <div class="row"><span class="solo">Formal dining room</span></div>
+      <div class="row"><span class="solo">Family room / great room</span></div>
+      <div class="row"><span class="solo">Breakfast area / eat-in kitchen</span></div>
+      <div class="row"><span class="solo">Main floor office / den / library</span></div>
+      <div class="row"><span class="solo">Powder room / 2-pc bath</span></div>
+      <div class="row"><span class="solo">Main floor laundry room</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>5.  Kitchen</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Kitchen Size</span><span class="val">Galley</span></div>
+      <div class="row"><span class="lbl">Kitchen Layout</span><span class="val">Island, Open concept</span></div>
+      <div class="row"><span class="lbl">Kitchen Island</span><span class="val">Large island, Storage</span></div>
+      <div class="row"><span class="lbl">Cabinet Quality</span><span class="val">Custom, Stained wood</span></div>
+      <div class="row"><span class="lbl">Countertop</span><span class="val">Quartz</span></div>
+      <div class="row"><span class="lbl">Backsplash</span><span class="val">Marble</span></div>
+      <div class="row"><span class="lbl">Sink</span><span class="val">Undermount double</span></div>
+      <div class="row"><span class="lbl">Faucet</span><span class="val">Touchless</span></div>
+      <div class="row"><span class="lbl">Dishwasher</span><span class="val">Included</span></div>
+      <div class="row"><span class="lbl">Appliance Package</span><span class="val">Professional grade, Stainless steel</span></div>
+      <div class="row"><span class="lbl">Range / Cooktop</span><span class="val">Electric range</span></div>
+      <div class="row"><span class="lbl">Range Hood</span><span class="val">Ducted to exterior</span></div>
+      <div class="row"><span class="lbl">Microwave</span><span class="val">Integrated</span></div>
+      <div class="row"><span class="solo">Bar / beverage fridge</span></div>
+      <div class="row"><span class="lbl">Kitchen Lighting</span><span class="val">Pot lights, Under-cabinet</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>6.  Upper Floor</span></div><div class="sh-bar"></div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 3 of 8</span></div>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 4</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Bedrooms Above Grade</span><span class="val">Main bdrms: 4</span></div>
+      <div class="row"><span class="lbl">Primary Bedroom Size</span><span class="val">Large (14×14+)</span></div>
+      <div class="row"><span class="lbl">Primary Bedroom Orientation</span><span class="val">Rear / quiet side, South / bright</span></div>
+      <div class="row"><span class="lbl">Primary Walk-in Closet</span><span class="val">Large walk-in, Double closet, Built-in organizers</span></div>
+      <div class="row"><span class="lbl">Primary Ensuite</span><span class="val">6-pc, Double sink, Heated floor, Soaker tub, Steam shower</span></div>
+      <div class="row"><span class="lbl">Secondary Bedroom Closets</span><span class="val">Walk-in</span></div>
+      <div class="row"><span class="solo">Bedroom windows — good size / egress compliant</span></div>
+      <div class="row"><span class="lbl">Upper Floor Natural Light</span><span class="val">Excellent</span></div>
+      <div class="row"><span class="solo">Jack-and-Jill bathroom</span></div>
+      <div class="row"><span class="lbl">Second Full Bathroom</span><span class="val">4-pc, Recently renovated</span></div>
+      <div class="row"><span class="lbl">Upper Floor Ceiling Height</span><span class="val">9 ft, Vaulted in primary</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>7.  Basement</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Basement Type</span><span class="val">Full</span></div>
+      <div class="row"><span class="lbl">Basement Ceiling Height</span><span class="val">Above 8 ft</span></div>
+      <div class="row"><span class="lbl">Basement Finish Level</span><span class="val">Fully finished</span></div>
+      <div class="row"><span class="lbl">Basement Subfloor</span><span class="val">Laminate / LVP over concrete</span></div>
+      <div class="row"><span class="lbl">Basement Ceiling Treatment</span><span class="val">Drywalled</span></div>
+      <div class="row"><span class="solo">Basement bedroom(s) with egress window</span></div>
+      <div class="row"><span class="lbl">Basement Bathroom</span><span class="val">4-pc</span></div>
+      <div class="row"><span class="solo">In-law suite (self-contained)</span></div>
+      <div class="row"><span class="solo">Cold room / cantina / cellar</span></div>
+      <div class="row"><span class="solo">Basement floor drain (functional / backwater protected)</span></div>
+      <div class="row"><span class="solo">Storage room(s)</span></div>
+      <div class="row"><span class="solo">Basement windows — good size / covers / drainage</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>8.  Bathrooms</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Bathroom Count</span><span class="val">Full (3-pc+): 4  Half (2-pc): 1  Total: 5</span></div>
+      <div class="row"><span class="lbl">Upper Floor Main Bath</span><span class="val">4-pc, Recently renovated</span></div>
+      <div class="row"><span class="lbl">Fixture Quality</span><span class="val">Designer / high-end</span></div>
+      <div class="row"><span class="lbl">Tile Work</span><span class="val">Porcelain</span></div>
+      <div class="row"><span class="lbl">Vanity</span><span class="val">Custom cabinetry</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 4 of 8</span></div>
+</div>
+
+<!-- PAGE 5 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 5</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Toilet</span><span class="val">Comfort height</span></div>
+      <div class="row"><span class="lbl">Walk-in Shower</span><span class="val">Glass enclosure</span></div>
+      <div class="row"><span class="lbl">Shower Fixtures</span><span class="val">Rain head, Body jets, Wall-mount</span></div>
+      <div class="row"><span class="lbl">Bathroom Ventilation</span><span class="val">Window + fan, Timer fan</span></div>
+      <div class="row"><span class="lbl">Natural Light</span><span class="val">Window — large</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>9.  Laundry</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Laundry Location</span><span class="val">Main floor — room</span></div>
+      <div class="row"><span class="lbl">Setup</span><span class="val">Laundry closet, Side-by-side</span></div>
+      <div class="row"><span class="lbl">Washer &amp; Dryer</span><span class="val">Front-load set, Electric dryer</span></div>
+      <div class="row"><span class="solo">Laundry sink</span></div>
+      <div class="row"><span class="solo">Storage / cabinetry / folding counter</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>10.  Interior Finishes &amp; Details</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Main Floor Flooring</span><span class="val">Hardwood</span></div>
+      <div class="row"><span class="lbl">Upper Floor Flooring</span><span class="val">Hardwood</span></div>
+      <div class="row"><span class="lbl">Basement Flooring</span><span class="val">Laminate</span></div>
+      <div class="row"><span class="lbl">Stair Treads</span><span class="val">Hardwood</span></div>
+      <div class="row"><span class="lbl">Interior Doors</span><span class="val">Solid core, 8 ft height</span></div>
+      <div class="row"><span class="lbl">Door Hardware</span><span class="val">Matte black</span></div>
+      <div class="row"><span class="lbl">Trim &amp; Baseboard</span><span class="val">Crown moulding</span></div>
+      <div class="row"><span class="solo">Wainscoting / wall panelling</span></div>
+      <div class="row"><span class="lbl">Lighting Quality</span><span class="val">Upgraded throughout</span></div>
+      <div class="row"><span class="lbl">Main Fireplace</span><span class="val">Gas — traditional</span></div>
+      <div class="row"><span class="lbl">Paint Quality</span><span class="val">Fresh neutral palette, Washable eggshell / satin</span></div>
+      <div class="row"><span class="lbl">Natural Light Overall</span><span class="val">Excellent — all exposures</span></div>
+      <div class="row"><span class="lbl">Storage Overall</span><span class="val">Excellent throughout</span></div>
+      <div class="row"><span class="solo">Flex / multipurpose spaces (office / gym / guest room potential)</span></div>
+      <div class="row"><span class="lbl">Overall Finish Level</span><span class="val">Fully renovated</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>11.  Mechanical Systems</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Furnace Type</span><span class="val">High-efficiency gas (96%+)</span></div>
+      <div class="row"><span class="lbl">Furnace Year Installed</span><span class="val">2019</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 5 of 8</span></div>
+</div>
+
+<!-- PAGE 6 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 6</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Furnace Flue</span><span class="val">PVC (high-efficiency)</span></div>
+      <div class="row"><span class="lbl">Central A/C</span><span class="val">High SEER (16+)</span></div>
+      <div class="row"><span class="lbl">A/C Year Installed</span><span class="val">2020</span></div>
+      <div class="row"><span class="solo">HRV / ERV (heat recovery ventilator — fresh air)</span></div>
+      <div class="row"><span class="solo">Whole-home humidifier</span></div>
+      <div class="row"><span class="solo">Air purifier / UV system</span></div>
+      <div class="row"><span class="lbl">Hot Water System</span><span class="val">Tankless — owned</span></div>
+      <div class="row"><span class="solo">Water filtration / reverse osmosis</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>12.  Electrical</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Panel Size</span><span class="val">200A — upgraded</span></div>
+      <div class="row"><span class="lbl">Wiring</span><span class="val">All copper</span></div>
+      <div class="row"><span class="solo">Adequate number of circuits for modern use</span></div>
+      <div class="row"><span class="solo">GFCI outlets in all wet areas</span></div>
+      <div class="row"><span class="lbl">EV Charger</span><span class="val">Level 2 installed</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>13.  Plumbing</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Water Supply</span><span class="val">Municipal</span></div>
+      <div class="row"><span class="solo">Water meter (location known / remote read)</span></div>
+      <div class="row"><span class="lbl">Pipe Material</span><span class="val">Copper throughout</span></div>
+      <div class="row"><span class="lbl">Sewer</span><span class="val">Municipal</span></div>
+      <div class="row"><span class="solo">Irrigation system (winterized / backflow preventer)</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>14.  Smart Home &amp; Technology</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Smart Thermostat</span><span class="val">Ecobee</span></div>
+      <div class="row"><span class="solo">Smart lighting / switches throughout</span></div>
+      <div class="row"><span class="solo">Smart locks (front / side / garage)</span></div>
+      <div class="row"><span class="lbl">Security System</span><span class="val">Self-monitored</span></div>
+      <div class="row"><span class="solo">Whole-home audio / built-in speakers</span></div>
+      <div class="row"><span class="lbl">Internet</span><span class="val">Fibre available</span></div>
+      <div class="row"><span class="solo">Smart appliances (fridge / oven / washer-dryer)</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>15.  Energy Efficiency &amp; Sustainability</span></div><div class="sh-bar"></div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 6 of 8</span></div>
+</div>
+
+<!-- PAGE 7 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 7</span></div>
+  <div class="body">
+    <div class="rows">
+      <div class="row"><span class="lbl">Attic Insulation R-Value</span><span class="val">R-value: 60</span></div>
+      <div class="row"><span class="solo">Energy Star windows &amp; doors</span></div>
+      <div class="row"><span class="lbl">Furnace Efficiency</span><span class="val">96%+ AFUE</span></div>
+      <div class="row"><span class="lbl">A/C Efficiency</span><span class="val">SEER 16–18</span></div>
+      <div class="row"><span class="solo">Tankless or heat pump water heater</span></div>
+      <div class="row"><span class="lbl">EV Ready</span><span class="val">Level 2 charger installed</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>16.  Location &amp; Neighbourhood</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Municipality / Neighbourhood</span><span class="val">Jefferson</span></div>
+      <div class="row"><span class="solo">Strong school district (elementary &amp; secondary — public &amp; Catholic)</span></div>
+      <div class="row"><span class="solo">High school ratings / Fraser Institute rankings</span></div>
+      <div class="row"><span class="solo">French immersion access</span></div>
+      <div class="row"><span class="lbl">Transit Access</span><span class="val">GO Train</span></div>
+      <div class="row"><span class="lbl">Proximity to Nature</span><span class="val">Park — walking distance, Ravine access</span></div>
+      <div class="row"><span class="lbl">Proximity to Amenities</span><span class="val">Grocery — walking, Restaurants / cafés</span></div>
+      <div class="row"><span class="lbl">Highway Access</span><span class="val">DVP</span></div>
+      <div class="row"><span class="lbl">Utility Provider</span><span class="val">Enbridge Gas</span></div>
+      <div class="row"><span class="lbl">Neighbourhood Character</span><span class="val">Mature established</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>17.  Legal &amp; Title</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="solo">Survey available (lot dimensions confirmed)</span></div>
+      <div class="row"><span class="lbl">Zoning</span><span class="val">Residential — stable</span></div>
+      <div class="row"><span class="lbl">Annual Property Tax</span><span class="val">8538 $/yr</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>19.  Inclusives &amp; Transaction Details</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Chattels Included</span><span class="val">All appliances, Window coverings, Light fixtures, Garage openers, TV mounts</span></div>
+      <div class="row"><span class="lbl">Closing Date</span><span class="val">Flexible</span></div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span>20.  Seller &amp; Listing Intelligence</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">Reason for Selling</span><span class="val">Upsizing</span></div>
+      <div class="row"><span class="lbl">Seller Timeline</span><span class="val">Flexible</span></div>
+      <div class="row"><span class="lbl">Length of Ownership</span><span class="val">15 yrs</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 7 of 8</span></div>
+</div>
+
+<!-- PAGE 8 -->
+<div class="page">
+  <div class="hdrN"><span>PROPERTY FEATURE REPORT  ·  PETER LUO  ·  RE/MAX REALTRON REALTY INC.</span><span>Page 8</span></div>
+  <div class="body" style="min-height:280px;">
+    <div class="sh"><span>21.  Accessibility &amp; Aging-in-Place</span></div><div class="sh-bar"></div>
+    <div class="rows">
+      <div class="row"><span class="solo">No-step / barrier-free entry</span></div>
+      <div class="row"><span class="solo">Wider doorways (32"+ clear — wheelchair accessible)</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="fl">Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage</span><span class="fr">Page 8 of 8</span></div>
+</div>
+
+</body>
+</html>

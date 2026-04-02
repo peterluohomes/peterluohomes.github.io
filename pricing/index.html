@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" class="min-h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategic Pricing Philosophy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Montserrat:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-navy: #0A192F;
+      --accent-gold: #C5A059;
+      --text-charcoal: #333333;
+      --border-light: #E0E0E0;
+      --bg-offwhite: #FDFDFD;
+    }
+
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+    html, body { min-height: 100%; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #f4f4f4;
+      color: var(--text-charcoal);
+    }
+
+    .main-wrapper {
+      width: 100%;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page-container {
+      background-color: white;
+      width: 100%;
+      max-width: 1200px;
+      padding: 50px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 3px solid var(--accent-gold);
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28pt;
+      color: var(--primary-navy);
+      margin: 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .pillar-subtitle {
+      text-align: center;
+      font-size: 14pt;
+      color: var(--accent-gold);
+      font-weight: 600;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .section-header {
+      font-weight: 700;
+      font-size: 11pt;
+      color: var(--primary-navy);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--accent-gold);
+      padding-bottom: 8px;
+      margin: 30px 0 15px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .section-intro-text {
+      font-size: 10.5pt;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: var(--text-charcoal);
+    }
+
+    .intro-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 40px;
+    }
+
+    .intro-section p {
+      font-size: 11pt;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .column-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .column-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .info-box {
+      background-color: var(--bg-offwhite);
+      border: 1px solid var(--border-light);
+      padding: 25px;
+      border-radius: 4px;
+    }
+
+    .info-box h3 {
+      font-size: 10.5pt;
+      color: var(--primary-navy);
+      text-transform: uppercase;
+      margin-top: 0;
+      border-bottom: 1px solid var(--accent-gold);
+      padding-bottom: 5px;
+    }
+
+    .info-box p {
+      font-size: 10pt;
+      line-height: 1.5;
+      margin-bottom: 0;
+    }
+
+    ul { list-style: none; padding: 0; margin: 0; }
+    li {
+      font-size: 10pt;
+      margin-bottom: 15px;
+      position: relative;
+      padding-left: 20px;
+      line-height: 1.5;
+    }
+    li::before {
+      content: "•";
+      color: var(--accent-gold);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      font-size: 14pt;
+      top: -2px;
+    }
+    li strong { display: block; color: var(--primary-navy); margin-bottom: 3px; }
+
+    .cta-container { text-align: center; margin: 20px 0 40px 0; }
+    .cta-description { font-size: 10pt; margin-bottom: 15px; line-height: 1.5; }
+    .cta-button {
+      display: inline-block;
+      color: var(--primary-navy);
+      text-decoration: none;
+      padding: 12px 25px;
+      border: 2px solid var(--accent-gold);
+      font-weight: 700;
+      font-size: 9pt;
+      text-transform: uppercase;
+      transition: 0.3s;
+    }
+    .cta-button:hover { background-color: var(--accent-gold); color: white; }
+
+    .faq-item { margin-bottom: 25px; }
+    .faq-q { font-weight: 700; color: var(--primary-navy); font-size: 10.5pt; margin-bottom: 5px; }
+    .faq-a { font-size: 10pt; line-height: 1.5; color: var(--text-charcoal); }
+
+    @media (max-width: 900px) {
+      .column-grid-3, .column-grid-2 { grid-template-columns: 1fr; }
+      .page-container { padding: 30px 20px; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="main-wrapper">
+   <div class="page-container">
+    
+    <header>
+     <h1>Strategic Pricing Philosophy</h1>
+     <div class="pillar-subtitle">- Market Positioning to Maximize Your Home's Value -</div>
+    </header>
+
+    <div class="intro-section">
+     <div class="section-header" style="border:none; text-align:center;">Pricing your home is a strategic decision</div>
+     <p>Pricing your home is a strategic decision that determines how many qualified buyers will walk through your door and how much leverage we have during negotiations. My goal is to position your home as the most attractive option in its category.</p>
+    </div>
+
+    <div class="section-header">The Market Determines Value, We Determine Strategy</div>
+    <div class="section-intro-text">
+      While we all want the highest price possible, the "asking price" is actually a marketing tool used to drive demand. Pricing isn't about the home's worth to us—it's about what sparks maximum buyer response. To help you make an informed decision, here are three analytical tools I'd like to share:
+    </div>
+    <div class="column-grid-3">
+     <div class="info-box">
+      <h3><a href="./pyramid.html" style="color: inherit; text-decoration: underline;">Price Pyramid</a>
+</h3>
+      <p>A visual model illustrating that as a property's asking price increases above fair market value, the pool of qualified buyers exponentially decreases.</p>
+     </div>
+     <div class="info-box">
+      <h3><a href="./curve.html" style="color: inherit; text-decoration: underline;">Market Activity Curve</a>
+</h3>
+      <p>A graphical representation showing that buyer interest and showing volume peak within the first two weeks of a listing before sharply declining.</p>
+     </div>
+     <div class="info-box">
+      <h3><a href="./waterfall.html" style="color: inherit; text-decoration: underline;">Price Erosion Waterfall</a></h3>
+      <p>A financial illustration of how overpricing leads to "stale" listings, eventually forcing deep price cuts that result in a lower final sale price.</p>
+     </div>
+    </div>
+
+    <div class="section-header"><a href="./chart.html" style="color: inherit; text-decoration: underline;">The Three Strategic Paths</a>
+</div>
+    <div class="section-intro-text">
+      Every seller has different goals. We will choose the strategy that aligns with your timeline and risk tolerance:
+    </div>
+    <div class="column-grid-3">
+     <div class="info-box" style="border-top: 4px solid var(--accent-gold);">
+      <h3 style="border:none;">The Momentum-Driven</h3>
+      <p>Approach—Pricing below market value to spark a "bidding war." This is highly effective in low-inventory markets and can drive the final price above the asking price.</p>
+     </div>
+     <div class="info-box" style="border-top: 4px solid var(--accent-gold);">
+      <h3 style="border:none;">The Market-Aligned</h3>
+      <p>Approach—Pricing exactly where recent data suggests. This typically leads to a steady stream of buyers and a solid, predictable sale.</p>
+     </div>
+     <div class="info-box" style="border-top: 4px solid var(--accent-gold);">
+      <h3 style="border:none;">The Test-the-Market</h3>
+      <p>Approach—Pricing at the top end of the bracket. Best for unique properties where we're waiting for a specific buyer, though it may take longer to sell.</p>
+     </div>
+    </div>
+    <div class="cta-container">
+     <div class="cta-description">
+       A comprehensive comparison of the three pricing strategies, detailing how data-driven pricing and strategic market positioning maximize a property's final sale price.
+     </div>
+     <a href="./chart.html" class="cta-button">Pricing Strategy Comparison Chart</a>
+    </div>
+
+    <div class="section-header"><a href="./matrix.html" style="color: inherit; text-decoration: underline;">Pricing Strategy Matrix</a>
+</div>
+    <div class="info-box" style="margin-bottom: 40px; text-align: center;">
+     <p>The Pricing Strategy Matrix is a competitive mapping tool that aligns price with perceived value to ensure your property is positioned to capture demand. This tool helps you visualize how your home's asking price relates to its perceived value in the current market.</p>
+    </div>
+
+    <div class="section-header"><a href="./correlation.html" style="color: inherit; text-decoration: underline;">The First Week Factor</a></div>
+    <div class="info-box" style="margin-bottom: 40px; text-align: center;">
+     <p>First-week showing activity predicts sale price. This chart illustrates the relationship between early showing volume and final sale price as a percentage of list price. Properties with more showings tend to sell for higher percentages of their list price. The shaded area between the curves represents the typical outcome range.</p>
+    </div>
+
+    <div class="section-header">My Commitment to You</div>
+    <div class="section-intro-text">
+      When we meet, I will provide a Comprehensive Market Analysis (CMA) by examining:
+    </div>
+    <div class="column-grid-2">
+     <div>
+      <ul>
+       <li><strong>Sold Listings</strong> The "hard truth" of what buyers have recently paid.</li>
+      </ul>
+     </div>
+     <div>
+      <ul>
+       <li><strong>Active Listings</strong> Our current competition.</li>
+      </ul>
+     </div>
+    </div>
+    <div class="section-intro-text" style="margin-top: -20px;">
+      This analysis gives us the data foundation we need to price strategically.
+    </div>
+
+    <div class="section-header">The "Success Factors" Checklist</div>
+    <div class="section-intro-text">
+      What we can influence vs. what the market dictates. To get your home sold for the highest price, we must focus our energy on the variables we can actually control. Here's how we break down the factors of a successful sale:
+    </div>
+    <div class="column-grid-2">
+     <div class="info-box">
+      <h3 style="color: #2e7d32; border-color: #2e7d32;">Things We CAN Control</h3>
+      <ul>
+       <li><strong>The Condition</strong> How the home shows: decluttering, cleaning, and staging. A "move-in ready" home always commands a premium.</li>
+       <li><strong>The Price</strong> Our entry point into the market. This is the #1 lever we can pull to increase or decrease buyer demand.</li>
+       <li><strong>The Marketing</strong> Professional photography, video tours, social targeting, and elite placement on search portals.</li>
+       <li><strong>Accessibility</strong> Flexible showing schedules create more opportunities with buyers.</li>
+       <li><strong>The Atmosphere</strong> Lighting, temperature, and scents that make a buyer feel "at home".</li>
+      </ul>
+     </div>
+     <div class="info-box">
+      <h3 style="color: #c62828; border-color: #c62828;">Things We CANNOT Control</h3>
+      <ul>
+       <li><strong>The Location</strong> We can't move the house; we must price according to where it sits.</li>
+       <li><strong>The Market Trends</strong> Interest rates, the local economy, and buyer confidence.</li>
+       <li><strong>The Competition</strong> When neighbors list or the prices they choose; we can only react to it.</li>
+       <li><strong>The Floor Plan</strong> We can't easily change the fundamental layout or square footage.</li>
+       <li><strong>External Factors</strong> Broad forces such as government policy changes or property tax adjustments that influence the real estate landscape.</li>
+      </ul>
+     </div>
+    </div>
+
+    <div class="section-header">Frequently Asked Questions: Pricing & Market Response</div>
+    <div class="faq-item">
+     <div class="faq-q">What happens if we don't get offers right away?</div>
+     <div class="faq-a">The market provides feedback quickly—usually within 10 to 14 days. 10+ showings with no offers typically means the market sees the value about 5-10% below current price.</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q">How long should we wait before adjusting the price?</div>
+     <div class="faq-a">In a fast market, we look at a 14-day window. Waiting too long leads to "listing fatigue," where buyers wonder "What's wrong with this house?".</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q">If we reduce the price, does it look like we're desperate?</div>
+     <div class="faq-a">Not at all. It looks like you are responsive to the market. A price adjustment is simply a tool to "re-launch" the home to a fresh pool of buyers.</div>
+    </div>
+    <div class="faq-item">
+     <div class="faq-q">Will you ask me to lower my price just to get a quick sale?</div>
+     <div class="faq-a">My goal is to get the highest net return for your equity. I will never suggest a price change just for a "quick" sale; any adjustment will be backed by a Market Update Report.</div>
+    </div>
+
+   </div>
+  </div>
+ </body>
+</html>

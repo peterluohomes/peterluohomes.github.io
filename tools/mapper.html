@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Ruler Tool — Comparative Market Analysis</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --nv: #162A3E;
+  --nv2: #1E3A54;
+  --nv3: #E8EEF4;
+  --au: #C2A04E;
+  --au2: #A6873A;
+  --au3: #B5944A;
+  --au4: #EDE0C0;
+  --au5: #D4BB72;
+  --c4: #7E97AC;
+  --c7: #E0E8EF;
+  --bg: #F7F9FC;
+  --sold: #2E7D5B;
+  --sold-light: #3A9E73;
+  --comp: #2563EB;
+  --dot-sold: #2E7D5B;
+  --dot-comp: #E67E22;
+  --card-shadow: 0 2px 20px rgba(22,42,62,0.06), 0 1px 4px rgba(22,42,62,0.04);
+  --card-shadow-hover: 0 4px 32px rgba(22,42,62,0.10), 0 2px 8px rgba(22,42,62,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Subtle grid background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(22,42,62,0.02) 1px, transparent 0);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.top-accent {
+  height: 4px;
+  background: linear-gradient(90deg, var(--au2), var(--au), var(--au5), var(--au));
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+}
+
+.toolbar {
+  position: fixed; top: 14px; left: 24px; z-index: 50;
+  display: flex; gap: 6px; align-items: center;
+}
+.toolbar button {
+  padding: 7px 16px; background: #fff; color: var(--nv);
+  border: 1px solid var(--c7); font-family: 'Manrope', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(22,42,62,0.05);
+  display: flex; align-items: center; gap: 5px;
+}
+.toolbar button:hover {
+  border-color: var(--au);
+  color: var(--au);
+  box-shadow: 0 2px 8px rgba(194,160,78,0.15);
+}
+.toolbar button svg { width: 12px; height: 12px; flex-shrink: 0; }
+.toolbar .divider {
+  width: 1px; height: 18px; background: var(--c7); margin: 0 2px;
+}
+
+.print-btn {
+  position: fixed; top: 14px; right: 24px; z-index: 50;
+}
+.print-btn button {
+  padding: 7px 20px; background: #fff; color: var(--nv);
+  border: 1px solid var(--c7); font-family: 'Manrope', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(22,42,62,0.05);
+}
+.print-btn button:hover {
+  border-color: var(--au);
+  color: var(--au);
+  box-shadow: 0 2px 8px rgba(194,160,78,0.15);
+}
+
+.ruler-wrap {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.tool-title {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--nv);
+  margin-bottom: 6px;
+  padding-top: 4px;
+  position: relative;
+}
+.tool-title span {
+  display: inline-block;
+  border-bottom: 2px solid var(--au);
+  padding-bottom: 5px;
+}
+
+.ruler-card {
+  background: #fff;
+  border: 1px solid var(--c7);
+  position: relative;
+  overflow: visible;
+  border-radius: 4px;
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.3s ease;
+}
+.ruler-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Blue ref lines */
+.ref-lines-layer {
+  position: absolute; top: 0; left: 60px; right: 0;
+  pointer-events: none; z-index: 4;
+}
+.ref-line {
+  position: absolute; top: 0; height: 100%; width: 0;
+  background: none;
+  transform: translateX(-0.5px);
+}
+.ref-line-thin {
+  border-left: 1px solid rgba(37,99,235,0.25);
+}
+.ref-line-thick {
+  border-left: 1.5px solid rgba(37,99,235,0.45);
+}
+
+/* Lane */
+.lane { display: flex; position: relative; }
+.lane + .lane { border-top: 1px solid var(--c7); }
+
+.lane-label {
+  width: 60px; display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 10px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
+  border-right: 1px solid var(--c7); background: #FAFBFD; flex-shrink: 0;
+}
+.lane-label.sold { color: var(--sold); }
+.lane-label.comp { color: var(--dot-comp); }
+
+.lane-content { flex: 1; position: relative; }
+
+/* Marker zone */
+.marker-zone {
+  position: relative;
+  height: 105px;
+  background: linear-gradient(180deg, rgba(247,249,252,0.5) 0%, rgba(255,255,255,0) 100%);
+}
+
+/* Ruler strip */
+.ruler-strip {
+  height: 30px;
+  background: linear-gradient(180deg, #F8F2DA 0%, #EFE5BE 50%, #E8DDB0 100%);
+  border-top: 1px solid #CCBF7A;
+  border-bottom: 1px solid #CCBF7A;
+  position: relative; overflow: hidden;
+  cursor: crosshair;
+  box-shadow: inset 0 1px 2px rgba(194,160,78,0.08);
+}
+.tick-major { position: absolute; top: 0; width: 1px; height: 100%; background: #BFB270; }
+.tick-mid { position: absolute; top: 0; width: 1px; height: 65%; background: #C4B87A; }
+.tick-minor { position: absolute; top: 0; width: 1px; height: 50%; background: #D0C48E; }
+.tick-tiny { position: absolute; top: 0; width: 1px; height: 30%; background: #DAD4A8; }
+
+/* Dots */
+.dot {
+  position: absolute;
+  top: 42px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  transform: translateX(-8px);
+  z-index: 10;
+  cursor: pointer;
+  border: 2.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.dot:hover {
+  transform: translateX(-8px) scale(1.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.06);
+}
+.dot.sold-dot {
+  background: radial-gradient(circle at 35% 35%, var(--sold-light), var(--dot-sold));
+}
+.dot.comp-dot {
+  background: radial-gradient(circle at 35% 35%, #F09843, var(--dot-comp));
+}
+
+.dot-tooltip {
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  background: var(--nv); color: #fff; padding: 3px 9px;
+  font-size: 9px; font-weight: 600; white-space: nowrap;
+  border-radius: 3px; opacity: 0; pointer-events: none;
+  box-shadow: 0 2px 6px rgba(22,42,62,0.2);
+  transition: opacity 0.15s ease;
+}
+.dot-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px;
+  background: var(--nv);
+  transform: translateX(-50%) rotate(45deg);
+}
+.dot:hover .dot-tooltip { opacity: 1; }
+
+/* Price axis */
+.price-axis {
+  display: flex;
+  position: relative;
+  height: 110px;
+  border-top: 1px solid var(--c7);
+  overflow: visible;
+  background: linear-gradient(180deg, #FAFBFD 0%, #fff 100%);
+}
+.price-axis-area {
+  margin-left: 60px;
+  flex: 1;
+  position: relative;
+}
+
+.price-slot-wrap {
+  position: absolute;
+  top: 32px;
+  transform: translateX(-50%);
+}
+
+.price-slot {
+  display: block;
+  transform: rotate(-45deg);
+  transform-origin: top left;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--nv);
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 80px;
+  padding: 2px 0;
+  cursor: text;
+  transition: color 0.15s ease;
+}
+.price-slot:focus {
+  color: var(--au2);
+}
+.price-slot::placeholder { color: #C0C8D0; font-style: italic; }
+
+/* Footer */
+.fill-bar {
+  position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
+  z-index: 100;
+}
+.fill-btn {
+  padding: 6px 28px;
+  background: linear-gradient(135deg, var(--au), var(--au2));
+  color: #fff; border: none;
+  font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(194,160,78,0.3);
+  transition: all 0.2s ease;
+}
+.fill-btn:hover {
+  background: linear-gradient(135deg, var(--au2), #8F7430);
+  box-shadow: 0 3px 12px rgba(194,160,78,0.4);
+  transform: translateY(-1px);
+}
+
+.footer-bar {
+  background: linear-gradient(135deg, var(--nv), var(--nv2));
+  padding: 7px 0;
+  text-align: center;
+  border-radius: 0 0 4px 4px;
+}
+.footer-input {
+  background: transparent; border: none; font-family: 'Manrope', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.9);
+  text-align: center; outline: none; width: 400px;
+  transition: color 0.15s ease;
+}
+.footer-input:focus {
+  color: #fff;
+}
+.footer-input::placeholder { color: rgba(255,255,255,0.4); }
+
+/* Watermark / branding line */
+.brand-line {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--c4);
+  opacity: 0.6;
+}
+
+@media print {
+  body { min-height: auto; display: block; background: #fff; }
+  body::before { display: none; }
+  .print-btn, .top-accent, .fill-bar, .toolbar, #jsonFileInput { display: none !important; }
+  .ruler-card { border: none; box-shadow: none; }
+  .ruler-card:hover { box-shadow: none; }
+  .dot-tooltip { opacity: 1 !important; }
+  .ruler-strip { cursor: default; }
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar" id="toolbar">
+  <button onclick="saveJSON()" title="Save data as JSON">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Save
+  </button>
+  <button onclick="document.getElementById('jsonFileInput').click()" title="Load data from JSON">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Load
+  </button>
+  <div class="divider"></div>
+  <button onclick="clearDB()" title="Clear saved data from IndexedDB" style="color:#c0736a;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    Clear
+  </button>
+</div>
+<input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadJSON(event)">
+
+<div class="top-accent"></div>
+
+<div class="ruler-wrap">
+  <div class="tool-title"><span>Property Price Mapper</span></div>
+  <div class="ruler-card" id="rulerCard">
+    <div class="ref-lines-layer" id="refLines"></div>
+    <div id="lanesContainer"></div>
+    <div class="price-axis">
+      <div class="price-axis-area" id="priceAxis"></div>
+    </div>
+    <div class="footer-bar">
+      <input class="footer-input" value="Property Address" id="footerText" placeholder="Property Address">
+    </div>
+  </div>
+  <div class="brand-line">Comparative Market Analysis</div>
+</div>
+
+<div class="fill-bar">
+  <button class="fill-btn" onclick="fillPrices()">Fill</button>
+</div>
+
+<script>
+// ── IndexedDB STORAGE LAYER ──────────────────────────────────────
+const DB_NAME = 'plMapperDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'mapper';
+const DB_KEY = 'mapperState';
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+function dbGet(key) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readonly');
+    const req = tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(key, val) {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    const req = tx.objectStore(STORE_NAME).put(val, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbClear() {
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction(STORE_NAME, 'readwrite');
+    const req = tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ── Auto-save (debounced) ────────────────────────────────────────
+let _saveTimer = null;
+function autoSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (_db) dbPut(DB_KEY, getState()).catch(e => console.error('IndexedDB save error:', e));
+  }, 400);
+}
+
+// ── LANES & RULER ────────────────────────────────────────────────
+const LANES = [
+  { id: 'sold', label: 'Solds', cssClass: 'sold', dotClass: 'sold-dot', dots: [] },
+  { id: 'comp', label: 'Competitions', cssClass: 'comp', dotClass: 'comp-dot', dots: [] },
+];
+
+const SECTIONS = 10;
+
+function buildRuler() {
+  const container = document.getElementById('lanesContainer');
+  container.innerHTML = '';
+
+  LANES.forEach(lane => {
+    const el = document.createElement('div');
+    el.className = 'lane';
+    el.innerHTML = `
+      <div class="lane-label ${lane.cssClass}">${lane.label}</div>
+      <div class="lane-content">
+        <div class="marker-zone" id="markers-${lane.id}"></div>
+        <div class="ruler-strip" id="ruler-${lane.id}"></div>
+      </div>
+    `;
+    container.appendChild(el);
+
+    const ruler = el.querySelector('.ruler-strip');
+    const ticksPerSection = 10;
+    const totalTicks = SECTIONS * ticksPerSection;
+    for (let i = 0; i <= totalTicks; i++) {
+      if (i % ticksPerSection === 0) continue;
+      const pct = (i / totalTicks) * 100;
+      const tick = document.createElement('div');
+      if (i % (ticksPerSection / 2) === 0) {
+        tick.className = 'tick-mid';
+      } else if (i % 2 === 0) {
+        tick.className = 'tick-minor';
+      } else {
+        tick.className = 'tick-tiny';
+      }
+      tick.style.left = pct + '%';
+      ruler.appendChild(tick);
+    }
+
+    ruler.addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const pct = ((e.clientX - rect.left) / rect.width) * 100;
+      const clampedPct = Math.max(0, Math.min(100, pct));
+      placeDot(lane.id, clampedPct);
+      autoSave();
+    });
+  });
+
+  LANES.forEach(lane => {
+    lane.dots.forEach(pct => createDotEl(lane.id, pct));
+  });
+
+  const refLayer = document.getElementById('refLines');
+  refLayer.innerHTML = '';
+
+  requestAnimationFrame(() => {
+    const card = document.getElementById('rulerCard');
+    const lastRuler = document.getElementById('ruler-comp');
+    const cardRect = card.getBoundingClientRect();
+    const rulerRect = lastRuler.getBoundingClientRect();
+    const lineHeight = rulerRect.bottom - cardRect.top;
+    refLayer.style.height = lineHeight + 'px';
+
+    for (let i = 0; i <= SECTIONS; i++) {
+      const pct = (i / SECTIONS) * 100;
+      const line = document.createElement('div');
+      line.className = 'ref-line ' + (i % 2 === 1 ? 'ref-line-thick' : 'ref-line-thin');
+      line.style.left = pct + '%';
+      line.style.height = '100%';
+      refLayer.appendChild(line);
+    }
+  });
+
+  const axis = document.getElementById('priceAxis');
+  axis.innerHTML = '';
+  for (let i = 0; i <= SECTIONS; i++) {
+    const pct = (i / SECTIONS) * 100;
+    const wrap = document.createElement('div');
+    wrap.className = 'price-slot-wrap';
+    wrap.style.left = pct + '%';
+
+    const input = document.createElement('input');
+    input.className = 'price-slot';
+    input.placeholder = '$';
+    input.title = 'Type price';
+    input.addEventListener('blur', function() {
+      const raw = this.value.replace(/[^0-9]/g, '');
+      if (raw) {
+        this.value = '$' + Number(raw).toLocaleString();
+      }
+      autoSave();
+    });
+    input.addEventListener('focus', function() {
+      const raw = this.value.replace(/[^0-9]/g, '');
+      this.value = raw;
+    });
+
+    wrap.appendChild(input);
+    axis.appendChild(wrap);
+  }
+}
+
+function placeDot(laneId, pct) {
+  const lane = LANES.find(l => l.id === laneId);
+  lane.dots.push(pct);
+  createDotEl(laneId, pct);
+}
+
+function createDotEl(laneId, pct) {
+  const lane = LANES.find(l => l.id === laneId);
+  const zone = document.getElementById('markers-' + laneId);
+  const dot = document.createElement('div');
+  dot.className = 'dot ' + lane.dotClass;
+  dot.style.left = pct + '%';
+  dot.dataset.pct = pct;
+  dot.innerHTML = '<div class="dot-tooltip"></div>';
+
+  dot.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const idx = lane.dots.indexOf(parseFloat(this.dataset.pct));
+    if (idx > -1) lane.dots.splice(idx, 1);
+    this.remove();
+    autoSave();
+  });
+
+  dot.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const dragDot = this;
+    const onMove = function(ev) {
+      const rect = zone.getBoundingClientRect();
+      const p = Math.max(0, Math.min(100, ((ev.clientX - rect.left) / rect.width) * 100));
+      dragDot.style.left = p + '%';
+      dragDot.dataset.pct = p;
+    };
+    const onUp = function() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      lane.dots = Array.from(zone.querySelectorAll('.dot')).map(d => parseFloat(d.dataset.pct));
+      autoSave();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  zone.appendChild(dot);
+}
+
+function fillPrices() {
+  const slots = document.querySelectorAll('#priceAxis .price-slot');
+  const first = slots[0];
+  const last = slots[slots.length - 1];
+
+  const rawFirst = first.value.replace(/[^0-9]/g, '');
+  const rawLast = last.value.replace(/[^0-9]/g, '');
+
+  if (!rawFirst || !rawLast) {
+    alert('Please enter the first (lowest) and last (highest) price, then click Fill.');
+    return;
+  }
+
+  const low = Number(rawFirst);
+  const high = Number(rawLast);
+  const step = (high - low) / SECTIONS;
+
+  slots.forEach((slot, i) => {
+    const val = Math.round(low + step * i);
+    slot.value = '$' + val.toLocaleString();
+  });
+  autoSave();
+}
+
+function savePDF() {
+  window.print();
+}
+
+function getState() {
+  const prices = Array.from(document.querySelectorAll('#priceAxis .price-slot')).map(s => s.value);
+  const footerText = document.getElementById('footerText').value;
+  const lanes = LANES.map(l => ({ id: l.id, dots: [...l.dots] }));
+  return { prices, footerText, lanes };
+}
+
+function restoreState(state) {
+  // Restore dots
+  if (state.lanes) {
+    state.lanes.forEach(saved => {
+      const lane = LANES.find(l => l.id === saved.id);
+      if (lane) lane.dots = saved.dots || [];
+    });
+  }
+
+  // Rebuild ruler (which also restores dots)
+  buildRuler();
+
+  // Restore prices
+  if (state.prices) {
+    const slots = document.querySelectorAll('#priceAxis .price-slot');
+    state.prices.forEach((val, i) => {
+      if (slots[i]) slots[i].value = val;
+    });
+  }
+
+  // Restore footer
+  if (state.footerText) {
+    document.getElementById('footerText').value = state.footerText;
+  }
+}
+
+function saveJSON() {
+  const state = getState();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const addr = document.getElementById('footerText').value.replace(/[^a-zA-Z0-9]/g, '_') || '';
+  a.download = 'mapper' + (addr ? '_' + addr : '') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      restoreState(state);
+      autoSave();
+    } catch (err) {
+      alert('Invalid JSON file.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ── Auto-save footer on input ────────────────────────────────────
+document.getElementById('footerText').addEventListener('input', autoSave);
+
+// ── CLEAR DB ─────────────────────────────────────────────────────
+function clearDB() {
+  if (!confirm('Clear all saved data from IndexedDB?\nDots, prices, and address will be reset. This cannot be undone.')) return;
+  LANES.forEach(l => { l.dots = []; });
+  if (_db) {
+    dbClear().then(() => {
+      buildRuler();
+      document.getElementById('footerText').value = 'Property Address';
+    }).catch(e => console.error('Clear error:', e));
+  } else {
+    buildRuler();
+    document.getElementById('footerText').value = 'Property Address';
+  }
+}
+
+// ── INIT: open DB, restore state, then build ─────────────────────
+openDB().then(() => dbGet(DB_KEY)).then(saved => {
+  if (saved && typeof saved === 'object') {
+    restoreState(saved);
+  } else {
+    buildRuler();
+  }
+}).catch(err => {
+  console.error('IndexedDB init failed:', err);
+  buildRuler();
+});
+</script>
+</body>
+</html>

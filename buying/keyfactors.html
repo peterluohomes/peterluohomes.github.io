@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Factors for Buying — Pinnacle Listing System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1B3A6B;--navy2:#2A4F8C;--navy3:#0F2548;
+  --gold:#B8952A;--gold2:#D4AF50;--gold3:#F5EDD5;--gold4:#FBF6E9;
+  --cream:#FDFAF4;--g100:#F7F5F0;--g200:#EAE6DD;--g300:#D4CFC4;
+  --g400:#B0A89A;--g500:#8C8678;--g700:#4A4540;--g900:#1E1C18;
+  --green:#2D6A4F;--green2:#EBF5EF;
+  --red:#991B1B;--red2:#FEF2F2;--red3:#FCA5A5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--g900);font-size:13px;line-height:1.55;}
+
+/* ── COVER ── */
+.cover{background:var(--navy3);color:#fff;padding:2.8rem 3.5rem 2.2rem;position:relative;overflow:hidden;}
+.cover::before{content:'';position:absolute;top:-80px;right:-80px;width:380px;height:380px;border-radius:50%;border:1px solid rgba(184,149,42,.12);}
+.cover::after{content:'';position:absolute;bottom:-50px;left:200px;width:250px;height:250px;border-radius:50%;border:1px solid rgba(184,149,42,.07);}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.6rem;}
+.badge{font-size:9.5px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(184,149,42,.35);padding:4px 12px;border-radius:2px;}
+.cover-title{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;line-height:1.1;margin-bottom:.35rem;}
+.cover-title em{color:var(--gold2);font-style:normal;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.55);margin-bottom:2rem;}
+.gold-rule{height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.8rem;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem 2rem;}
+.info-field label{display:block;font-size:8.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);margin-bottom:3px;opacity:.8;}
+.info-field input,.info-field select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.18);color:#fff;font-family:'DM Sans',sans-serif;font-size:12.5px;padding:3px 0;outline:none;transition:border-color .2s;}
+.info-field input::placeholder{color:rgba(255,255,255,.28);}
+.info-field input:focus,.info-field select:focus{border-bottom-color:var(--gold2);}
+.info-field select option{background:var(--navy3);}
+.span2{grid-column:span 2;}
+
+/* ── TOPBAR ── */
+.topbar{background:#fff;border-bottom:2px solid var(--gold3);padding:.6rem 3.5rem;display:flex;align-items:center;gap:.9rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 14px rgba(27,58,107,.07);}
+.topbar-label{font-family:'Cormorant Garamond',serif;font-size:.82rem;font-style:italic;color:var(--g500);flex:1;}
+.score-pill{background:var(--navy);color:#fff;font-size:10.5px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;}
+.score-pill b{color:var(--gold2);}
+.btn{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:3px;cursor:pointer;transition:all .18s;border:none;white-space:nowrap;}
+.btn-gold{background:var(--gold);color:#fff;}.btn-gold:hover{background:var(--gold2);}
+.btn-navy{background:var(--navy);color:#fff;}.btn-navy:hover{background:var(--navy2);}
+.btn-ghost{background:transparent;color:var(--g500);border:1px solid var(--g300);}.btn-ghost:hover{border-color:var(--g500);color:var(--g700);}
+
+/* ── MAIN ── */
+.main{padding:2rem 3.5rem 5rem;max-width:1300px;margin:0 auto;}
+
+/* ── SECTION ── */
+.section{margin-bottom:2rem;border:1px solid var(--g200);border-radius:5px;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(27,58,107,.04);}
+.sec-hdr{background:var(--navy);color:#fff;padding:.65rem 1.4rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .15s;}
+.sec-hdr:hover{background:var(--navy2);}
+.sec-title{font-family:'Playfair Display',serif;font-size:.92rem;font-weight:600;}
+.sec-right{display:flex;align-items:center;gap:.7rem;}
+.sec-tally{font-size:9.5px;color:rgba(255,255,255,.55);}
+.chevron{color:rgba(255,255,255,.4);font-size:11px;transition:transform .2s;display:inline-block;}
+.collapsed .chevron{transform:rotate(-90deg);}
+.collapsed .sec-body{display:none;}
+
+/* ── GROUP HEADER (inside section) ── */
+.group-hdr{padding:.5rem 1.4rem;background:var(--g100);border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:.7rem;}
+.group-hdr.red-hdr{background:var(--red2);border-color:var(--red3);}
+.group-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--g500);}
+.group-hdr.red-hdr .group-label{color:var(--red);}
+.group-tag{font-size:9px;padding:1px 8px;border-radius:20px;border:1px solid var(--g300);color:var(--g500);}
+.group-hdr.red-hdr .group-tag{border-color:var(--red3);color:var(--red);background:#fff;}
+
+/* ── ITEM ROW ── */
+.item-row{border-bottom:1px solid var(--g100);background:#fff;}
+.item-row:last-child{border-bottom:none;}
+.item-row.checked{background:var(--gold4);}
+.item-row.stigma{background:#fffafa;}
+.item-row.stigma.checked{background:#fff5f5;}
+
+.item-main{display:flex;align-items:stretch;min-height:36px;}
+
+/* checkbox */
+.item-cb-wrap{width:38px;min-width:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-right:1px solid var(--g100);transition:background .12s;}
+.item-cb-wrap:hover{background:var(--gold3);}
+.item-row.stigma .item-cb-wrap:hover{background:var(--red2);}
+.cb-box{width:15px;height:15px;border:1.5px solid var(--g300);border-radius:3px;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s;}
+.item-row.checked .cb-box{background:var(--gold);border-color:var(--gold);}
+.item-row.stigma.checked .cb-box{background:var(--red);border-color:var(--red);}
+.cb-tick{display:none;color:#fff;font-size:9px;font-weight:700;}
+.item-row.checked .cb-tick{display:block;}
+
+/* label area */
+.item-body{flex:1;padding:8px 12px;display:flex;flex-direction:column;justify-content:center;}
+.item-label{font-size:12.5px;color:var(--g700);line-height:1.4;}
+.item-row.stigma .item-label{font-size:12px;color:var(--g700);}
+.item-row.checked .item-label{color:var(--g900);font-weight:500;}
+.item-row.stigma.checked .item-label{color:var(--red);}
+
+/* note toggle */
+.item-note-btn{display:flex;align-items:center;padding:0 14px;}
+.note-lnk{font-size:9.5px;color:var(--g400);cursor:pointer;text-decoration:underline;text-underline-offset:2px;border:none;background:none;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.note-lnk:hover{color:var(--navy);}
+.item-row.stigma .note-lnk:hover{color:var(--red);}
+
+/* note textarea */
+.item-note-wrap{display:none;padding:6px 14px 10px 52px;background:var(--gold4);border-top:1px dashed var(--g200);}
+.item-note-wrap.open{display:flex;flex-direction:column;gap:4px;}
+.item-row.stigma .item-note-wrap{background:#fff5f5;}
+.note-label{font-size:8.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--g500);}
+.item-row.stigma .note-label{color:var(--red3);}
+.note-ta{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--g900);padding:5px 8px;resize:vertical;min-height:40px;background:#fff;outline:none;transition:border-color .2s;}
+.note-ta:focus{border-color:var(--gold);}
+.item-row.stigma .note-ta:focus{border-color:var(--red3);}
+
+/* ── NEGO COLUMNS ── */
+.nego-cols{display:grid;grid-template-columns:1fr 1fr;}
+.nego-col{border-right:1px solid var(--g200);}
+.nego-col:last-child{border-right:none;}
+.nego-col-hdr{padding:.5rem 1.4rem;background:var(--g100);border-bottom:1px solid var(--g200);}
+.nego-col-title{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);}
+.nego-tagline{padding:.7rem 1.4rem;background:var(--gold3);border-top:1px solid var(--gold3);text-align:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:var(--gold);}
+
+/* ── SUMMARY ── */
+.summary-section{background:#fff;border:1px solid var(--g200);border-radius:5px;overflow:hidden;margin-top:2rem;}
+.summary-hdr{background:var(--navy);color:#fff;padding:.65rem 1.2rem;}
+.summary-hdr-title{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:600;}
+.overall-wrap{padding:1rem 1.2rem;background:var(--g100);}
+.overall-lbl{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--g500);margin-bottom:.4rem;}
+.overall-ta{width:100%;border:1px solid var(--g300);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--g900);padding:7px 10px;resize:vertical;min-height:80px;background:#fff;outline:none;}
+.overall-ta:focus{border-color:var(--gold);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;font-size:12px;padding:10px 18px;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;z-index:999;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-top"><div class="badge">Confidential — Agent Use</div></div>
+  <div class="cover-title">Key Factors for <em>Buying</em></div>
+  <div class="cover-sub">Buyer Consultation Framework · Pinnacle Listing System</div>
+  <div class="gold-rule"></div>
+  <div class="info-grid">
+    <div class="info-field span2"><label>Buyer Name(s)</label><input type="text" id="f_buyer" placeholder="e.g. John & Jane Smith"></div>
+    <div class="info-field"><label>Target Area</label><input type="text" id="f_area" placeholder="e.g. Thornhill, Richmond Hill"></div>
+    <div class="info-field"><label>Date</label><input type="date" id="f_date"></div>
+    <div class="info-field"><label>Budget</label><input type="text" id="f_budget" placeholder="e.g. $1,200,000"></div>
+    <div class="info-field"><label>Property Type</label>
+      <select id="f_type">
+        <option value="">— Select —</option>
+        <option>Detached</option><option>Semi-Detached</option>
+        <option>Freehold Townhouse</option><option>Condo Townhouse</option>
+        <option>Condo Apartment</option>
+      </select>
+    </div>
+    <div class="info-field"><label>Prepared By</label><input type="text" id="f_agent" value="Peter Luo"></div>
+    <div class="info-field"><label>MLS® / PIN</label><input type="text" id="f_mls" placeholder="Optional"></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-label">Key Factors for Buying</div>
+  <div class="score-pill">Checked: <b id="tb_checked">0</b> / <b id="tb_total">0</b></div>
+  <button class="btn btn-ghost" onclick="expandAll()">Expand All</button>
+  <button class="btn btn-ghost" onclick="collapseAll()">Collapse All</button>
+  <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+  <button class="btn btn-navy" onclick="loadFile()">📂 Load JSON</button>
+  <button class="btn btn-gold" onclick="saveJSON()">💾 Save JSON</button>
+  <button class="btn btn-gold" style="background:var(--navy3);" onclick="savePDF()">📄 Save PDF</button>
+</div>
+
+<div class="main" id="app"></div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleLoad(event)">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+
+// ── DATA (exact from Excel) ───────────────────────────────────────────────────
+
+const SECTIONS = [
+  {
+    id: 'consideration',
+    title: 'Key Factors of Consideration for Buying',
+    groups: [
+      {
+        id: 'g_consid',
+        label: null,
+        items: [
+          { id:'i01', label:'1. Budget' },
+          { id:'i02', label:'2. Location' },
+          { id:'i03', label:'3. Preference / Matching — The property brings you happiness and enjoyment to reside' },
+          { id:'i04', label:'4. Type / Style' },
+          { id:'i05', label:'5. Separate Entrance' },
+          { id:'i06', label:'6. Walkout Basement' },
+          { id:'i07', label:'7. Ravine' },
+          { id:'i08', label:'8. Garage Type / Space' },
+          { id:'i09', label:'9. Condition — Exterior & Interior (upgrades — value added vs defects — cost of maintenance)' },
+          { id:'i10', label:'10. Basement Finished / Not Finished' },
+          { id:'i11', label:'11. Condition — Basement Layout — Potential Income' },
+          { id:'i12', label:'12. Patent Defect (Observable) / Latent Defect (Hidden Defect)' },
+          { id:'i13', label:'13. Best Buy (Listing / Closing Price)' },
+          { id:'i14', label:'14. Timing (Buy First / Sell First)' },
+          { id:'i15', label:'15. Saleability (adapt all atmosphere)' },
+          { id:'i16', label:'16. With good expectation (Meet the trend / demand of the forthcoming market place)' },
+          { id:'i17', label:'17. Balance / Compromise' },
+          { id:'i18', label:'18. Features of the property — # of Bedrooms / Bathrooms' },
+          { id:'i19', label:'19. Size and Square Footage' },
+          { id:'i20', label:'20. Direction' },
+        ]
+      },
+      {
+        id: 'g_stigma',
+        label: '22. Stigmas',
+        tag: 'Disclosure Required',
+        red: true,
+        items: [
+          { id:'s01', label:'Former marijuana grow operation that has been remediated according to the local health or building authority', stigma:true },
+          { id:'s02', label:'Suicide or death that occurred in the property', stigma:true },
+          { id:'s03', label:'Property was the scene of a major crime', stigma:true },
+          { id:'s04', label:'Property was used in the ongoing commission of a crime (examples: drug dealing or chop shop)', stigma:true },
+          { id:'s05', label:'Property was previously owned by a notorious individual (examples: organized crime leader, known murderer)', stigma:true },
+          { id:'s06', label:'Reports that a property is haunted', stigma:true },
+          { id:'s07', label:'Address of the property has the wrong numerals', stigma:true },
+          { id:'s08', label:'Unfavourable Street Number', stigma:true },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'negotiation',
+    title: 'Key Factors of Negotiation',
+    tagline: 'Count on me on negotiation',
+    cols: [
+      {
+        id: 'gc_nego',
+        title: 'Negotiation Elements',
+        items: [
+          { id:'n01', label:'1. Price' },
+          { id:'n02', label:'2. Terms and Conditions' },
+          { id:'n03', label:'3. Deposit' },
+          { id:'n04', label:'4. Extras' },
+          { id:'n05', label:'5. Closing Date' },
+        ]
+      },
+      {
+        id: 'gc_proc',
+        title: 'Negotiation Procedure',
+        items: [
+          { id:'p01', label:'1. Negotiation Planning' },
+          { id:'p02', label:'2. Negotiation Strategy' },
+        ]
+      }
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const S = { checked: {}, notes: {}, overall: '' };
+
+// ── COLLECT ALL ITEMS ─────────────────────────────────────────────────────────
+function allItems() {
+  const items = [];
+  SECTIONS.forEach(sec => {
+    if (sec.groups) sec.groups.forEach(g => g.items.forEach(it => items.push(it)));
+    if (sec.cols)   sec.cols.forEach(c => c.items.forEach(it => items.push(it)));
+  });
+  return items;
+}
+
+// ── BUILD DOM ─────────────────────────────────────────────────────────────────
+function build() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  SECTIONS.forEach(sec => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    secEl.id = 'sec_' + sec.id;
+
+    // header
+    const hdr = document.createElement('div');
+    hdr.className = 'sec-hdr';
+    hdr.innerHTML = `
+      <div class="sec-title">${sec.title}</div>
+      <div class="sec-right">
+        <span class="sec-tally" id="tally_${sec.id}"></span>
+        <span class="chevron">▾</span>
+      </div>`;
+    hdr.onclick = () => secEl.classList.toggle('collapsed');
+    secEl.appendChild(hdr);
+
+    const body = document.createElement('div');
+    body.className = 'sec-body';
+
+    // groups layout
+    if (sec.groups) {
+      sec.groups.forEach(g => {
+        if (g.label) {
+          const ghdr = document.createElement('div');
+          ghdr.className = 'group-hdr' + (g.red ? ' red-hdr' : '');
+          ghdr.innerHTML = `<span class="group-label">${g.label}</span>${g.tag ? `<span class="group-tag">${g.tag}</span>` : ''}`;
+          body.appendChild(ghdr);
+        }
+        g.items.forEach(it => body.appendChild(makeItemRow(it)));
+      });
+    }
+
+    // columns layout (negotiation)
+    if (sec.cols) {
+      const colsEl = document.createElement('div');
+      colsEl.className = 'nego-cols';
+      sec.cols.forEach(col => {
+        const colEl = document.createElement('div');
+        colEl.className = 'nego-col';
+        colEl.innerHTML = `<div class="nego-col-hdr"><div class="nego-col-title">${col.title}</div></div>`;
+        col.items.forEach(it => colEl.appendChild(makeItemRow(it)));
+        colsEl.appendChild(colEl);
+      });
+      body.appendChild(colsEl);
+      if (sec.tagline) {
+        const tl = document.createElement('div');
+        tl.className = 'nego-tagline';
+        tl.textContent = sec.tagline;
+        body.appendChild(tl);
+      }
+    }
+
+    secEl.appendChild(body);
+    app.appendChild(secEl);
+  });
+
+  // summary
+  const sum = document.createElement('div');
+  sum.className = 'summary-section';
+  sum.innerHTML = `
+    <div class="summary-hdr"><div class="summary-hdr-title">Buyer Consultation Notes &amp; Summary</div></div>
+    <div class="overall-wrap">
+      <div class="overall-lbl">Key Priorities, Preferences, Offer Strategy &amp; Remarks</div>
+      <textarea class="overall-ta" id="overall_notes" placeholder="Summarize buyer's top priorities, must-haves vs nice-to-haves, budget flexibility, timing constraints, offer strategy, and any special considerations..."></textarea>
+    </div>`;
+  app.appendChild(sum);
+
+  document.getElementById('tb_total').textContent = allItems().length;
+  document.getElementById('overall_notes').addEventListener('input', e => S.overall = e.target.value);
+  updateTally();
+}
+
+function makeItemRow(it) {
+  const wrap = document.createElement('div');
+
+  const row = document.createElement('div');
+  row.className = 'item-row' + (it.stigma ? ' stigma' : '');
+  row.id = 'row_' + it.id;
+
+  row.innerHTML = `
+    <div class="item-main">
+      <div class="item-cb-wrap" onclick="toggleCheck('${it.id}')">
+        <div class="cb-box"><span class="cb-tick">✓</span></div>
+      </div>
+      <div class="item-body">
+        <div class="item-label">${it.label}</div>
+      </div>
+      <div class="item-note-btn">
+        <button class="note-lnk" onclick="toggleNote('${it.id}')">note</button>
+      </div>
+    </div>
+    <div class="item-note-wrap" id="nwrap_${it.id}">
+      <div class="note-label">Notes</div>
+      <textarea class="note-ta" id="note_${it.id}" placeholder="Add your notes here…" rows="2"
+        oninput="S.notes['${it.id}']=this.value"></textarea>
+    </div>`;
+
+  return row;
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────────────
+function toggleCheck(id) {
+  const row = document.getElementById('row_' + id);
+  S.checked[id] = row.classList.toggle('checked');
+  updateTally();
+}
+
+function toggleNote(id) {
+  const wrap = document.getElementById('nwrap_' + id);
+  wrap.classList.toggle('open');
+  if (wrap.classList.contains('open')) document.getElementById('note_' + id).focus();
+}
+
+function updateTally() {
+  const total = Object.values(S.checked).filter(Boolean).length;
+  document.getElementById('tb_checked').textContent = total;
+
+  SECTIONS.forEach(sec => {
+    const tallyEl = document.getElementById('tally_' + sec.id);
+    if (!tallyEl) return;
+    let secItems = [];
+    if (sec.groups) sec.groups.forEach(g => g.items.forEach(it => secItems.push(it.id)));
+    if (sec.cols)   sec.cols.forEach(c => c.items.forEach(it => secItems.push(it.id)));
+    const on = secItems.filter(id => S.checked[id]).length;
+    tallyEl.textContent = on > 0 ? on + ' checked' : '';
+  });
+}
+
+function expandAll()  { document.querySelectorAll('.section').forEach(el => el.classList.remove('collapsed')); }
+function collapseAll(){ document.querySelectorAll('.section').forEach(el => el.classList.add('collapsed')); }
+
+function clearAll() {
+  if (!confirm('Clear all checks and notes?')) return;
+  document.querySelectorAll('.item-row').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.note-ta').forEach(el => el.value = '');
+  document.querySelectorAll('.item-note-wrap').forEach(el => el.classList.remove('open'));
+  const ov = document.getElementById('overall_notes'); if (ov) ov.value = '';
+  Object.keys(S.checked).forEach(k => S.checked[k] = false);
+  Object.keys(S.notes).forEach(k => S.notes[k] = '');
+  S.overall = '';
+  updateTally();
+  toast('Cleared.');
+}
+
+// ── JSON ──────────────────────────────────────────────────────────────────────
+function getForm() {
+  const ids = ['buyer','area','date','type','budget','agent','mls'];
+  const o = {}; ids.forEach(k => { const el = document.getElementById('f_'+k); if(el) o[k]=el.value; }); return o;
+}
+
+function saveJSON() {
+  const state = { form: getForm(), checked: S.checked, notes: S.notes, overall: S.overall };
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  const buyer = (document.getElementById('f_buyer').value||'').replace(/[^a-zA-Z0-9]/g,'_');
+  a.download = 'mapper' + (buyer ? '_'+buyer : '') + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  toast('JSON saved!');
+}
+
+function loadFile() { document.getElementById('fileInput').click(); }
+
+function handleLoad(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try { restoreState(JSON.parse(ev.target.result)); toast('Loaded.'); }
+    catch { alert('Invalid JSON file.'); }
+  };
+  reader.readAsText(file); e.target.value = '';
+}
+
+function restoreState(data) {
+  if (data.form) Object.entries(data.form).forEach(([k,v]) => { const el = document.getElementById('f_'+k); if(el) el.value=v; });
+  if (data.checked) Object.entries(data.checked).forEach(([id, on]) => {
+    if (on) { document.getElementById('row_'+id)?.classList.add('checked'); S.checked[id]=true; }
+  });
+  if (data.notes) Object.entries(data.notes).forEach(([id, val]) => {
+    if (!val) return; S.notes[id] = val;
+    const el = document.getElementById('note_'+id); if (el) el.value = val;
+    document.getElementById('nwrap_'+id)?.classList.add('open');
+  });
+  if (data.overall) { const el = document.getElementById('overall_notes'); if(el) el.value=data.overall; S.overall=data.overall; }
+  updateTally();
+}
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
+function savePDF() {
+  if (!window.jspdf) { toast('PDF library loading…'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'letter' });
+  const PW=215.9, PH=279.4, ML=14, MR=14, usableW=PW-ML-MR;
+  const NAVY=[15,37,72], GOLD=[184,149,42], WHITE=[255,255,255];
+  const GRAY=[74,69,64], LGRAY=[212,207,196], LITE=[247,245,240], HI=[251,246,233];
+  const RED=[153,27,27], REDLT=[254,242,242];
+
+  let y=0;
+  function checkY(h){ if(y+h>PH-14){ doc.addPage(); y=14; } }
+
+  // Cover
+  doc.setFillColor(...NAVY); doc.rect(0,0,PW,44,'F');
+  doc.setFontSize(18); doc.setTextColor(...WHITE); doc.setFont('helvetica','bold');
+  doc.text('Key Factors for Buying', ML, 17);
+  doc.setFontSize(9); doc.setTextColor(...GOLD); doc.setFont('helvetica','italic');
+  doc.text('Buyer Consultation Framework  ·  Pinnacle Listing System', ML, 24);
+  doc.setFillColor(...GOLD); doc.rect(0,44,PW,0.7,'F');
+
+  const form = getForm();
+  const ff=[['Buyer',form.buyer],['Area',form.area],['Date',form.date],['Budget',form.budget],['Type',form.type],['Agent',form.agent]];
+  let fx=ML;
+  ff.forEach(([lbl,val])=>{
+    if(val && fx<PW-40){
+      doc.setFontSize(7); doc.setTextColor(...GOLD); doc.setFont('helvetica','bold');
+      doc.text(lbl.toUpperCase(), fx, 32);
+      doc.setFontSize(7.5); doc.setTextColor(...WHITE); doc.setFont('helvetica','normal');
+      doc.text(String(val).substring(0,24), fx, 37);
+      fx+=32;
+    }
+  });
+
+  y=54;
+
+  SECTIONS.forEach(sec=>{
+    checkY(12);
+    doc.setFillColor(...NAVY); doc.rect(ML,y,usableW,8,'F');
+    doc.setFontSize(10); doc.setTextColor(...WHITE); doc.setFont('helvetica','bold');
+    doc.text(sec.title.toUpperCase(), ML+3, y+5.5);
+    y+=10;
+
+    if(sec.groups){
+      sec.groups.forEach(g=>{
+        // group header
+        if(g.label){
+          checkY(7);
+          if(g.red){ doc.setFillColor(...REDLT); } else { doc.setFillColor(235,230,221); }
+          doc.rect(ML,y,usableW,6,'F');
+          doc.setFontSize(7.5);
+          if(g.red){ doc.setTextColor(...RED); } else { doc.setTextColor(140,134,120); }
+          doc.setFont('helvetica','bold');
+          doc.text(g.label.toUpperCase()+(g.tag?' — '+g.tag.toUpperCase():''), ML+3, y+4.2);
+          y+=7;
+        }
+
+        g.items.forEach(it=>{
+          const isOn = !!S.checked[it.id];
+          const note = S.notes[it.id]||'';
+          const noteLines = note ? doc.splitTextToSize(note, usableW-16) : [];
+          const labelLines = doc.splitTextToSize(it.label, usableW-16);
+          const rowH = Math.max(7, labelLines.length*4+3 + (noteLines.length ? noteLines.length*3.5+5 : 0));
+
+          checkY(rowH);
+          if(isOn){ doc.setFillColor(...HI); }
+          else if(it.stigma){ doc.setFillColor(255,250,250); }
+          else { doc.setFillColor(248,246,242); }
+          doc.rect(ML,y,usableW,rowH,'F');
+          doc.setDrawColor(...LGRAY); doc.rect(ML,y,usableW,rowH,'S');
+
+          const accentColor = isOn ? GOLD : it.stigma ? RED : [176,168,154];
+          doc.setFillColor(...accentColor); doc.rect(ML,y,2.5,rowH,'F');
+
+          doc.setFontSize(isOn?9:8.5);
+          doc.setTextColor(...(it.stigma&&!isOn ? RED : GRAY));
+          doc.setFont('helvetica', isOn?'bold':'normal');
+          doc.text(labelLines, ML+6, y+4.8);
+
+          if(noteLines.length){
+            const noteY = y + labelLines.length*4 + 3;
+            doc.setFontSize(7); doc.setTextColor(140,134,120); doc.setFont('helvetica','italic');
+            doc.text('Note:', ML+6, noteY);
+            doc.setTextColor(100,90,75);
+            doc.text(noteLines, ML+16, noteY);
+          }
+          y+=rowH+0.5;
+        });
+      });
+    }
+
+    if(sec.cols){
+      const colW=usableW/2;
+      // col headers
+      checkY(8);
+      sec.cols.forEach((col,ci)=>{
+        doc.setFillColor(235,230,221); doc.rect(ML+ci*colW,y,colW,6,'F');
+        doc.setFontSize(7.5); doc.setTextColor(...GOLD); doc.setFont('helvetica','bold');
+        doc.text(col.title.toUpperCase(), ML+ci*colW+3, y+4.2);
+      });
+      y+=7;
+
+      const maxRows=Math.max(...sec.cols.map(c=>c.items.length));
+      for(let i=0;i<maxRows;i++){
+        // get max height for this row across both columns
+        let rowH=7;
+        sec.cols.forEach((col,ci)=>{
+          const it=col.items[i]; if(!it) return;
+          const note=S.notes[it.id]||'';
+          const nl=note?doc.splitTextToSize(note,colW-14):[];
+          const lh=Math.max(7, nl.length*3.5+(nl.length?7:0)+7);
+          rowH=Math.max(rowH,lh);
+        });
+
+        checkY(rowH);
+        sec.cols.forEach((col,ci)=>{
+          const it=col.items[i]; if(!it) return;
+          const isOn=!!S.checked[it.id];
+          const note=S.notes[it.id]||'';
+          const noteLines=note?doc.splitTextToSize(note,colW-16):[];
+
+          if(isOn){ doc.setFillColor(...HI); } else { doc.setFillColor(i%2===0?[248,246,242]:[252,250,248]); }
+          doc.rect(ML+ci*colW,y,colW,rowH,'F');
+          doc.setDrawColor(...LGRAY); doc.rect(ML+ci*colW,y,colW,rowH,'S');
+          if(isOn){ doc.setFillColor(...GOLD); doc.rect(ML+ci*colW,y,2.5,rowH,'F'); }
+
+          doc.setFontSize(isOn?9:8.5); doc.setTextColor(...GRAY); doc.setFont('helvetica',isOn?'bold':'normal');
+          doc.text(it.label, ML+ci*colW+5, y+4.8);
+
+          if(noteLines.length){
+            doc.setFontSize(7); doc.setTextColor(140,134,120); doc.setFont('helvetica','italic');
+            doc.text('Note: '+noteLines[0], ML+ci*colW+5, y+9);
+          }
+        });
+        y+=rowH+0.5;
+      }
+
+      if(sec.tagline){
+        checkY(8);
+        doc.setFillColor(245,237,213); doc.rect(ML,y,usableW,7,'F');
+        doc.setFontSize(9); doc.setTextColor(...GOLD); doc.setFont('helvetica','italic');
+        doc.text(sec.tagline, PW/2, y+5, 'center');
+        y+=9;
+      }
+    }
+    y+=4;
+  });
+
+  // Overall notes
+  const overall=document.getElementById('overall_notes')?.value||'';
+  if(overall){
+    checkY(14);
+    const onLines=doc.splitTextToSize(overall,usableW-8);
+    const onH=onLines.length*3.8+9;
+    doc.setFillColor(...LITE); doc.roundedRect(ML,y,usableW,onH,1.5,1.5,'F');
+    doc.setFontSize(7); doc.setTextColor(...GOLD); doc.setFont('helvetica','bold');
+    doc.text('BUYER CONSULTATION NOTES / STRATEGY REMARKS', ML+3, y+5);
+    doc.setFontSize(8); doc.setTextColor(...GRAY); doc.setFont('helvetica','normal');
+    doc.text(onLines, ML+3, y+9);
+  }
+
+  // Footer
+  const totalPages=doc.getNumberOfPages();
+  for(let i=1;i<=totalPages;i++){
+    doc.setPage(i);
+    doc.setFillColor(...NAVY); doc.rect(0,PH-8,PW,8,'F');
+    doc.setFontSize(6.5); doc.setTextColor(180,175,165); doc.setFont('helvetica','normal');
+    doc.text('Peter Luo, SRS · MCNE · FRI  ·  RE/MAX Realtron Realty Inc., Brokerage', ML, PH-3.5);
+    doc.setTextColor(...GOLD);
+    doc.text('Page '+i+' of '+totalPages, PW-MR, PH-3.5, 'right');
+  }
+
+  const buyer=(document.getElementById('f_buyer').value||'').replace(/[^a-zA-Z0-9]/g,'_');
+  doc.save('key_factors'+(buyer?'_'+buyer:'')+'.pdf');
+  toast('PDF saved!');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+build();
+</script>
+</body>
+</html>
