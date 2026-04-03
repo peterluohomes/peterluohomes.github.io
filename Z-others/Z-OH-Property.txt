@@ -1,9 +1,0 @@
-peterluo.homes/tools/register?addr=123+Main+St,+Toronto&lot=30x120&sqft=2450&year=2005&tax=4200&feat=Renovated+kitchen.+South-facing+yard.+Steps+to+subway.
-```
-Parameters:
-`addr` — Property address
-`lot` — Lot dimensions (e.g., `30x120`)
-`sqft` — Square footage
-`year` — Year built
-`tax` — Annual property tax (number only)
-`feat` — 3 main features
