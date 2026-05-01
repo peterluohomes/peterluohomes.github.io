@@ -259,6 +259,8 @@
   .sec-market .card-emoji { background: #E8F0FE; }
   .sec-wellness .section-icon { background: #E6F7ED; color: #1B7340; }
   .sec-wellness .card-emoji { background: #E6F7ED; }
+  .sec-seller .section-icon { background: #FBEAE8; color: #9A3A2E; }
+  .sec-seller .card-emoji { background: #FBEAE8; }
 
   /* ── No results ── */
   .no-results {
@@ -292,6 +294,7 @@
   .section:nth-child(9) { animation-delay: 0.4s; }
   .section:nth-child(10) { animation-delay: 0.45s; }
   .section:nth-child(11) { animation-delay: 0.5s; }
+  .section:nth-child(12) { animation-delay: 0.55s; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
@@ -451,6 +454,27 @@
       <a class="card" href="./plp">
         <div class="card-emoji">📄</div>
         <div class="card-body"><div class="card-title">Prelisting Package</div><div class="card-path">./plp</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Seller -->
+  <div class="section sec-seller" data-section="seller">
+    <div class="section-header">
+      <div class="section-icon">🤝</div>
+      <div class="section-title">Seller</div>
+      <div class="section-count">2</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./seller/scomms">
+        <div class="card-emoji">✉️</div>
+        <div class="card-body"><div class="card-title">Seller Communication</div><div class="card-path">./seller/scomms</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./seller/supdate">
+        <div class="card-emoji">📊</div>
+        <div class="card-body"><div class="card-title">Seller Update</div><div class="card-path">./seller/supdate</div></div>
         <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </a>
     </div>
