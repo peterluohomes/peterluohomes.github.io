@@ -1,22 +1,22 @@
 // ============================================================================
 //  firebase-sync.js  —  shared cloud-sync module for the Pinnacle tools
-//  Loaded by each tool as:  <script type="module" src="firebase-sync.js"></script>
-//
-//  Each tool, BEFORE loading this file, sets window.__SYNC = { ... } describing
-//  how to read/apply its own data. This file handles sign-in, reconciliation,
-//  and live cross-device updates. Config is entered ONCE, right below.
+//  Load in each tool as:  <script type="module" src="/firebase-sync.js"></script>
+//  Each tool sets window.__SYNC = {...} BEFORE this file loads.
+//  getData()/apply() may be sync OR async (return a Promise) — both work.
 // ============================================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+         getRedirectResult, signOut, onAuthStateChanged, browserLocalPersistence,
+         setPersistence }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
          doc, getDoc, setDoc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // ============================================================================
-//  >>> PASTE YOUR FIREBASE CONFIG VALUES HERE (replace each PASTE_… string) <<<
-//  Copy them from: Firebase console > Project settings > General > Your apps.
+//  >>> PASTE YOUR FIREBASE CONFIG VALUES HERE (replace each PASTE_... string) <<<
+//  From: Firebase console > Project settings > General > Your apps.
 //  Copy storageBucket EXACTLY (newer projects end in .firebasestorage.app).
 // ============================================================================
 const firebaseConfig = {
@@ -34,67 +34,80 @@ const db   = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
 
-const cfg = window.__SYNC || null;   // set by each tool before this module loads
-let uid          = null;
-let unsub        = null;
-let lastAppliedAt = 0;   // timestamp of the most recent data we wrote to the UI
-let lastPushedAt  = 0;   // timestamp of the most recent data we pushed (echo guard)
+const cfg = window.__SYNC || null;
+let uid = null, unsub = null, lastAppliedAt = 0, lastPushedAt = 0;
+let signinInProgress = false;
 
 function $(id){ return document.getElementById(id); }
 function setStatus(t){ const e = $('sync-status'); if (e) e.textContent = t; }
 function tsOf(d){ return (d && d.savedAt) ? (Date.parse(d.savedAt) || 0) : 0; }
 function docRef(){ return doc(db, 'users', uid, 'tools', cfg.toolName); }
+function isMobile(){ return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); } // iPadOS reports as Mac
 
 async function readCloud(){
   try { const s = await getDoc(docRef()); return s.exists() ? s.data().payload : null; }
-  catch(e){ console.warn('[sync] cloud read failed', e); return null; }
+  catch(e){ console.warn('[sync] read failed', e); return null; }
 }
 async function writeCloud(data){
-  try {
-    await setDoc(docRef(), { payload: data, savedAt: (data && data.savedAt) || new Date().toISOString() });
-  } catch(e){ console.warn('[sync] cloud write failed', e); }
+  try { await setDoc(docRef(), { payload: data, savedAt: (data && data.savedAt) || new Date().toISOString() }); }
+  catch(e){ console.warn('[sync] write failed', e); }
 }
 
-// On sign-in: decide whether cloud or local is newer, seed/apply accordingly,
-// then subscribe to live changes from other devices.
 async function reconcile(){
-  const local = cfg.getData ? cfg.getData() : null;
+  const local = cfg.getData ? await cfg.getData() : null;   // getData may be async
   const cloud = await readCloud();
   const lt = tsOf(local), ct = tsOf(cloud);
-
-  if (cloud && ct >= lt){          // cloud is newer (or local empty) -> pull down
+  if (cloud && ct >= lt){
     lastAppliedAt = ct;
-    try { cfg.apply(cloud); } catch(e){ console.warn('[sync] apply failed', e); }
-  } else if (local){               // local is newer (or no cloud yet) -> push up
+    try { await cfg.apply(cloud); } catch(e){ console.warn('[sync] apply failed', e); }
+  } else if (local){
     lastPushedAt = lt;
     await writeCloud(local);
   }
   setStatus('Synced \u2713');
-
   if (unsub) unsub();
-  unsub = onSnapshot(docRef(), (snap) => {
+  unsub = onSnapshot(docRef(), async (snap) => {
     if (!snap.exists()) return;
-    const data = snap.data().payload;
-    const at = tsOf(data);
-    // Apply only genuinely newer data that isn't the echo of our own push.
+    const data = snap.data().payload, at = tsOf(data);
     if (at > lastAppliedAt && at !== lastPushedAt){
       lastAppliedAt = at;
-      try { cfg.apply(data); } catch(e){ console.warn('[sync] apply failed', e); }
+      try { await cfg.apply(data); } catch(e){ console.warn('[sync] apply failed', e); }
       setStatus('Updated from another device \u2713');
     }
   }, (err) => console.warn('[sync] snapshot error', err));
 }
 
 const Sync = {
-  signIn:  async function(){
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-    catch(e){ alert('Sign-in failed: ' + (e && e.message ? e.message : e)); }
+  signIn: async function(){
+    if (signinInProgress) return;            // block double-taps -> no cancelled-popup-request
+    signinInProgress = true;
+    setStatus('Opening sign-in...');
+    const provider = new GoogleAuthProvider();
+    try {
+      if (isMobile()){
+        await signInWithRedirect(auth, provider);   // page navigates away & back; reliable on iOS
+        return;                                      // signinInProgress reset on reload
+      }
+      await signInWithPopup(auth, provider);
+    } catch(e){
+      const code = e && e.code;
+      if (code === 'auth/cancelled-popup-request' || code === 'auth/popup-closed-by-user'){
+        // benign: user double-tapped or closed the window -- no alert
+      } else if (code === 'auth/popup-blocked'){
+        try { await signInWithRedirect(auth, provider); return; } catch(_){}
+      } else {
+        alert('Sign-in failed: ' + (e && e.message ? e.message : e));
+        setStatus('Not signed in');
+      }
+    } finally {
+      signinInProgress = false;
+    }
   },
   signOut: function(){ signOut(auth); },
-  // Tools call this right after a local save so the change propagates to the cloud.
   notifyChanged: async function(){
     if (!uid || !cfg || !cfg.getData) return;
-    const data = cfg.getData();
+    const data = await cfg.getData();          // getData may be async
     if (!data) return;
     lastPushedAt = tsOf(data);
     await writeCloud(data);
@@ -103,12 +116,16 @@ const Sync = {
 };
 window.PinnacleSync = Sync;
 
+// Keep the session across reloads, and surface any redirect-flow errors.
+setPersistence(auth, browserLocalPersistence).catch(function(e){ console.warn('[sync] persistence', e); });
+getRedirectResult(auth).catch(function(e){ console.warn('[sync] redirect result', e); });
+
 onAuthStateChanged(auth, (user) => {
   const btn = $('sync-signin');
   if (user){
     uid = user.uid;
     if (btn) btn.style.display = 'none';
-    setStatus('Signed in \u2014 syncing\u2026');
+    setStatus('Signed in -- syncing...');
     if (cfg) reconcile();
   } else {
     uid = null;
