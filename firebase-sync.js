@@ -85,7 +85,7 @@ const Sync = {
     setStatus('Opening sign-in...');
     const provider = new GoogleAuthProvider();
     try {
-      if (isMobile()){
+      if (false){
         await signInWithRedirect(auth, provider);   // page navigates away & back; reliable on iOS
         return;                                      // signinInProgress reset on reload
       }
