@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just Sold Card Maker · Pinnacle Listing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#16223e; --navy-deep:#0f1830; --panel:#1b2a4a;
+    --gold:#c9a84c; --gold-soft:#d3b25a;
+    --cream:#f8f4ea; --ink:#1b2540; --muted:#8a93a8; --line:#2a3a5c;
+    --display:'Playfair Display',Georgia,serif;
+    --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--body);background:var(--navy-deep);color:var(--cream);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);background:#0c1428;}
+  .brand{display:flex;flex-direction:column;line-height:1.15;}
+  .brand .name{font-family:var(--display);font-weight:700;font-size:18px;}
+  .brand .sub{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-soft);margin-top:2px;}
+  .topbar .hint{font-size:12px;color:var(--muted);}
+
+  .wrap{display:grid;grid-template-columns:380px 1fr;gap:0;min-height:calc(100vh - 65px);}
+  .controls{padding:22px 22px 60px;border-right:1px solid var(--line);background:#0e1830;overflow-y:auto;}
+  .stage{padding:28px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+
+  .group{margin-bottom:20px;}
+  .group h3{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:11px;font-weight:700;}
+  label.f{display:block;font-size:11.5px;color:#aeb6c8;margin:11px 0 5px;font-weight:600;}
+  input[type=text], textarea{
+    width:100%;font-family:var(--body);font-size:14px;color:var(--cream);
+    background:#16233f;border:1px solid var(--line);border-radius:9px;padding:10px 11px;
+    transition:border-color .15s;
+  }
+  input[type=text]:focus, textarea:focus{outline:none;border-color:var(--gold);}
+  textarea{resize:vertical;min-height:54px;line-height:1.35;}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* dropzone */
+  .drop{
+    border:1.5px dashed #3a4d75;border-radius:12px;padding:20px;text-align:center;
+    cursor:pointer;transition:border-color .15s,background .15s;background:#13203a;
+  }
+  .drop:hover,.drop.over{border-color:var(--gold);background:#16243f;}
+  .drop svg{width:26px;height:26px;color:var(--gold-soft);margin-bottom:8px;}
+  .drop .big{font-size:13.5px;font-weight:600;color:var(--cream);}
+  .drop .small{font-size:11.5px;color:var(--muted);margin-top:3px;}
+
+  .slider-row{display:flex;align-items:center;gap:11px;margin-top:6px;}
+  .slider-row input[type=range]{flex:1;accent-color:var(--gold);}
+  .slider-row .val{font-size:12px;color:var(--muted);width:38px;text-align:right;}
+  .ghost-btn{
+    width:100%;margin-top:9px;background:transparent;border:1px solid var(--line);
+    color:#aeb6c8;border-radius:9px;padding:9px;font-family:var(--body);font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .ghost-btn:hover{border-color:var(--gold-soft);color:var(--cream);}
+  .toggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;cursor:pointer;font-size:13px;color:var(--cream);font-weight:600;}
+  .toggle input{accent-color:var(--gold);width:16px;height:16px;cursor:pointer;}
+  .toggle em{flex-basis:100%;font-style:normal;font-size:11px;color:var(--muted);font-weight:400;padding-left:24px;}
+  .controls.panel-off .text-group{opacity:.38;pointer-events:none;}
+
+  /* preview */
+  .preview-shell{width:100%;max-width:840px;}
+  .canvas-card{
+    width:100%;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px -24px rgba(0,0,0,.7);
+    border:1px solid #233354;display:block;background:#16223e;touch-action:none;cursor:grab;
+  }
+  .canvas-card.dragging{cursor:grabbing;}
+  .preview-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;}
+
+  .export-row{display:flex;gap:12px;align-items:center;width:100%;max-width:840px;}
+  .filename-wrap{flex:1;display:flex;align-items:center;gap:8px;background:#16233f;border:1px solid var(--line);border-radius:10px;padding:0 12px;}
+  .filename-wrap span{font-size:13px;color:var(--muted);white-space:nowrap;}
+  .filename-wrap input{border:0;background:transparent;padding:11px 0;flex:1;width:auto;}
+  .filename-wrap input:focus{outline:none;}
+  .filename-wrap .ext{color:var(--gold-soft);font-weight:600;}
+  .download{
+    background:var(--gold);color:var(--navy-deep);border:0;border-radius:10px;
+    padding:13px 22px;font-family:var(--body);font-weight:700;font-size:14.5px;cursor:pointer;
+    transition:background .15s,transform .1s;white-space:nowrap;
+  }
+  .download:hover{background:#b8973d;transform:translateY(-1px);}
+  .download:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+  .publish{max-width:840px;width:100%;background:#0c1730;border:1px solid var(--line);border-radius:11px;padding:15px 17px;font-size:12.5px;color:#aeb6c8;line-height:1.6;}
+  .publish b{color:var(--cream);}
+  .publish code{background:#1a2a4a;color:var(--gold-soft);padding:1px 6px;border-radius:5px;font-size:12px;}
+
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr;}
+    .controls{border-right:0;border-bottom:1px solid var(--line);}
+  }
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:#0c1730;border:1px solid var(--gold);color:var(--cream);
+    padding:13px 20px;border-radius:10px;font-size:13.5px;font-weight:600;
+    box-shadow:0 14px 40px -12px rgba(0,0,0,.7);opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:50;max-width:90vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.error{border-color:var(--bad,#d46a6a);}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="name">Just Sold Card Maker</span>
+      <span class="sub">Pinnacle Listing System</span>
+    </div>
+    <span class="hint">1200 × 630 · ready for Facebook</span>
+  </div>
+
+  <div class="wrap">
+    <!-- ============ CONTROLS ============ -->
+    <div class="controls">
+
+      <div class="group">
+        <h3>Publish to GitHub</h3>
+        <label class="f">GitHub token <span style="color:var(--muted);font-weight:400">· kept only in this field, never saved</span></label>
+        <input type="password" id="gh-token" placeholder="ghp_… or github_pat_…" autocomplete="off">
+        <label class="f">Website repo · saved on this device</label>
+        <div class="twocol">
+          <input type="text" id="gh-owner" placeholder="owner">
+          <input type="text" id="gh-repo" placeholder="repo (e.g. peterluohomes.github.io)">
+        </div>
+        <div class="twocol" style="margin-top:9px;">
+          <input type="text" id="gh-branch" placeholder="branch">
+          <input type="text" id="gh-dir" placeholder="folder">
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Photo</h3>
+        <div class="drop" id="drop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div class="big">Upload property photo</div>
+          <div class="small">Click or drag an image here</div>
+        </div>
+        <input type="file" id="file" accept="image/*" style="display:none">
+
+        <label class="f">Zoom</label>
+        <div class="slider-row">
+          <input type="range" id="zoom" min="1" max="3" step="0.01" value="1" disabled>
+          <span class="val" id="zoomVal">1.0×</span>
+        </div>
+        <button class="ghost-btn" id="recenter" disabled>Recenter photo</button>
+        <label class="toggle"><input type="checkbox" id="fullbleed"> <span>Full-bleed photo</span><em>fills all 1200×630, hides the text panel</em></label>
+      </div>
+
+      <div class="group text-group">
+        <h3>Badge & address</h3>
+        <label class="f">Badge</label>
+        <input type="text" id="badge" value="JUST SOLD IN 3 DAYS">
+        <label class="f">Address line</label>
+        <input type="text" id="address" value="18 Hayfield Crescent, Richmond Hill">
+      </div>
+
+      <div class="group text-group">
+        <h3>Headline</h3>
+        <label class="f">Headline — cream (one line per row)</label>
+        <textarea id="headline">Want your home
+sold fast — for</textarea>
+        <label class="f">Accent line — gold italic</label>
+        <input type="text" id="accent" value="top dollar?">
+        <label class="f">Sub-line — muted (one line per row)</label>
+        <textarea id="sub">Get a free home valuation
+and see how I did it.</textarea>
+      </div>
+
+      <div class="group text-group">
+        <h3>Footer</h3>
+        <label class="f">Name</label>
+        <input type="text" id="name" value="Peter Luo">
+        <label class="f">Role</label>
+        <input type="text" id="role" value="Broker · RE/MAX Realtron Realty Inc.">
+        <label class="f">URL</label>
+        <input type="text" id="url" value="peterluo.homes/valuation">
+      </div>
+    </div>
+
+    <!-- ============ PREVIEW ============ -->
+    <div class="stage">
+      <div class="preview-shell">
+        <canvas id="card" class="canvas-card" width="1200" height="630"></canvas>
+        <div class="preview-note">Drag to reposition · scroll or pinch over the photo to zoom · or use the Zoom slider</div>
+      </div>
+
+      <div class="export-row">
+        <div class="filename-wrap">
+          <span>imgs /</span>
+          <input type="text" id="filename" value="hayfield" spellcheck="false">
+          <span class="ext">.jpg</span>
+        </div>
+        <button class="download" id="download" disabled>Download JPG</button>
+        <button class="download" id="publish" style="background:var(--navy);color:var(--cream);border:1px solid var(--gold)" disabled>Publish to imgs/</button>
+      </div>
+
+      <div class="publish">
+        <b>To publish:</b> download the JPG → drag it into your <code>imgs/</code> folder on GitHub (the repo serving peterluo.homes) and commit → post <code>imgs.peterluo.workers.dev/?img=<span id="fnEcho">hayfield</span></code> to Facebook. The filename here becomes the <code>?img=</code> value, so keep it short and lowercase.
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('card');
+  const ctx = canvas.getContext('2d');
+  const W = 1200, H = 630, SPLIT = 400;            // photo region x: SPLIT..W (split card)
+  let fullBleed = false;
+  function getRegion(){ const x = fullBleed ? 0 : SPLIT; return { x:x, y:0, w:W-x, h:H }; }
+
+  let img = null;
+  let zoom = 1, panX = 0, panY = 0;                // pan = offset from centered
+  let fontsReady = false;
+
+  const $ = id => document.getElementById(id);
+  const fields = ['badge','address','headline','accent','sub','name','role','url'];
+
+  // ---------- font loading ----------
+  async function loadFonts(){
+    try{
+      await Promise.all([
+        document.fonts.load('700 37px "Playfair Display"'),
+        document.fonts.load('italic 600 37px "Playfair Display"'),
+        document.fonts.load('700 25px "Playfair Display"'),
+        document.fonts.load('400 18px "DM Sans"'),
+        document.fonts.load('500 17px "DM Sans"'),
+        document.fonts.load('700 17px "DM Sans"')
+      ]);
+      await document.fonts.ready;
+    }catch(e){}
+    fontsReady = true;
+    draw();
+  }
+
+  // ---------- helpers ----------
+  function clamp(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); }
+
+  function drawPhoto(){
+    if(!img) return;
+    const region = getRegion();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(region.x, region.y, region.w, region.h);
+    ctx.clip();
+    const base = Math.max(region.w/img.width, region.h/img.height);
+    const s = base * zoom;
+    const dw = img.width*s, dh = img.height*s;
+    let dx = region.x + (region.w-dw)/2 + panX;
+    let dy = region.y + (region.h-dh)/2 + panY;
+    dx = clamp(dx, region.x+region.w-dw, region.x);   // keep fully covered
+    dy = clamp(dy, region.y+region.h-dh, region.y);
+    panX = dx - (region.x + (region.w-dw)/2);          // write back clamped pan
+    panY = dy - (region.y + (region.h-dh)/2);
+    ctx.drawImage(img, dx, dy, dw, dh);
+    ctx.restore();
+  }
+
+  function setLS(px){ if('letterSpacing' in ctx) ctx.letterSpacing = px+'px'; }
+
+  function draw(){
+    const region = getRegion();
+    // background — radial navy
+    const g = ctx.createRadialGradient(480,63,0, 480,63,1100);
+    g.addColorStop(0,'#223158'); g.addColorStop(.55,'#17243f'); g.addColorStop(1,'#0e1730');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+    // photo (right) or placeholder
+    if(img){ drawPhoto(); }
+    else {
+      ctx.fillStyle = '#0c1730'; ctx.fillRect(region.x,0,region.w,H);
+      ctx.fillStyle = '#3a4d75'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font = '500 19px "DM Sans"';
+      ctx.fillText('Upload a photo' + (fullBleed?'':' →'), region.x + region.w/2, H/2);
+    }
+
+    // full-bleed: photo only, no panel or text
+    if(fullBleed){ ctx.textAlign='left'; ctx.textBaseline='alphabetic'; return; }
+
+    // seam fade + gold divider
+    const seam = ctx.createLinearGradient(region.x,0, region.x+110,0);
+    seam.addColorStop(0,'rgba(14,23,48,0.9)'); seam.addColorStop(1,'rgba(14,23,48,0)');
+    ctx.fillStyle = seam; ctx.fillRect(region.x,0,110,H);
+    ctx.fillStyle = 'rgba(201,168,76,0.85)'; ctx.fillRect(SPLIT-2,0,2.5,H);
+
+    ctx.textBaseline = 'alphabetic';
+
+    // ---- badge ----
+    const badge = ($('badge').value||'').toUpperCase();
+    if(badge){
+      ctx.font = '700 17px "DM Sans"'; setLS(2);
+      const tw = ctx.measureText(badge).width;
+      const padX = 24, bw = tw + padX*2, bx = 36, by = 54, bh = 40, r = 5;
+      ctx.fillStyle = '#c9a84c';
+      roundRect(bx,by,bw,bh,r); ctx.fill();
+      ctx.fillStyle = '#15233f'; ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText(badge, bx+padX, by+bh/2+1);
+      setLS(0); ctx.textBaseline='alphabetic';
+    }
+
+    // ---- address ----
+    ctx.fillStyle = '#cdd5e6'; ctx.textAlign='left';
+    ctx.font = '500 16px "DM Sans"';
+    ctx.fillText($('address').value||'', 38, 130);
+
+    // ---- headline (cream) + accent (gold italic) ----
+    const hlLines = ($('headline').value||'').split('\n').filter(l=>l.length);
+    let y = 196; const step = 48;
+    ctx.fillStyle = '#f8f4ea'; ctx.font = '700 37px "Playfair Display"';
+    hlLines.forEach(line=>{ ctx.fillText(line, 36, y); y += step; });
+    const accent = ($('accent').value||'').trim();
+    if(accent){
+      ctx.fillStyle = '#d3b25a'; ctx.font = 'italic 600 37px "Playfair Display"';
+      ctx.fillText(accent, 36, y); y += step;
+    }
+
+    // ---- sub ----
+    const subLines = ($('sub').value||'').split('\n').filter(l=>l.length);
+    let sy = y + 14; const sstep = 26;
+    ctx.fillStyle = '#aeb6c8'; ctx.font = '400 18px "DM Sans"';
+    subLines.forEach(line=>{ ctx.fillText(line, 38, sy); sy += sstep; });
+
+    // ---- footer (fixed at bottom) ----
+    ctx.strokeStyle = 'rgba(201,168,76,0.4)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(36,512); ctx.lineTo(364,512); ctx.stroke();
+
+    ctx.fillStyle = '#f8f4ea'; ctx.font = '700 25px "Playfair Display"';
+    ctx.fillText($('name').value||'', 36, 550);
+    ctx.fillStyle = '#9aa3b8'; ctx.font = '400 14px "DM Sans"';
+    ctx.fillText($('role').value||'', 38, 573);
+    ctx.fillStyle = '#d3b25a'; ctx.font = '500 17px "DM Sans"';
+    ctx.fillText($('url').value||'', 38, 598);
+  }
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  // ---------- image load ----------
+  function loadImageFile(f){
+    if(!f || !f.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(f);
+    const im = new Image();
+    im.onload = ()=>{
+      img = im; zoom = 1; panX = 0; panY = 0;
+      $('zoom').disabled = false; $('zoom').value = 1; $('zoomVal').textContent = '1.0×';
+      $('recenter').disabled = false; $('download').disabled = false; $('publish').disabled = false;
+      draw(); URL.revokeObjectURL(url);
+    };
+    im.src = url;
+  }
+
+  // ---------- drag to pan ----------
+  let dragging = false, lastX = 0, lastY = 0;
+  function canvasScale(){ return W / canvas.getBoundingClientRect().width; }
+  canvas.addEventListener('pointerdown', e=>{
+    if(!img) return;
+    dragging = true; canvas.classList.add('dragging');
+    canvas.setPointerCapture(e.pointerId);
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const sc = canvasScale();
+    panX += (e.clientX - lastX) * sc;
+    panY += (e.clientY - lastY) * sc;
+    lastX = e.clientX; lastY = e.clientY;
+    draw();
+  });
+  function endDrag(){ dragging = false; canvas.classList.remove('dragging'); }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+
+  // ---------- zoom on the photo (wheel / trackpad), centred on cursor ----------
+  function applyZoom(newZoom, cx, cy){
+    if(!img) return;
+    const region = getRegion();
+    newZoom = clamp(newZoom, 1, 3);
+    if(newZoom === zoom) return;
+    // keep the point under the cursor stationary while zooming
+    const sc = canvasScale();
+    const px = (cx - canvas.getBoundingClientRect().left) * sc;
+    const py = (cy - canvas.getBoundingClientRect().top) * sc;
+    const base = Math.max(region.w/img.width, region.h/img.height);
+    const before = base*zoom, after = base*newZoom;
+    // current top-left of image
+    const dwB = img.width*before, dhB = img.height*before;
+    let dxB = region.x + (region.w-dwB)/2 + panX;
+    let dyB = region.y + (region.h-dhB)/2 + panY;
+    const ix = (px - dxB)/before, iy = (py - dyB)/before;   // image coords under cursor
+    const dwA = img.width*after, dhA = img.height*after;
+    const dxA = px - ix*after, dyA = py - iy*after;          // new top-left so cursor stays put
+    panX = dxA - (region.x + (region.w-dwA)/2);
+    panY = dyA - (region.y + (region.h-dhA)/2);
+    zoom = newZoom;
+    $('zoom').value = zoom; $('zoomVal').textContent = zoom.toFixed(1)+'×';
+    draw();
+  }
+  canvas.addEventListener('wheel', e=>{
+    if(!img) return;
+    e.preventDefault();
+    applyZoom(zoom * (e.deltaY < 0 ? 1.08 : 0.926), e.clientX, e.clientY);
+  }, { passive:false });
+
+  // pinch-zoom (two fingers) on touch devices
+  let pinchDist = 0, pinchMid = null;
+  canvas.addEventListener('touchstart', e=>{
+    if(e.touches.length === 2){
+      pinchDist = touchDist(e); pinchMid = touchMid(e);
+    }
+  }, { passive:false });
+  canvas.addEventListener('touchmove', e=>{
+    if(e.touches.length === 2 && img){
+      e.preventDefault();
+      const d = touchDist(e), mid = touchMid(e);
+      if(pinchDist) applyZoom(zoom * (d/pinchDist), mid.x, mid.y);
+      pinchDist = d; pinchMid = mid;
+    }
+  }, { passive:false });
+  function touchDist(e){ const a=e.touches[0], b=e.touches[1]; return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+  function touchMid(e){ const a=e.touches[0], b=e.touches[1]; return { x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2 }; }
+
+  // ---------- controls ----------
+  const drop = $('drop');
+  drop.addEventListener('click', ()=> $('file').click());
+  $('file').addEventListener('change', e=> loadImageFile(e.target.files[0]));
+  ['dragover','dragenter'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e=> loadImageFile(e.dataTransfer.files[0]));
+
+  $('zoom').addEventListener('input', e=>{
+    zoom = parseFloat(e.target.value);
+    $('zoomVal').textContent = zoom.toFixed(1)+'×';
+    draw();
+  });
+  $('recenter').addEventListener('click', ()=>{
+    zoom = 1; panX = 0; panY = 0;
+    $('zoom').value = 1; $('zoomVal').textContent = '1.0×';
+    draw();
+  });
+
+  $('fullbleed').addEventListener('change', e=>{
+    fullBleed = e.target.checked;
+    panX = 0; panY = 0;                 // region width changes → recenter
+    document.querySelector('.controls').classList.toggle('panel-off', fullBleed);
+    draw();
+  });
+
+  fields.forEach(id=> $(id).addEventListener('input', draw));
+
+  // filename echo
+  const fn = $('filename'), fnEcho = $('fnEcho');
+  function cleanFn(){
+    let v = fn.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
+    fnEcho.textContent = v || 'hayfield';
+    return v;
+  }
+  fn.addEventListener('input', cleanFn);
+
+  // ---------- export ----------
+  $('download').addEventListener('click', ()=>{
+    if(!img) return;
+    draw();
+    const name = (cleanFn() || 'sold') + '.jpg';
+    canvas.toBlob(blob=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+    }, 'image/jpeg', 0.92);
+  });
+
+  // ---------- toast ----------
+  let toastTimer = null;
+  function toast(msg, isErr){
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', !!isErr);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), isErr ? 5000 : 3000);
+  }
+
+  // ---------- repo settings (saved on this device; token is NOT saved) ----------
+  const repoFields = { owner:'gh-owner', repo:'gh-repo', branch:'gh-branch', dir:'gh-dir' };
+  const repoDefaults = { owner:'peterluohomes', repo:'', branch:'main', dir:'imgs' };
+  function loadRepoSettings(){
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem('scm_repo') || '{}'); } catch(e){}
+    Object.keys(repoFields).forEach(k=>{
+      $(repoFields[k]).value = (saved[k] != null && saved[k] !== '') ? saved[k] : repoDefaults[k];
+    });
+  }
+  function saveRepoSettings(){
+    const s = {};
+    Object.keys(repoFields).forEach(k=> s[k] = $(repoFields[k]).value.trim());
+    try { localStorage.setItem('scm_repo', JSON.stringify(s)); } catch(e){}
+  }
+  Object.values(repoFields).forEach(id=> $(id).addEventListener('input', saveRepoSettings));
+
+  function getToken(){
+    const t = $('gh-token').value.trim();
+    if(!t){ toast('Enter your GitHub token first', true); return null; }
+    return t;
+  }
+
+  // ---------- publish to GitHub (mirrors the open-house commit) ----------
+  $('publish').addEventListener('click', async ()=>{
+    if(!img){ toast('Upload a photo first', true); return; }
+    const token = getToken(); if(!token) return;
+    const owner = $('gh-owner').value.trim(), repo = $('gh-repo').value.trim();
+    const branch = $('gh-branch').value.trim() || 'main', dir = $('gh-dir').value.trim() || 'imgs';
+    const fname = cleanFn();
+    if(!owner || !repo){ toast('Set the repo owner and name', true); return; }
+    if(!fname){ toast('Enter a filename', true); return; }
+
+    const path = dir.replace(/\/+$/,'') + '/' + fname + '.jpg';
+    const base = 'https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;
+    const headers = { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github.v3+json' };
+
+    const btn = $('publish');
+    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Publishing…';
+    try {
+      draw();
+      // base64 of the JPEG bytes (strip the data-URL prefix)
+      const content = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+
+      // does the file already exist? need its sha to overwrite
+      let sha = null;
+      const head = await fetch(base + '?ref=' + encodeURIComponent(branch), { headers });
+      if(head.ok){ const d = await head.json(); sha = d.sha; }
+      else if(head.status !== 404){ throw new Error('Check failed: ' + head.status); }
+
+      const body = {
+        message: 'Add sold card ' + fname + '.jpg — ' + new Date().toLocaleString(),
+        content: content,
+        branch: branch
+      };
+      if(sha) body.sha = sha;
+
+      const put = await fetch(base, {
+        method:'PUT',
+        headers: Object.assign({}, headers, { 'Content-Type':'application/json' }),
+        body: JSON.stringify(body)
+      });
+      if(!put.ok){ const d = await put.json().catch(()=>({})); throw new Error(d.message || ('API error ' + put.status)); }
+
+      toast('Published ✓  Post:  imgs.peterluo.workers.dev/?img=' + fname);
+    } catch(err){
+      toast('Publish failed: ' + err.message, true);
+    } finally {
+      btn.disabled = false; btn.textContent = label;
+    }
+  });
+
+  // init
+  loadRepoSettings();
+  loadFonts();
+  draw();
+})();
+</script>
+</body>
+</html>
