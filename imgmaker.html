@@ -129,7 +129,7 @@
         </div>
         <div class="twocol" style="margin-top:9px;">
           <input type="text" id="gh-branch" placeholder="branch">
-          <input type="text" id="gh-dir" placeholder="folder">
+          <input type="text" id="gh-dir" placeholder="imgs">
         </div>
       </div>
 
@@ -200,7 +200,7 @@ and see how I did it.</textarea>
       </div>
 
       <div class="publish">
-        <b>To publish:</b> download the JPG → drag it into your <code>imgs/</code> folder on GitHub (the repo serving peterluo.homes) and commit → post <code>imgs.peterluo.workers.dev/?img=<span id="fnEcho">hayfield</span></code> to Facebook. The filename here becomes the <code>?img=</code> value, so keep it short and lowercase.
+        <b>Publish to imgs/</b> commits the card straight into your <code>imgs</code> repo, then post <code>imgs.peterluo.workers.dev/?img=<span id="fnEcho">hayfield</span></code> to Facebook. The filename becomes the <code>?img=</code> value — keep it short and lowercase. (Or use <b>Download JPG</b> and add it to the repo by hand.)
       </div>
     </div>
   </div>
@@ -499,7 +499,7 @@ and see how I did it.</textarea>
   const repoDefaults = { owner:'peterluohomes', repo:'peterluohomes.github.io', branch:'main', dir:'imgs' };
   function loadRepoSettings(){
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem('scm_repo_v2') || '{}'); } catch(e){}
+    try { saved = JSON.parse(localStorage.getItem('scm_repo_v4') || '{}'); } catch(e){}
     Object.keys(repoFields).forEach(k=>{
       $(repoFields[k]).value = (saved[k] != null && saved[k] !== '') ? saved[k] : repoDefaults[k];
     });
@@ -507,7 +507,7 @@ and see how I did it.</textarea>
   function saveRepoSettings(){
     const s = {};
     Object.keys(repoFields).forEach(k=> s[k] = $(repoFields[k]).value.trim());
-    try { localStorage.setItem('scm_repo_v2', JSON.stringify(s)); } catch(e){}
+    try { localStorage.setItem('scm_repo_v4', JSON.stringify(s)); } catch(e){}
   }
   Object.values(repoFields).forEach(id=> $(id).addEventListener('input', saveRepoSettings));
 
@@ -527,7 +527,8 @@ and see how I did it.</textarea>
     if(!owner || !repo){ toast('Set the repo owner and name', true); return; }
     if(!fname){ toast('Enter a filename', true); return; }
 
-    const path = dir.replace(/\/+$/,'') + '/' + fname + '.jpg';
+    const cleanDir = dir.replace(/^\/+|\/+$/g,'');
+    const path = (cleanDir ? cleanDir + '/' : '') + fname + '.jpg';
     const base = 'https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;
     const headers = { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github.v3+json' };
 
