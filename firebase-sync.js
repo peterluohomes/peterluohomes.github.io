@@ -37,6 +37,11 @@ const db   = initializeFirestore(app, {
 const cfg = window.__SYNC || null;
 let uid = null, unsub = null, lastAppliedAt = 0, lastPushedAt = 0;
 let signinInProgress = false;
+let applyingRemote = false;   // true while we apply cloud data, so it can't echo back as a save
+// A stable id for THIS device/tab session, written with every save so we can
+// recognise and ignore our own writes coming back through the listener.
+const CLIENT_ID = (self.crypto && crypto.randomUUID) ? crypto.randomUUID()
+  : (Date.now() + '-' + Math.random().toString(36).slice(2));
 
 function $(id){ return document.getElementById(id); }
 function setStatus(t){ const e = $('sync-status'); if (e) e.textContent = t; }
@@ -50,31 +55,62 @@ async function readCloud(){
   catch(e){ console.warn('[sync] read failed', e); return null; }
 }
 async function writeCloud(data){
-  try { await setDoc(docRef(), { payload: data, savedAt: (data && data.savedAt) || new Date().toISOString() }); }
+  try {
+    await setDoc(docRef(), {
+      payload: data,
+      savedAt: (data && data.savedAt) || new Date().toISOString(),
+      writer:  CLIENT_ID
+    });
+  }
   catch(e){ console.warn('[sync] write failed', e); }
+}
+
+// Apply remote data WITHOUT letting it trigger a save-back (echo).
+async function applyRemote(data){
+  applyingRemote = true;
+  try { await cfg.apply(data); }
+  catch(e){ console.warn('[sync] apply failed', e); }
+  finally { applyingRemote = false; }
+}
+// Timestamp of whatever the tool currently has in memory RIGHT NOW.
+async function localTs(){
+  try { return tsOf(cfg.getData ? await cfg.getData() : null); }
+  catch(e){ return 0; }
 }
 
 async function reconcile(){
   const local = cfg.getData ? await cfg.getData() : null;   // getData may be async
   const cloud = await readCloud();
   const lt = tsOf(local), ct = tsOf(cloud);
-  if (cloud && ct >= lt){
+  if (cloud && ct > lt){
     lastAppliedAt = ct;
-    try { await cfg.apply(cloud); } catch(e){ console.warn('[sync] apply failed', e); }
-  } else if (local){
+    await applyRemote(cloud);
+  } else if (local && lt > ct){
     lastPushedAt = lt;
     await writeCloud(local);
+  } else {
+    // equal timestamps (or both empty) -> treat as already in sync, touch nothing
+    lastAppliedAt = Math.max(lastAppliedAt, ct);
   }
   setStatus('Synced \u2713');
   if (unsub) unsub();
   unsub = onSnapshot(docRef(), async (snap) => {
     if (!snap.exists()) return;
-    const data = snap.data().payload, at = tsOf(data);
-    if (at > lastAppliedAt && at !== lastPushedAt){
-      lastAppliedAt = at;
-      try { await cfg.apply(data); } catch(e){ console.warn('[sync] apply failed', e); }
-      setStatus('Updated from another device \u2713');
-    }
+    // Skip our own optimistic local write before the server confirms it.
+    if (snap.metadata && snap.metadata.hasPendingWrites) return;
+    const raw  = snap.data();
+    const data = raw.payload, at = tsOf(data);
+    // Skip our OWN write echoing back from the server.
+    if (raw.writer === CLIENT_ID){ lastPushedAt = at; return; }
+    // CRITICAL GUARD: only accept data that is strictly newer than what THIS
+    // device currently holds. An idle device pushing a stale copy will have an
+    // older (or equal) timestamp, so it can never roll back active work here.
+    const here = await localTs();
+    if (at <= here)          return;   // not newer than my live data -> ignore
+    if (at <= lastAppliedAt) return;   // already applied something this fresh
+    lastAppliedAt = at;
+    await applyRemote(data);
+    setStatus('Updated from another device \u2713');
   }, (err) => console.warn('[sync] snapshot error', err));
 }
 
@@ -107,9 +143,12 @@ const Sync = {
   signOut: function(){ signOut(auth); },
   notifyChanged: async function(){
     if (!uid || !cfg || !cfg.getData) return;
+    if (applyingRemote) return;                 // don't save data we're mid-applying from the cloud
     const data = await cfg.getData();          // getData may be async
     if (!data) return;
-    lastPushedAt = tsOf(data);
+    const at = tsOf(data);
+    if (at && at <= lastAppliedAt) return;      // not newer than what we just applied -> spurious, skip
+    lastPushedAt = at;
     await writeCloud(data);
     setStatus('Synced \u2713');
   }
