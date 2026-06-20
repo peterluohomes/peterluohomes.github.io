@@ -85,11 +85,17 @@ async function reconcile(){
   if (cloud && ct > lt){
     lastAppliedAt = ct;
     await applyRemote(cloud);
-  } else if (local && lt > ct){
+  } else if (!cloud && local){
+    // Cloud is empty -> seed it from this device. We DELIBERATELY do not push
+    // local over an EXISTING cloud doc here: a device whose clock runs ahead
+    // could otherwise mark its stale snapshot as "newer" and shove it up on
+    // open, which then shows as "new data" on your active device and rolls it
+    // back. Real edits still sync via notifyChanged; offline work still flushes
+    // through Firestore's write queue. Reconcile only ever SEEDS or PULLS.
     lastPushedAt = lt;
     await writeCloud(local);
   } else {
-    // equal timestamps (or both empty) -> treat as already in sync, touch nothing
+    // cloud exists and is not newer (older or equal) -> leave it alone
     lastAppliedAt = Math.max(lastAppliedAt, ct);
   }
   setStatus('Synced \u2713');
