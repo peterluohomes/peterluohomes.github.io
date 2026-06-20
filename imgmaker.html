@@ -499,7 +499,7 @@ and see how I did it.</textarea>
   const repoDefaults = { owner:'peterluohomes', repo:'peterluohomes.github.io', branch:'main', dir:'imgs' };
   function loadRepoSettings(){
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem('scm_repo') || '{}'); } catch(e){}
+    try { saved = JSON.parse(localStorage.getItem('scm_repo_v2') || '{}'); } catch(e){}
     Object.keys(repoFields).forEach(k=>{
       $(repoFields[k]).value = (saved[k] != null && saved[k] !== '') ? saved[k] : repoDefaults[k];
     });
@@ -507,7 +507,7 @@ and see how I did it.</textarea>
   function saveRepoSettings(){
     const s = {};
     Object.keys(repoFields).forEach(k=> s[k] = $(repoFields[k]).value.trim());
-    try { localStorage.setItem('scm_repo', JSON.stringify(s)); } catch(e){}
+    try { localStorage.setItem('scm_repo_v2', JSON.stringify(s)); } catch(e){}
   }
   Object.values(repoFields).forEach(id=> $(id).addEventListener('input', saveRepoSettings));
 
