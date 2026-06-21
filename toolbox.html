@@ -262,6 +262,26 @@
   .sec-seller .section-icon { background: #FBEAE8; color: #9A3A2E; }
   .sec-seller .card-emoji { background: #FBEAE8; }
   .sec-tools .section-icon { background: #EAEFF5; color: var(--navy); }
+  .sec-marketing .section-icon { background: #FBE9DA; color: #A0593B; }
+  .info-card .info-i { color: var(--gold); }
+  .info-card:hover .info-i { color: var(--navy); }
+  .modal-back{position:fixed;inset:0;background:rgba(18,39,72,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
+  .modal-back.open{display:flex;}
+  .modal{background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;box-shadow:0 30px 80px -20px rgba(18,39,72,.6);border:1px solid var(--cream-dark);}
+  .modal-head{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 14px;border-bottom:1px solid var(--cream-dark);position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;}
+  .modal-head .em{font-size:28px;line-height:1;}
+  .modal-head h3{font-size:19px;color:var(--navy);font-weight:700;margin:0;}
+  .modal-head .u{font-size:12.5px;color:var(--gold);font-weight:600;margin-top:3px;word-break:break-all;}
+  .modal-close{margin-left:auto;background:none;border:0;font-size:26px;line-height:1;color:#9aa0a8;cursor:pointer;padding:0 4px;}
+  .modal-body{padding:18px 24px 8px;color:#37415a;font-size:14px;line-height:1.6;}
+  .modal-body h4{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#A0593B;margin:16px 0 6px;font-weight:700;}
+  .modal-body h4:first-child{margin-top:0;}
+  .modal-body ul{margin:0 0 6px 0;padding-left:18px;}
+  .modal-body li{margin:4px 0;}
+  .modal-body code{background:var(--cream-dark);color:var(--navy);padding:1px 6px;border-radius:5px;font-size:12.5px;word-break:break-all;}
+  .modal-foot{padding:14px 24px 22px;display:flex;gap:10px;flex-wrap:wrap;}
+  .modal-foot a{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;text-decoration:none;font-weight:600;font-size:13.5px;padding:11px 18px;border-radius:10px;}
+  .modal-foot a.alt{background:transparent;color:var(--navy);border:1px solid var(--cream-dark);}
   .sec-tools .card-emoji { background: #EAEFF5; }
 
   /* ── No results ── */
@@ -323,23 +343,13 @@
 <div class="content" id="content">
 
   <!-- Tools -->
-  <div class="section sec-tools" data-section="tools">
+  <div class="section sec-marketing" data-section="marketing">
     <div class="section-header">
-      <div class="section-icon">🧰</div>
-      <div class="section-title">Tools</div>
-      <div class="section-count">6</div>
+      <div class="section-icon">📣</div>
+      <div class="section-title">Marketing</div>
+      <div class="section-count">11</div>
     </div>
     <div class="card-list">
-      <a class="card" href="./tools/fintrac">
-        <div class="card-emoji">🛡️</div>
-        <div class="card-body"><div class="card-title">FINTRAC</div><div class="card-path">./tools/fintrac</div></div>
-        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
-      <a class="card" href="./tools/call">
-        <div class="card-emoji">☎️</div>
-        <div class="card-body"><div class="card-title">Pre-Call Checklist</div><div class="card-path">./tools/call</div></div>
-        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
       <a class="card" href="./tools/postcardf">
         <div class="card-emoji">🖼️</div>
         <div class="card-body"><div class="card-title">Postcard Front</div><div class="card-path">./tools/postcardf</div></div>
@@ -358,6 +368,63 @@
       <a class="card" href="./tools/doorhangerb">
         <div class="card-emoji">🏷️</div>
         <div class="card-body"><div class="card-title">Door Hanger Back</div><div class="card-path">./tools/doorhangerb</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./listing/brochure">
+        <div class="card-emoji">📔</div>
+        <div class="card-body"><div class="card-title">Luxury Listing Brochure</div><div class="card-path">./listing/brochure</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./listing/reel">
+        <div class="card-emoji">🎬</div>
+        <div class="card-body"><div class="card-title">Listing Reel Studio</div><div class="card-path">./listing/reel</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+
+      <a class="card" href="./imgmaker">
+        <div class="card-emoji">🎨</div>
+        <div class="card-body"><div class="card-title">Image Maker</div><div class="card-path">./imgmaker</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+
+      <a class="card info-card" href="#" data-info="valuation">
+        <div class="card-emoji">💰</div>
+        <div class="card-body"><div class="card-title">Valuation Landing Page</div><div class="card-path">peterluo.homes/valuation · tap for usage</div></div>
+        <svg class="card-arrow info-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
+      </a>
+      <a class="card info-card" href="#" data-info="showing">
+        <div class="card-emoji">👀</div>
+        <div class="card-body"><div class="card-title">Book a Showing Page</div><div class="card-path">peterluo.homes/showing · tap for usage</div></div>
+        <svg class="card-arrow info-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
+      </a>
+      <a class="card info-card" href="#" data-info="subscribe">
+        <div class="card-emoji">📩</div>
+        <div class="card-body"><div class="card-title">Subscribe / VIP Page</div><div class="card-path">peterluo.homes/subscribe · tap for usage</div></div>
+        <svg class="card-arrow info-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
+      </a>
+      <a class="card info-card" href="#" data-info="guide">
+        <div class="card-emoji">📘</div>
+        <div class="card-body"><div class="card-title">Seller's Guide Page</div><div class="card-path">peterluo.homes/guide · tap for usage</div></div>
+        <svg class="card-arrow info-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="section sec-tools" data-section="tools">
+    <div class="section-header">
+      <div class="section-icon">🧰</div>
+      <div class="section-title">Tools</div>
+      <div class="section-count">2</div>
+    </div>
+    <div class="card-list">
+      <a class="card" href="./tools/fintrac">
+        <div class="card-emoji">🛡️</div>
+        <div class="card-body"><div class="card-title">FINTRAC</div><div class="card-path">./tools/fintrac</div></div>
+        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a class="card" href="./tools/call">
+        <div class="card-emoji">☎️</div>
+        <div class="card-body"><div class="card-title">Pre-Call Checklist</div><div class="card-path">./tools/call</div></div>
         <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </a>
     </div>
@@ -409,7 +476,7 @@
     <div class="section-header">
       <div class="section-icon">📋</div>
       <div class="section-title">Listing</div>
-      <div class="section-count">17</div>
+      <div class="section-count">15</div>
     </div>
     <div class="card-list">
       <a class="card" href="./tools/feedback">
@@ -486,16 +553,6 @@
       <a class="card" href="./listing/marketing">
         <div class="card-emoji">🎯</div>
         <div class="card-body"><div class="card-title">Listing Marketing Plan</div><div class="card-path">./listing/marketing</div></div>
-        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
-      <a class="card" href="./listing/brochure">
-        <div class="card-emoji">📔</div>
-        <div class="card-body"><div class="card-title">Luxury Listing Brochure</div><div class="card-path">./listing/brochure</div></div>
-        <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
-      <a class="card" href="./listing/reel">
-        <div class="card-emoji">🎬</div>
-        <div class="card-body"><div class="card-title">Listing Reel Studio</div><div class="card-path">./listing/reel</div></div>
         <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </a>
     </div>
@@ -928,6 +985,61 @@
     searchInput.dispatchEvent(new Event('input'));
     searchInput.focus();
   });
+</script>
+
+<div class="modal-back" id="infoModal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <span class="em" id="mEm">💰</span>
+      <div><h3 id="mTitle"></h3><div class="u" id="mUrl"></div></div>
+      <button class="modal-close" id="mClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-foot" id="mFoot"></div>
+  </div>
+</div>
+
+<script>
+  const INFO = {
+    valuation:{ emoji:"💰", title:"Valuation Landing Page", url:"https://peterluo.homes/valuation",
+      body:`<h4>What it's for</h4><p>Capturing <b>seller leads</b> by offering a free, no-obligation home valuation. Your highest-value page — point seller-curiosity traffic here.</p>
+      <h4>When to use it</h4><ul><li>After <b>Just Sold / Sold Over Asking</b> posts (seller curiosity is peak)</li><li>QR on yard signs, postcards, door hangers</li><li>In your email signature and farming mailers</li></ul>
+      <h4>CTA framings (<code>?cta=</code>)</h4><ul><li><code>cta=1</code> — What's your home worth? (default)</li><li><code>cta=2</code> — Your neighbour just sold — what's yours worth?</li><li><code>cta=3</code> — Thinking of selling this year?</li></ul>
+      <h4>Link format</h4><p><code>peterluo.homes/valuation?cta=2&src=fb-hayfield</code><br>Or via the card link: <code>imgs.peterluo.workers.dev/?img=hayfield&to=valuation&cta=2</code></p>
+      <h4>How it works</h4><p>Visitor enters name, phone, email, address → silent Firestore write to your <code>leads</code> → you get a Pushover buzz + backup email. Reply within one business day.</p>` },
+    showing:{ emoji:"👀", title:"Book a Showing Page", url:"https://peterluo.homes/showing",
+      body:`<h4>What it's for</h4><p>Letting <b>buyers request a private tour</b> of a specific home.</p>
+      <h4>When to use it</h4><ul><li><b>Just Listed / Coming Soon / Open House</b> posts</li><li>Feature sheets & brochures (QR code)</li><li>Anywhere you show a specific property</li></ul>
+      <h4>Pre-fill the property</h4><p>Add <code>?property=18+Hayfield+Crescent</code> so the form already names the home.</p>
+      <h4>CTA framings (<code>?cta=</code>)</h4><ul><li><code>cta=1</code> — Book a private showing</li><li><code>cta=2</code> — See it before it's gone (just-listed urgency)</li><li><code>cta=3</code> — Tour on your schedule</li></ul>
+      <h4>Link format</h4><p><code>peterluo.homes/showing?property=18+Hayfield&cta=2&src=li-elgin</code></p>
+      <h4>How it works</h4><p>Property + preferred date + time + contact → Firestore + Pushover + email. Confirm a time within one business day.</p>` },
+    subscribe:{ emoji:"📩", title:"Subscribe / VIP Page", url:"https://peterluo.homes/subscribe",
+      body:`<h4>What it's for</h4><p><b>List-building.</b> One page, two modes: a VIP new-listings list or your monthly market newsletter.</p>
+      <h4>When to use it</h4><ul><li>Market-update & education posts</li><li>Instagram bio link (feed captions can't click)</li><li>The low-pressure CTA for people not ready to sell yet</li></ul>
+      <h4>Two modes (<code>?cta=</code>)</h4><ul><li><code>cta=vip</code> — Be first to see new listings (default)</li><li><code>cta=news</code> — Monthly market update</li></ul>
+      <h4>Link format</h4><p><code>peterluo.homes/subscribe?cta=vip&src=ig-bio</code></p>
+      <h4>How it works</h4><p>Name + email (+ optional phone) → Firestore with <code>type</code> vip / newsletter + email. Add them to your nurture sequence.</p>` },
+    guide:{ emoji:"📘", title:"Seller's Guide Page", url:"https://peterluo.homes/guide",
+      body:`<h4>What it's for</h4><p>Capturing <b>seller leads</b> with a lead magnet — your guide PDF is the trade for their email.</p>
+      <h4>When to use it</h4><ul><li>Authority / education posts ("Sell for top dollar")</li><li>Audiences who are <i>thinking</i> about selling but not ready to call</li><li>As a softer alternative to the valuation ask</li></ul>
+      <h4>CTA framings (<code>?cta=</code>)</h4><ul><li><code>cta=1</code> — Get my free seller's guide</li><li><code>cta=2</code> — Sell for top dollar</li></ul>
+      <h4>Setup note</h4><p>Upload your PDF and set <code>guideUrl</code> in the page — the download button appears on the success screen.</p>
+      <h4>Link format</h4><p><code>peterluo.homes/guide?cta=2&src=fb-guide</code></p>
+      <h4>How it works</h4><p>Name + email → Firestore + email, and the PDF download shows on success.</p>` }
+  };
+  (function(){
+    const back=document.getElementById('infoModal');
+    const mEm=document.getElementById('mEm'), mTitle=document.getElementById('mTitle'), mUrl=document.getElementById('mUrl'), mBody=document.getElementById('mBody'), mFoot=document.getElementById('mFoot');
+    function open(key){ const d=INFO[key]; if(!d)return; mEm.textContent=d.emoji; mTitle.textContent=d.title; mUrl.textContent=d.url; mBody.innerHTML=d.body;
+      mFoot.innerHTML='<a href="'+d.url+'" target="_blank" rel="noopener">Open the page →</a><a class="alt" href="'+d.url+'?cta=2&src=test" target="_blank" rel="noopener">Preview a CTA variant</a>';
+      back.classList.add('open'); }
+    function close(){ back.classList.remove('open'); }
+    document.querySelectorAll('.info-card').forEach(c=> c.addEventListener('click', e=>{ e.preventDefault(); open(c.dataset.info); }));
+    document.getElementById('mClose').addEventListener('click', close);
+    back.addEventListener('click', e=>{ if(e.target===back) close(); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  })();
 </script>
 
 </body>
