@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Just Sold Card Maker · Pinnacle Listing System</title>
+<title>Listing Card Maker · Pinnacle Listing System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#16223e; --navy-deep:#0f1830; --panel:#1b2a4a;
-    --gold:#c9a84c; --gold-soft:#d3b25a;
-    --cream:#f8f4ea; --ink:#1b2540; --muted:#8a93a8; --line:#2a3a5c;
-    --display:'Playfair Display',Georgia,serif;
-    --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --navy:#16223e;--navy-deep:#0f1830;--panel:#1b2a4a;
+    --gold:#c9a84c;--gold-soft:#d3b25a;--cream:#f8f4ea;--ink:#1b2540;--muted:#8a93a8;--line:#2a3a5c;--bad:#d46a6a;
+    --display:'Playfair Display',Georgia,serif;--body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:var(--body);background:var(--navy-deep);color:var(--cream);line-height:1.5;-webkit-font-smoothing:antialiased;}
@@ -22,153 +20,181 @@
   .brand .name{font-family:var(--display);font-weight:700;font-size:18px;}
   .brand .sub{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-soft);margin-top:2px;}
   .topbar .hint{font-size:12px;color:var(--muted);}
-
   .wrap{display:grid;grid-template-columns:380px 1fr;gap:0;min-height:calc(100vh - 65px);}
   .controls{padding:22px 22px 60px;border-right:1px solid var(--line);background:#0e1830;overflow-y:auto;}
   .stage{padding:28px;display:flex;flex-direction:column;align-items:center;gap:18px;}
-
   .group{margin-bottom:20px;}
   .group h3{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:11px;font-weight:700;}
   label.f{display:block;font-size:11.5px;color:#aeb6c8;margin:11px 0 5px;font-weight:600;}
-  input[type=text], textarea{
-    width:100%;font-family:var(--body);font-size:14px;color:var(--cream);
-    background:#16233f;border:1px solid var(--line);border-radius:9px;padding:10px 11px;
-    transition:border-color .15s;
-  }
-  input[type=text]:focus, textarea:focus{outline:none;border-color:var(--gold);}
+  input[type=text],textarea,select{width:100%;font-family:var(--body);font-size:14px;color:var(--cream);background:#16233f;border:1px solid var(--line);border-radius:9px;padding:10px 11px;transition:border-color .15s;}
+  select{cursor:pointer;}
+  input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);}
   textarea{resize:vertical;min-height:54px;line-height:1.35;}
   .twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-  /* dropzone */
-  .drop{
-    border:1.5px dashed #3a4d75;border-radius:12px;padding:20px;text-align:center;
-    cursor:pointer;transition:border-color .15s,background .15s;background:#13203a;
-  }
+  .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+  .seg button{flex:1;background:#16233f;border:0;color:#aeb6c8;font-family:var(--body);font-size:12.5px;font-weight:600;padding:9px;cursor:pointer;transition:background .15s,color .15s;}
+  .seg button.on{background:var(--gold);color:var(--navy-deep);}
+  .drop{border:1.5px dashed #3a4d75;border-radius:11px;padding:16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:#13203a;}
   .drop:hover,.drop.over{border-color:var(--gold);background:#16243f;}
-  .drop svg{width:26px;height:26px;color:var(--gold-soft);margin-bottom:8px;}
-  .drop .big{font-size:13.5px;font-weight:600;color:var(--cream);}
-  .drop .small{font-size:11.5px;color:var(--muted);margin-top:3px;}
-
+  .drop.mini{padding:11px;}
+  .drop .big{font-size:12.5px;font-weight:600;color:var(--cream);}
+  .drop .small{font-size:11px;color:var(--muted);margin-top:2px;}
+  .drop.filled{border-style:solid;border-color:#3f6b46;}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
   .slider-row{display:flex;align-items:center;gap:11px;margin-top:6px;}
   .slider-row input[type=range]{flex:1;accent-color:var(--gold);}
   .slider-row .val{font-size:12px;color:var(--muted);width:38px;text-align:right;}
-  .ghost-btn{
-    width:100%;margin-top:9px;background:transparent;border:1px solid var(--line);
-    color:#aeb6c8;border-radius:9px;padding:9px;font-family:var(--body);font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s;
-  }
+  .ghost-btn{width:100%;margin-top:9px;background:transparent;border:1px solid var(--line);color:#aeb6c8;border-radius:9px;padding:9px;font-family:var(--body);font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s;}
   .ghost-btn:hover{border-color:var(--gold-soft);color:var(--cream);}
-  .toggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;cursor:pointer;font-size:13px;color:var(--cream);font-weight:600;}
+  .toggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;cursor:pointer;font-size:13px;color:var(--cream);font-weight:600;}
   .toggle input{accent-color:var(--gold);width:16px;height:16px;cursor:pointer;}
   .toggle em{flex-basis:100%;font-style:normal;font-size:11px;color:var(--muted);font-weight:400;padding-left:24px;}
-  .controls.panel-off .text-group{opacity:.38;pointer-events:none;}
-
-  /* preview */
+  .swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .sw{border:2px solid transparent;border-radius:9px;padding:8px 6px;cursor:pointer;text-align:center;font-size:10.5px;font-weight:600;color:#fff;transition:border-color .12s,transform .1s;}
+  .sw:hover{transform:translateY(-1px);}
+  .sw.on{border-color:#fff;}
+  .hide{display:none!important;}
   .preview-shell{width:100%;max-width:840px;}
-  .canvas-card{
-    width:100%;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px -24px rgba(0,0,0,.7);
-    border:1px solid #233354;display:block;background:#16223e;touch-action:none;cursor:grab;
-  }
+  .canvas-card{width:100%;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px -24px rgba(0,0,0,.7);border:1px solid #233354;display:block;background:#16223e;touch-action:none;cursor:grab;}
   .canvas-card.dragging{cursor:grabbing;}
   .preview-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px;}
-
   .export-row{display:flex;gap:12px;align-items:center;width:100%;max-width:840px;}
   .filename-wrap{flex:1;display:flex;align-items:center;gap:8px;background:#16233f;border:1px solid var(--line);border-radius:10px;padding:0 12px;}
   .filename-wrap span{font-size:13px;color:var(--muted);white-space:nowrap;}
   .filename-wrap input{border:0;background:transparent;padding:11px 0;flex:1;width:auto;}
   .filename-wrap input:focus{outline:none;}
   .filename-wrap .ext{color:var(--gold-soft);font-weight:600;}
-  .download{
-    background:var(--gold);color:var(--navy-deep);border:0;border-radius:10px;
-    padding:13px 22px;font-family:var(--body);font-weight:700;font-size:14.5px;cursor:pointer;
-    transition:background .15s,transform .1s;white-space:nowrap;
-  }
+  .download{background:var(--gold);color:var(--navy-deep);border:0;border-radius:10px;padding:13px 22px;font-family:var(--body);font-weight:700;font-size:14.5px;cursor:pointer;transition:background .15s,transform .1s;white-space:nowrap;}
   .download:hover{background:#b8973d;transform:translateY(-1px);}
   .download:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-
   .publish{max-width:840px;width:100%;background:#0c1730;border:1px solid var(--line);border-radius:11px;padding:15px 17px;font-size:12.5px;color:#aeb6c8;line-height:1.6;}
-  .publish b{color:var(--cream);}
-  .publish code{background:#1a2a4a;color:var(--gold-soft);padding:1px 6px;border-radius:5px;font-size:12px;}
-
-  @media (max-width:900px){
-    .wrap{grid-template-columns:1fr;}
-    .controls{border-right:0;border-bottom:1px solid var(--line);}
-  }
-  .toast{
-    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
-    background:#0c1730;border:1px solid var(--gold);color:var(--cream);
-    padding:13px 20px;border-radius:10px;font-size:13.5px;font-weight:600;
-    box-shadow:0 14px 40px -12px rgba(0,0,0,.7);opacity:0;pointer-events:none;
-    transition:opacity .2s,transform .2s;z-index:50;max-width:90vw;text-align:center;
-  }
+  .publish b{color:var(--cream);}.publish code{background:#1a2a4a;color:var(--gold-soft);padding:1px 6px;border-radius:5px;font-size:12px;}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#0c1730;border:1px solid var(--gold);color:var(--cream);padding:13px 20px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:0 14px 40px -12px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:90vw;text-align:center;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast.error{border-color:var(--bad,#d46a6a);}
+  .toast.error{border-color:var(--bad);}
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;}.controls{border-right:0;border-bottom:1px solid var(--line);}}
 </style>
 </head>
 <body>
-
   <div class="topbar">
-    <div class="brand">
-      <span class="name">Just Sold Card Maker</span>
-      <span class="sub">Pinnacle Listing System</span>
-    </div>
+    <div class="brand"><span class="name">Listing Card Maker</span><span class="sub">Pinnacle Listing System</span></div>
     <span class="hint">1200 × 630 · ready for Facebook</span>
   </div>
 
   <div class="wrap">
-    <!-- ============ CONTROLS ============ -->
     <div class="controls">
 
       <div class="group">
         <h3>Publish to GitHub</h3>
         <label class="f">GitHub token <span style="color:var(--muted);font-weight:400">· kept only in this field, never saved</span></label>
         <input type="password" id="gh-token" placeholder="ghp_… or github_pat_…" autocomplete="off">
-        <label class="f">Website repo · saved on this device</label>
+        <label class="f">Repo · saved on this device</label>
         <div class="twocol">
-          <input type="text" id="gh-owner" placeholder="owner">
+          <input type="text" id="gh-owner" placeholder="peterluohomes">
           <input type="text" id="gh-repo" placeholder="peterluohomes.github.io">
         </div>
         <div class="twocol" style="margin-top:9px;">
-          <input type="text" id="gh-branch" placeholder="branch">
+          <input type="text" id="gh-branch" placeholder="main">
           <input type="text" id="gh-dir" placeholder="imgs">
         </div>
       </div>
 
       <div class="group">
-        <h3>Photo</h3>
-        <div class="drop" id="drop">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div class="big">Upload property photo</div>
-          <div class="small">Click or drag an image here</div>
+        <h3>Layout & style</h3>
+        <label class="f">Layout</label>
+        <div class="seg" id="seg-layout">
+          <button data-v="split" class="on">Split card</button>
+          <button data-v="collage">Collage</button>
         </div>
-        <input type="file" id="file" accept="image/*" style="display:none">
 
+        <label class="f">Colour scheme</label>
+        <div class="swatches" id="swatches"></div>
+
+        <div class="split-only">
+          <label class="f">Panel side</label>
+          <div class="seg" id="seg-side">
+            <button data-v="left" class="on">Left</button>
+            <button data-v="right">Right</button>
+          </div>
+          <label class="toggle"><input type="checkbox" id="fullbleed"> <span>Full-bleed photo</span><em>fills all 1200×630, hides the text panel</em></label>
+        </div>
+
+        <div class="collage-only hide">
+          <label class="f">Big photo + text side</label>
+          <div class="seg" id="seg-hero">
+            <button data-v="left">Left</button>
+            <button data-v="right" class="on">Right</button>
+          </div>
+          <label class="f">The two small photos</label>
+          <div class="seg" id="seg-pair">
+            <button data-v="top" class="on">Top</button>
+            <button data-v="bottom">Bottom</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPLIT photo -->
+      <div class="group split-only">
+        <h3>Photo</h3>
+        <div class="drop" id="drop-split">
+          <div class="big">Upload property photo</div>
+          <div class="small">Click or drag · drag on canvas to reposition · scroll to zoom</div>
+        </div>
+        <input type="file" id="file-split" accept="image/*" class="hide">
         <label class="f">Zoom</label>
         <div class="slider-row">
           <input type="range" id="zoom" min="1" max="3" step="0.01" value="1" disabled>
           <span class="val" id="zoomVal">1.0×</span>
         </div>
         <button class="ghost-btn" id="recenter" disabled>Recenter photo</button>
-        <label class="toggle"><input type="checkbox" id="fullbleed"> <span>Full-bleed photo</span><em>fills all 1200×630, hides the text panel</em></label>
+      </div>
+
+      <!-- COLLAGE photos -->
+      <div class="group collage-only hide">
+        <h3>Photos <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">· drag on canvas to nudge · scroll to zoom</span></h3>
+        <div class="grid4">
+          <div class="drop mini" data-slot="hero"><div class="big">Big photo</div><div class="small">hero</div></div>
+          <div class="drop mini" data-slot="wide"><div class="big">Wide photo</div><div class="small">gallery</div></div>
+          <div class="drop mini" data-slot="small1"><div class="big">Small 1</div><div class="small">gallery</div></div>
+          <div class="drop mini" data-slot="small2"><div class="big">Small 2</div><div class="small">gallery</div></div>
+        </div>
+        <input type="file" id="file-collage" accept="image/*" class="hide">
+        <button class="ghost-btn" id="recenter-c">Recenter all photos</button>
+      </div>
+
+      <div class="group text-group">
+        <h3>Post purpose</h3>
+        <label class="f">Pick a preset — fills the text below, then tweak</label>
+        <select id="preset"><option value="">— Custom / keep current —</option></select>
       </div>
 
       <div class="group text-group">
         <h3>Badge & address</h3>
-        <label class="f">Badge</label>
+        <label class="f">Badge <span style="color:var(--muted);font-weight:400">· split only</span></label>
         <input type="text" id="badge" value="JUST SOLD IN 3 DAYS">
         <label class="f">Address line</label>
         <input type="text" id="address" value="18 Hayfield Crescent, Richmond Hill">
       </div>
 
       <div class="group text-group">
-        <h3>Headline</h3>
-        <label class="f">Headline — cream (one line per row)</label>
+        <h3>Headline / Collage title</h3>
+        <label class="f">Headline — one line per row</label>
         <textarea id="headline">Want your home
 sold fast — for</textarea>
-        <label class="f">Accent line — gold italic</label>
+        <label class="f">Accent line — gold italic (split) / date line (collage)</label>
         <input type="text" id="accent" value="top dollar?">
-        <label class="f">Sub-line — muted (one line per row)</label>
+        <label class="f">Sub-line — one line per row</label>
         <textarea id="sub">Get a free home valuation
 and see how I did it.</textarea>
+      </div>
+
+      <div class="group text-group">
+        <h3>Selling features</h3>
+        <label class="f">One per line · checklist (split) / ·-row (collage)</label>
+        <textarea id="features" placeholder="4 Bed · 4 Bath
+Renovated chef's kitchen
+Finished walk-out basement
+Steps to GO & top schools"></textarea>
       </div>
 
       <div class="group text-group">
@@ -182,26 +208,17 @@ and see how I did it.</textarea>
       </div>
     </div>
 
-    <!-- ============ PREVIEW ============ -->
     <div class="stage">
       <div class="preview-shell">
         <canvas id="card" class="canvas-card" width="1200" height="630"></canvas>
-        <div class="preview-note">Drag to reposition · scroll or pinch over the photo to zoom · or use the Zoom slider</div>
+        <div class="preview-note" id="note">Drag a photo to reposition · scroll or pinch over a photo to zoom</div>
       </div>
-
       <div class="export-row">
-        <div class="filename-wrap">
-          <span>imgs /</span>
-          <input type="text" id="filename" value="hayfield" spellcheck="false">
-          <span class="ext">.jpg</span>
-        </div>
+        <div class="filename-wrap"><span>imgs /</span><input type="text" id="filename" value="hayfield" spellcheck="false"><span class="ext">.jpg</span></div>
         <button class="download" id="download" disabled>Download JPG</button>
         <button class="download" id="publish" style="background:var(--navy);color:var(--cream);border:1px solid var(--gold)" disabled>Publish to imgs/</button>
       </div>
-
-      <div class="publish">
-        <b>Publish to imgs/</b> commits the card straight into your <code>imgs</code> repo, then post <code>imgs.peterluo.workers.dev/?img=<span id="fnEcho">hayfield</span></code> to Facebook. The filename becomes the <code>?img=</code> value — keep it short and lowercase. (Or use <b>Download JPG</b> and add it to the repo by hand.)
-      </div>
+      <div class="publish"><b>Publish to imgs/</b> commits the card into your <code>imgs</code> folder, then post <code>imgs.peterluo.workers.dev/?img=<span id="fnEcho">hayfield</span></code>. Filename becomes the <code>?img=</code> value — short & lowercase. (Or <b>Download JPG</b> and add it by hand.)</div>
     </div>
   </div>
 
@@ -209,368 +226,301 @@ and see how I did it.</textarea>
 
 <script>
 (function(){
-  const canvas = document.getElementById('card');
-  const ctx = canvas.getContext('2d');
-  const W = 1200, H = 630, SPLIT = 400;            // photo region x: SPLIT..W (split card)
-  let fullBleed = false;
-  function getRegion(){ const x = fullBleed ? 0 : SPLIT; return { x:x, y:0, w:W-x, h:H }; }
+  const canvas=document.getElementById('card');
+  const ctx=canvas.getContext('2d');
+  const W=1200,H=630,PANEL=400;
+  const $=id=>document.getElementById(id);
 
-  let img = null;
-  let zoom = 1, panX = 0, panY = 0;                // pan = offset from centered
-  let fontsReady = false;
+  const SCHEMES=[
+    {name:'Navy & Gold',   c0:'#223158',c1:'#0e1730',badgeBg:'#c9a84c',badgeText:'#15233f',head:'#f8f4ea',accent:'#d3b25a',sub:'#aeb6c8',url:'#d3b25a',div:'rgba(201,168,76,.5)'},
+    {name:'Charcoal & Tan',c0:'#2a2a2a',c1:'#121212',badgeBg:'#c9a36a',badgeText:'#1a1a1a',head:'#f5efe6',accent:'#cda66a',sub:'#b3b0a8',url:'#cda66a',div:'rgba(205,166,106,.5)'},
+    {name:'Ivory & Navy',  c0:'#fbf7ee',c1:'#efe7d6',badgeBg:'#16223e',badgeText:'#f8f4ea',head:'#16223e',accent:'#b8860b',sub:'#5b6478',url:'#b8860b',div:'rgba(22,34,62,.28)',light:true},
+    {name:'Forest & Gold', c0:'#1a4234',c1:'#0c241c',badgeBg:'#cda24a',badgeText:'#0c241c',head:'#f2efe4',accent:'#d8b85a',sub:'#a9bcae',url:'#d8b85a',div:'rgba(216,184,90,.5)'},
+    {name:'Bordeaux & Cream',c0:'#552532',c1:'#2c1119',badgeBg:'#d8a26a',badgeText:'#2c1119',head:'#f6ece6',accent:'#e0a86a',sub:'#c2a3a8',url:'#e0a86a',div:'rgba(224,168,106,.5)'},
+    {name:'Slate & Sky',   c0:'#323c4b',c1:'#171c24',badgeBg:'#9fb8cf',badgeText:'#171c24',head:'#f1f4f8',accent:'#b9cde0',sub:'#9aa7b8',url:'#b9cde0',div:'rgba(185,205,224,.5)'}
+  ];
 
-  const $ = id => document.getElementById(id);
-  const fields = ['badge','address','headline','accent','sub','name','role','url'];
+  let layout='split', schemeIdx=0, panelSide='left', fullBleed=false, heroSide='right', pairPos='top', fontsReady=false;
+  const blank=()=>({img:null,zoom:1,panX:0,panY:0});
+  const splitSlot=blank();
+  const cSlots={hero:blank(),wide:blank(),small1:blank(),small2:blank()};
+  let currentSlots=[];
 
-  // ---------- font loading ----------
+  function clamp(v,lo,hi){return v<lo?lo:(v>hi?hi:v);}
+  function scheme(){return SCHEMES[schemeIdx];}
+  function anyImage(){ return layout==='split' ? !!splitSlot.img : Object.values(cSlots).some(s=>s.img); }
+
   async function loadFonts(){
+    try{ await Promise.all([
+      document.fonts.load('700 37px "Playfair Display"'),document.fonts.load('italic 600 37px "Playfair Display"'),
+      document.fonts.load('700 44px "Playfair Display"'),document.fonts.load('700 25px "Playfair Display"'),
+      document.fonts.load('400 18px "DM Sans"'),document.fonts.load('500 17px "DM Sans"'),document.fonts.load('700 17px "DM Sans"')
+    ]); await document.fonts.ready; }catch(e){}
+    fontsReady=true; draw();
+  }
+
+  function drawCover(slot,rect){
+    if(!slot.img){
+      ctx.fillStyle='#e7e2d6'; ctx.fillRect(rect.x,rect.y,rect.w,rect.h);
+      ctx.fillStyle='#aab0a0'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font='500 15px "DM Sans"';
+      ctx.fillText('photo', rect.x+rect.w/2, rect.y+rect.h/2);
+      ctx.textBaseline='alphabetic'; ctx.textAlign='left'; return;
+    }
+    ctx.save(); ctx.beginPath(); ctx.rect(rect.x,rect.y,rect.w,rect.h); ctx.clip();
+    const base=Math.max(rect.w/slot.img.width,rect.h/slot.img.height);
+    const s=base*slot.zoom, dw=slot.img.width*s, dh=slot.img.height*s;
+    let dx=rect.x+(rect.w-dw)/2+slot.panX, dy=rect.y+(rect.h-dh)/2+slot.panY;
+    dx=clamp(dx,rect.x+rect.w-dw,rect.x); dy=clamp(dy,rect.y+rect.h-dh,rect.y);
+    slot.panX=dx-(rect.x+(rect.w-dw)/2); slot.panY=dy-(rect.y+(rect.h-dh)/2);
+    ctx.drawImage(slot.img,dx,dy,dw,dh); ctx.restore();
+  }
+  function setLS(px){ if('letterSpacing' in ctx) ctx.letterSpacing=px+'px'; }
+  function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function hexA(hex,a){ const n=hex.replace('#',''); const r=parseInt(n.substr(0,2),16),g=parseInt(n.substr(2,2),16),b=parseInt(n.substr(4,2),16); return 'rgba('+r+','+g+','+b+','+a+')'; }
+  function darken(hex){ const n=hex.replace('#',''); let r=parseInt(n.substr(0,2),16),g=parseInt(n.substr(2,2),16),b=parseInt(n.substr(4,2),16); r=Math.round(r*.5);g=Math.round(g*.5);b=Math.round(b*.5); return 'rgb('+r+','+g+','+b+')'; }
+
+  // ============ SPLIT ============
+  function splitRects(){
+    if(fullBleed) return {photo:{x:0,y:0,w:W,h:H},panel:null};
+    const px = panelSide==='left' ? 0 : W-PANEL;
+    const photoX = panelSide==='left' ? PANEL : 0;
+    return {photo:{x:photoX,y:0,w:W-PANEL,h:H},panel:{x:px,y:0,w:PANEL,h:H}};
+  }
+  function drawSplit(){
+    const S=scheme(), R=splitRects();
+    const g=ctx.createRadialGradient(480,80,0,480,80,1000); g.addColorStop(0,S.c0); g.addColorStop(1,S.c1);
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    drawCover(splitSlot,R.photo);
+    currentSlots=[{slot:splitSlot,rect:R.photo}];
+    if(fullBleed) return;
+    const p=R.panel, px=p.x;
+    const pg=ctx.createRadialGradient(px+200,80,0,px+200,80,900); pg.addColorStop(0,S.c0); pg.addColorStop(1,S.c1);
+    ctx.fillStyle=pg; ctx.fillRect(px,0,PANEL,H);
+    const innerX = panelSide==='left' ? PANEL : px;
+    if(panelSide==='left'){
+      const sm=ctx.createLinearGradient(innerX,0,innerX+110,0); sm.addColorStop(0,hexA(S.c1,.9)); sm.addColorStop(1,hexA(S.c1,0));
+      ctx.fillStyle=sm; ctx.fillRect(innerX,0,110,H);
+    }else{
+      const sm=ctx.createLinearGradient(innerX-110,0,innerX,0); sm.addColorStop(0,hexA(S.c1,0)); sm.addColorStop(1,hexA(S.c1,.9));
+      ctx.fillStyle=sm; ctx.fillRect(innerX-110,0,110,H);
+    }
+    ctx.fillStyle=S.div; ctx.fillRect(panelSide==='left'?PANEL-2:px, 0, 2.5, H);
+    const L=px+36, L2=px+38;
+    const badge=($('badge').value||'').toUpperCase();
+    if(badge){ ctx.font='700 17px "DM Sans"'; setLS(2); const tw=ctx.measureText(badge).width; const pad=24,bw=tw+pad*2;
+      ctx.fillStyle=S.badgeBg; roundRect(L,54,bw,40,5); ctx.fill();
+      ctx.fillStyle=S.badgeText; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(badge,L+pad,54+21); setLS(0); ctx.textBaseline='alphabetic'; }
+    ctx.fillStyle=S.sub; ctx.textAlign='left'; ctx.font='500 16px "DM Sans"'; ctx.fillText($('address').value||'',L2,130);
+    const hl=($('headline').value||'').split('\n').filter(x=>x.length); let y=196;
+    ctx.fillStyle=S.head; ctx.font='700 37px "Playfair Display"'; hl.forEach(l=>{ctx.fillText(l,L,y);y+=48;});
+    const acc=($('accent').value||'').trim(); if(acc){ ctx.fillStyle=S.accent; ctx.font='italic 600 37px "Playfair Display"'; ctx.fillText(acc,L,y); y+=48; }
+    const sb=($('sub').value||'').split('\n').filter(x=>x.length); let sy=y+14;
+    ctx.fillStyle=S.sub; ctx.font='400 18px "DM Sans"'; sb.forEach(l=>{ctx.fillText(l,L2,sy);sy+=26;});
+    const feats=($('features').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+    if(feats.length){ let fy=sy+12; ctx.font='500 16px "DM Sans"'; ctx.lineCap='round';
+      for(const f of feats){ if(fy>500) break;
+        ctx.strokeStyle=S.accent; ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(L,fy-7); ctx.lineTo(L+5,fy-2); ctx.lineTo(L+12,fy-12); ctx.stroke();
+        ctx.fillStyle=S.head; ctx.fillText(f,L+22,fy); fy+=27;
+      } ctx.lineCap='butt';
+    }
+    ctx.strokeStyle=S.div; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L,512); ctx.lineTo(px+364,512); ctx.stroke();
+    ctx.fillStyle=S.head; ctx.font='700 25px "Playfair Display"'; ctx.fillText($('name').value||'',L,550);
+    ctx.fillStyle=S.sub; ctx.font='400 14px "DM Sans"'; ctx.fillText($('role').value||'',L2,573);
+    ctx.fillStyle=S.url; ctx.font='500 17px "DM Sans"'; ctx.fillText($('url').value||'',L2,598);
+  }
+
+  // ============ COLLAGE ============
+  function collageRects(){
+    const pad=22, gap=14, footerH=26;
+    const top=pad, bottom=H-footerH-pad, mid=W/2;
+    const galleryLeft = heroSide==='right';
+    const gx0 = galleryLeft ? pad : mid+gap/2;
+    const gx1 = galleryLeft ? mid-gap/2 : W-pad;
+    const hx0 = galleryLeft ? mid+gap/2 : pad;
+    const hx1 = galleryLeft ? W-pad : mid-gap/2;
+    const gw=gx1-gx0, hw=hx1-hx0, colH=bottom-top;
+    const pairH=colH*0.40, wideH=colH-pairH-gap;
+    const pairY = pairPos==='top' ? top : top+wideH+gap;
+    const wideY = pairPos==='top' ? top+pairH+gap : top;
+    const sw=(gw-gap)/2;
+    const small1={x:gx0,y:pairY,w:sw,h:pairH};
+    const small2={x:gx0+sw+gap,y:pairY,w:sw,h:pairH};
+    const wide={x:gx0,y:wideY,w:gw,h:wideH};
+    const textH=colH*0.34, heroH=colH-textH-gap;
+    const text={x:hx0,y:top,w:hw,h:textH};
+    const hero={x:hx0,y:top+textH+gap,w:hw,h:heroH};
+    const footer={x:0,y:H-footerH,w:W,h:footerH};
+    return {small1,small2,wide,hero,text,footer};
+  }
+  function drawCollage(){
+    const S=scheme(), R=collageRects();
+    ctx.fillStyle = S.light ? S.c0 : '#ffffff'; ctx.fillRect(0,0,W,H);
+    drawCover(cSlots.small1,R.small1); drawCover(cSlots.small2,R.small2);
+    drawCover(cSlots.wide,R.wide); drawCover(cSlots.hero,R.hero);
+    currentSlots=[{slot:cSlots.hero,rect:R.hero},{slot:cSlots.wide,rect:R.wide},{slot:cSlots.small1,rect:R.small1},{slot:cSlots.small2,rect:R.small2}];
+    const t=R.text, cx=t.x+t.w/2; ctx.textAlign='center';
+    const titleColor = S.light ? S.head : darken(S.c0);
+    const title=($('headline').value||'').split('\n').filter(x=>x.length);
+    let ty=t.y + t.h/2 - ((title.length-1)*26) - 22;
+    ctx.fillStyle=titleColor; ctx.font='700 44px "Playfair Display"';
+    title.forEach(l=>{ ctx.fillText(l.toUpperCase(), cx, ty); ty+=52; });
+    ctx.fillStyle = S.light ? S.sub : '#3a4150'; ctx.font='600 18px "DM Sans"';
+    ctx.fillText($('address').value||'', cx, ty+2); ty+=26;
+    ctx.fillStyle = S.accent; ctx.font='600 18px "DM Sans"';
+    const dateLine = ($('accent').value||'') || (($('sub').value||'').split('\n')[0]||'');
+    ctx.fillText(dateLine, cx, ty+2);
+    const cfeats=($('features').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+    if(cfeats.length){ ctx.fillStyle = S.light ? S.sub : '#56607a'; ctx.font='600 15px "DM Sans"'; ctx.fillText(cfeats.join('   ·   '), cx, ty+30); }
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    const navyW=W*0.40; ctx.fillStyle=S.light?S.badgeBg:S.c0; ctx.fillRect(0,R.footer.y,navyW,R.footer.h);
+    ctx.fillStyle='#d7d7d7'; ctx.fillRect(navyW,R.footer.y,W-navyW,R.footer.h);
+    ctx.fillStyle = S.light ? '#fff' : '#f4efe4'; ctx.font='600 12px "DM Sans"'; ctx.textBaseline='middle';
+    ctx.fillText(($('url').value||'').toUpperCase(), 22, R.footer.y+R.footer.h/2+1); ctx.textBaseline='alphabetic';
+  }
+
+  function draw(){ if(layout==='split') drawSplit(); else drawCollage(); }
+
+  function fileToImg(file,cb){ if(!file||!file.type.startsWith('image/'))return; const url=URL.createObjectURL(file); const im=new Image(); im.onload=()=>{cb(im);URL.revokeObjectURL(url);}; im.src=url; }
+  function loadSplit(file){ fileToImg(file,im=>{ splitSlot.img=im; splitSlot.zoom=1; splitSlot.panX=0; splitSlot.panY=0;
+    $('zoom').disabled=false; $('zoom').value=1; $('zoomVal').textContent='1.0×'; $('recenter').disabled=false; enableExport(); draw(); }); }
+  function loadCollageSlot(name,file){ fileToImg(file,im=>{ const s=cSlots[name]; s.img=im; s.zoom=1; s.panX=0; s.panY=0; enableExport(); draw(); markFilled(); }); }
+  function enableExport(){ $('download').disabled=!anyImage(); $('publish').disabled=!anyImage(); }
+  function markFilled(){ document.querySelectorAll('[data-slot]').forEach(d=>{ d.classList.toggle('filled', !!cSlots[d.dataset.slot].img); }); }
+
+  function canvasScale(){ return W/canvas.getBoundingClientRect().width; }
+  function ptToCanvas(e){ const r=canvas.getBoundingClientRect(),sc=W/r.width; return {x:(e.clientX-r.left)*sc,y:(e.clientY-r.top)*sc}; }
+  function slotAt(p){ for(const it of currentSlots){ const r=it.rect; if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h&&it.slot.img) return it; } return null; }
+
+  let dragging=null,lastX=0,lastY=0;
+  canvas.addEventListener('pointerdown',e=>{ const hit=slotAt(ptToCanvas(e)); if(!hit)return; dragging=hit; canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId); lastX=e.clientX; lastY=e.clientY; });
+  canvas.addEventListener('pointermove',e=>{ if(!dragging)return; const sc=canvasScale(); dragging.slot.panX+=(e.clientX-lastX)*sc; dragging.slot.panY+=(e.clientY-lastY)*sc; lastX=e.clientX; lastY=e.clientY; draw(); });
+  function endDrag(){ dragging=null; canvas.classList.remove('dragging'); }
+  canvas.addEventListener('pointerup',endDrag); canvas.addEventListener('pointercancel',endDrag);
+
+  function zoomSlot(slot,rect,factor,p){
+    if(!slot.img)return; const nz=clamp(slot.zoom*factor,1,3); if(nz===slot.zoom)return;
+    const base=Math.max(rect.w/slot.img.width,rect.h/slot.img.height), before=base*slot.zoom, after=base*nz;
+    const dwB=slot.img.width*before,dhB=slot.img.height*before;
+    const dxB=rect.x+(rect.w-dwB)/2+slot.panX, dyB=rect.y+(rect.h-dhB)/2+slot.panY;
+    const ix=(p.x-dxB)/before, iy=(p.y-dyB)/before;
+    const dxA=p.x-ix*after, dyA=p.y-iy*after;
+    slot.panX=dxA-(rect.x+(rect.w-slot.img.width*after)/2); slot.panY=dyA-(rect.y+(rect.h-slot.img.height*after)/2);
+    slot.zoom=nz;
+    if(layout==='split'){ $('zoom').value=nz; $('zoomVal').textContent=nz.toFixed(1)+'×'; }
+    draw();
+  }
+  canvas.addEventListener('wheel',e=>{ const p=ptToCanvas(e); const hit=slotAt(p); if(!hit)return; e.preventDefault(); zoomSlot(hit.slot,hit.rect,e.deltaY<0?1.08:0.926,p); },{passive:false});
+  let pd=0; canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) pd=tDist(e); },{passive:false});
+  canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ e.preventDefault(); const d=tDist(e),m=tMid(e),p=ptToCanvas({clientX:m.x,clientY:m.y}); const hit=slotAt(p); if(hit&&pd) zoomSlot(hit.slot,hit.rect,d/pd,p); pd=d; } },{passive:false});
+  function tDist(e){const a=e.touches[0],b=e.touches[1];return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);}
+  function tMid(e){const a=e.touches[0],b=e.touches[1];return {x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2};}
+
+  function wireDrop(el,onFile){ el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over');}); el.addEventListener('dragleave',e=>{e.preventDefault();el.classList.remove('over');}); el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('over');onFile(e.dataTransfer.files[0]);}); }
+  $('drop-split').addEventListener('click',()=>$('file-split').click());
+  $('file-split').addEventListener('change',e=>loadSplit(e.target.files[0]));
+  wireDrop($('drop-split'),loadSplit);
+  let pendingSlot=null;
+  document.querySelectorAll('[data-slot]').forEach(d=>{
+    d.addEventListener('click',()=>{ pendingSlot=d.dataset.slot; $('file-collage').click(); });
+    wireDrop(d,f=>loadCollageSlot(d.dataset.slot,f));
+  });
+  $('file-collage').addEventListener('change',e=>{ if(pendingSlot) loadCollageSlot(pendingSlot,e.target.files[0]); pendingSlot=null; });
+
+  $('zoom').addEventListener('input',e=>{ const r=splitRects().photo; const cx=r.x+r.w/2,cy=r.y+r.h/2; const target=parseFloat(e.target.value); if(splitSlot.img) zoomSlot(splitSlot,r,target/splitSlot.zoom,{x:cx,y:cy}); });
+  $('recenter').addEventListener('click',()=>{ splitSlot.zoom=1;splitSlot.panX=0;splitSlot.panY=0; $('zoom').value=1;$('zoomVal').textContent='1.0×'; draw(); });
+  $('recenter-c').addEventListener('click',()=>{ Object.values(cSlots).forEach(s=>{s.zoom=1;s.panX=0;s.panY=0;}); draw(); });
+
+  function wireSeg(id,fn){ const seg=$(id); seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ seg.querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); fn(b.dataset.v); })); }
+  wireSeg('seg-layout',v=>{ layout=v; document.querySelectorAll('.split-only').forEach(e=>e.classList.toggle('hide',v!=='split')); document.querySelectorAll('.collage-only').forEach(e=>e.classList.toggle('hide',v!=='collage')); $('note').textContent = v==='collage'?'Upload each photo, then drag / scroll on the canvas to frame it':'Drag a photo to reposition · scroll or pinch to zoom'; enableExport(); draw(); });
+  wireSeg('seg-side',v=>{ panelSide=v; splitSlot.panX=0;splitSlot.panY=0; draw(); });
+  wireSeg('seg-hero',v=>{ heroSide=v; Object.values(cSlots).forEach(s=>{s.panX=0;s.panY=0;}); draw(); });
+  wireSeg('seg-pair',v=>{ pairPos=v; Object.values(cSlots).forEach(s=>{s.panX=0;s.panY=0;}); draw(); });
+  $('fullbleed').addEventListener('change',e=>{ fullBleed=e.target.checked; splitSlot.panX=0;splitSlot.panY=0; document.querySelector('.controls').classList.toggle('panel-off',fullBleed); draw(); });
+
+  (function buildSwatches(){ const wrap=$('swatches'); SCHEMES.forEach((s,i)=>{ const el=document.createElement('div'); el.className='sw'+(i===0?' on':''); el.textContent=s.name; el.style.background='linear-gradient(135deg,'+s.c0+','+s.c1+')'; if(s.light){el.style.color=s.head;} el.addEventListener('click',()=>{ schemeIdx=i; wrap.querySelectorAll('.sw').forEach(x=>x.classList.remove('on')); el.classList.add('on'); draw(); }); wrap.appendChild(el); }); })();
+
+  const PRESET_GROUPS=[
+    {cat:'1 · Listing lifecycle',items:[
+      {k:'coming',name:'Coming Soon',badge:'COMING SOON',head:'A new listing is\ncoming soon —',accent:'stay tuned.',sub:'Want early access? →',feat:'4 Bed · 3 Bath\nPremium ravine lot\nMove-in ready'},
+      {k:'justlisted',name:'Just Listed',badge:'JUST LISTED',head:'Just listed —\nready to',accent:'view today?',sub:'Book a private showing →',feat:'4 Bed · 4 Bath\nRenovated kitchen\nFinished basement\nSteps to top schools'},
+      {k:'openhouse',name:'Open House',badge:'OPEN HOUSE',head:'OPEN HOUSE',accent:'Sat, Jun 21 · 2–4 PM',sub:'See you there →',feat:'5 Bed · 4 Bath\nChef\u2019s kitchen\nWalk to parks & transit'},
+      {k:'priceimp',name:'Price Improvement',badge:'PRICE IMPROVEMENT',head:'New price,\nsame great',accent:'home.',sub:'Book a showing →'},
+      {k:'backonmkt',name:'Back on Market',badge:'BACK ON MARKET',head:'Back on the\nmarket —',accent:'your second chance.',sub:'Book a showing →'},
+      {k:'offers',name:'Offers Anytime',badge:'OFFERS ANYTIME',head:'Offers welcome\nanytime —',accent:"don't wait.",sub:'Book a showing →'},
+      {k:'soldcond',name:'Sold Conditional',badge:'SOLD CONDITIONAL',head:'Sold conditional —\nanother one',accent:'moving fast.',sub:'Thinking of selling? →'},
+      {k:'soldfirm',name:'Sold Firm',badge:'SOLD FIRM',head:'Sold firm —\ncongratulations',accent:'to the sellers.',sub:"What's yours worth? →"},
+      {k:'soldover',name:'Sold Over Asking',badge:'SOLD OVER ASKING',head:'Sold over\nasking —',accent:'every dollar counts.',sub:'Get a free home valuation →'},
+      {k:'justsold',name:'Just Sold (in X days)',badge:'JUST SOLD IN 3 DAYS',head:'Want your home\nsold fast — for',accent:'top dollar?',sub:'Get a free home valuation →'},
+      {k:'closed',name:'Closed / Keys Handed Over',badge:'JUST CLOSED',head:'Keys handed over —\nanother happy',accent:'homeowner.',sub:'Ready for your move? →'}
+    ]},
+    {cat:'2 · Social proof',items:[
+      {k:'soldxdays',name:'Sold in X Days',badge:'JUST SOLD IN 3 DAYS',head:'Want your home\nsold fast — for',accent:'top dollar?',sub:'Get a free home valuation →'},
+      {k:'overasking2',name:'Sold Over Asking',badge:'SOLD OVER ASKING',head:'Sold over asking —\nwant the same',accent:'result?',sub:'Get a free home valuation →'},
+      {k:'testimonial',name:'Client Testimonial',badge:'CLIENT REVIEW',head:'“They made it\nfeel',accent:'effortless.”',sub:'— A happy seller'},
+      {k:'thankyou',name:'Thank You',badge:'THANK YOU',head:'Grateful to help\nanother family',accent:'move forward.',sub:'Could you be next? →'},
+      {k:'multioffer',name:'Multiple Offers',badge:'MULTIPLE OFFERS',head:'Multiple offers —\nstrong demand',accent:'right now.',sub:"What's your home worth? →"},
+      {k:'happyhome',name:'Helped Another Family',badge:'ANOTHER HAPPY HOME',head:'Helped another\nfamily find',accent:'home.',sub:"Looking too? Let's talk →"}
+    ]},
+    {cat:'3 · Authority / education',items:[
+      {k:'mktupdate',name:'Market Update',badge:'MARKET UPDATE',head:'Your monthly\nmarket',accent:'snapshot.',sub:'See the full report →'},
+      {k:'tip',name:'Tip of the Week',badge:'SELLER TIP',head:'One simple way\nto sell for',accent:'more.',sub:'More tips inside →'},
+      {k:'myth',name:'Myth vs Fact',badge:'MYTH vs FACT',head:'Must you renovate\nto sell?',accent:'Not quite.',sub:'Learn the truth →'},
+      {k:'worth',name:"What's Your Home Worth",badge:"WHAT'S IT WORTH?",head:"What's your home\nworth in today's",accent:'market?',sub:'Get a free valuation →'},
+      {k:'spotlight',name:'Neighbourhood Spotlight',badge:'NEIGHBOURHOOD SPOTLIGHT',head:'Why families\nlove',accent:'this area.',sub:'Explore the area →'},
+      {k:'bilingual',name:'Bilingual Explainer (中文)',badge:'买卖知识',head:'卖房前最该\n知道的',accent:'三件事。',sub:'免费咨询 →'}
+    ]},
+    {cat:'4 · Engagement / human',items:[
+      {k:'meet',name:'Meet the Agent',badge:'MEET PETER',head:'Your calm guide\nthrough every',accent:'move.',sub:"Let's connect →"},
+      {k:'bts',name:'Behind the Scenes',badge:'BEHIND THE SCENES',head:'What really goes\ninto selling a',accent:'home.',sub:'Curious? Ask me →'},
+      {k:'faq',name:'FAQ Answered',badge:'YOU ASKED',head:'“When\u2019s the best\ntime to',accent:'sell?”',sub:"Here's my answer →"},
+      {k:'locallove',name:'Local Business Spotlight',badge:'LOCAL LOVE',head:'A neighbourhood\ngem worth',accent:'a visit.',sub:'Tag a friend →'},
+      {k:'seasonal',name:'Seasonal / Holiday',badge:"SEASON'S GREETINGS",head:'Wishing you\nwarmth this',accent:'season.',sub:'From the Luo family →'},
+      {k:'poll',name:'Poll / Question',badge:'QUICK QUESTION',head:'Renovate first,\nor sell',accent:'as-is?',sub:'Vote in the comments →'}
+    ]}
+  ];
+  const PMAP={};
+  (function(){ const sel=$('preset'); PRESET_GROUPS.forEach(g=>{ const og=document.createElement('optgroup'); og.label=g.cat; g.items.forEach(it=>{ PMAP[it.k]=it; const o=document.createElement('option'); o.value=it.k; o.textContent=it.name; og.appendChild(o); }); sel.appendChild(og); }); })();
+  $('preset').addEventListener('change',e=>{ const it=PMAP[e.target.value]; if(!it)return; $('badge').value=it.badge; $('headline').value=it.head; $('accent').value=it.accent; $('sub').value=it.sub; $('features').value=it.feat||''; draw(); });
+
+  ['badge','address','headline','accent','sub','features','name','role','url'].forEach(id=>$(id).addEventListener('input',()=>{ $('preset').value=''; draw(); }));
+
+  const fn=$('filename'), fnEcho=$('fnEcho');
+  function cleanFn(){ let v=fn.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,''); fnEcho.textContent=v||'hayfield'; return v; }
+  fn.addEventListener('input',cleanFn);
+
+  $('download').addEventListener('click',()=>{ if(!anyImage())return; draw(); const name=(cleanFn()||'card')+'.jpg'; canvas.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); },'image/jpeg',0.92); });
+
+  let toastTimer=null;
+  function toast(m,err){ const t=$('toast'); t.textContent=m; t.classList.toggle('error',!!err); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),err?5000:3500); }
+
+  const repoFields={owner:'gh-owner',repo:'gh-repo',branch:'gh-branch',dir:'gh-dir'};
+  const repoDefaults={owner:'peterluohomes',repo:'peterluohomes.github.io',branch:'main',dir:'imgs'};
+  function loadRepo(){ let s={}; try{ s=JSON.parse(localStorage.getItem('scm_repo_v4')||'{}'); }catch(e){} Object.keys(repoFields).forEach(k=>{ $(repoFields[k]).value=(s[k]!=null&&s[k]!=='')?s[k]:repoDefaults[k]; }); }
+  function saveRepo(){ const s={}; Object.keys(repoFields).forEach(k=>s[k]=$(repoFields[k]).value.trim()); try{ localStorage.setItem('scm_repo_v4',JSON.stringify(s)); }catch(e){} }
+  Object.values(repoFields).forEach(id=>$(id).addEventListener('input',saveRepo));
+  function getToken(){ const t=$('gh-token').value.trim(); if(!t){ toast('Enter your GitHub token first',true); return null; } return t; }
+
+  $('publish').addEventListener('click',async()=>{
+    if(!anyImage()){ toast('Upload a photo first',true); return; }
+    const token=getToken(); if(!token)return;
+    const owner=$('gh-owner').value.trim(),repo=$('gh-repo').value.trim();
+    const branch=$('gh-branch').value.trim()||'main',dir=$('gh-dir').value.trim();
+    const fname=cleanFn(); if(!owner||!repo){toast('Set the repo owner and name',true);return;} if(!fname){toast('Enter a filename',true);return;}
+    const cleanDir=dir.replace(/^\/+|\/+$/g,''); const path=(cleanDir?cleanDir+'/':'')+fname+'.jpg';
+    const base='https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;
+    const headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github.v3+json'};
+    const btn=$('publish'); btn.disabled=true; const label=btn.textContent; btn.textContent='Publishing…';
     try{
-      await Promise.all([
-        document.fonts.load('700 37px "Playfair Display"'),
-        document.fonts.load('italic 600 37px "Playfair Display"'),
-        document.fonts.load('700 25px "Playfair Display"'),
-        document.fonts.load('400 18px "DM Sans"'),
-        document.fonts.load('500 17px "DM Sans"'),
-        document.fonts.load('700 17px "DM Sans"')
-      ]);
-      await document.fonts.ready;
-    }catch(e){}
-    fontsReady = true;
-    draw();
-  }
-
-  // ---------- helpers ----------
-  function clamp(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); }
-
-  function drawPhoto(){
-    if(!img) return;
-    const region = getRegion();
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(region.x, region.y, region.w, region.h);
-    ctx.clip();
-    const base = Math.max(region.w/img.width, region.h/img.height);
-    const s = base * zoom;
-    const dw = img.width*s, dh = img.height*s;
-    let dx = region.x + (region.w-dw)/2 + panX;
-    let dy = region.y + (region.h-dh)/2 + panY;
-    dx = clamp(dx, region.x+region.w-dw, region.x);   // keep fully covered
-    dy = clamp(dy, region.y+region.h-dh, region.y);
-    panX = dx - (region.x + (region.w-dw)/2);          // write back clamped pan
-    panY = dy - (region.y + (region.h-dh)/2);
-    ctx.drawImage(img, dx, dy, dw, dh);
-    ctx.restore();
-  }
-
-  function setLS(px){ if('letterSpacing' in ctx) ctx.letterSpacing = px+'px'; }
-
-  function draw(){
-    const region = getRegion();
-    // background — radial navy
-    const g = ctx.createRadialGradient(480,63,0, 480,63,1100);
-    g.addColorStop(0,'#223158'); g.addColorStop(.55,'#17243f'); g.addColorStop(1,'#0e1730');
-    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-
-    // photo (right) or placeholder
-    if(img){ drawPhoto(); }
-    else {
-      ctx.fillStyle = '#0c1730'; ctx.fillRect(region.x,0,region.w,H);
-      ctx.fillStyle = '#3a4d75'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.font = '500 19px "DM Sans"';
-      ctx.fillText('Upload a photo' + (fullBleed?'':' →'), region.x + region.w/2, H/2);
-    }
-
-    // full-bleed: photo only, no panel or text
-    if(fullBleed){ ctx.textAlign='left'; ctx.textBaseline='alphabetic'; return; }
-
-    // seam fade + gold divider
-    const seam = ctx.createLinearGradient(region.x,0, region.x+110,0);
-    seam.addColorStop(0,'rgba(14,23,48,0.9)'); seam.addColorStop(1,'rgba(14,23,48,0)');
-    ctx.fillStyle = seam; ctx.fillRect(region.x,0,110,H);
-    ctx.fillStyle = 'rgba(201,168,76,0.85)'; ctx.fillRect(SPLIT-2,0,2.5,H);
-
-    ctx.textBaseline = 'alphabetic';
-
-    // ---- badge ----
-    const badge = ($('badge').value||'').toUpperCase();
-    if(badge){
-      ctx.font = '700 17px "DM Sans"'; setLS(2);
-      const tw = ctx.measureText(badge).width;
-      const padX = 24, bw = tw + padX*2, bx = 36, by = 54, bh = 40, r = 5;
-      ctx.fillStyle = '#c9a84c';
-      roundRect(bx,by,bw,bh,r); ctx.fill();
-      ctx.fillStyle = '#15233f'; ctx.textAlign='left'; ctx.textBaseline='middle';
-      ctx.fillText(badge, bx+padX, by+bh/2+1);
-      setLS(0); ctx.textBaseline='alphabetic';
-    }
-
-    // ---- address ----
-    ctx.fillStyle = '#cdd5e6'; ctx.textAlign='left';
-    ctx.font = '500 16px "DM Sans"';
-    ctx.fillText($('address').value||'', 38, 130);
-
-    // ---- headline (cream) + accent (gold italic) ----
-    const hlLines = ($('headline').value||'').split('\n').filter(l=>l.length);
-    let y = 196; const step = 48;
-    ctx.fillStyle = '#f8f4ea'; ctx.font = '700 37px "Playfair Display"';
-    hlLines.forEach(line=>{ ctx.fillText(line, 36, y); y += step; });
-    const accent = ($('accent').value||'').trim();
-    if(accent){
-      ctx.fillStyle = '#d3b25a'; ctx.font = 'italic 600 37px "Playfair Display"';
-      ctx.fillText(accent, 36, y); y += step;
-    }
-
-    // ---- sub ----
-    const subLines = ($('sub').value||'').split('\n').filter(l=>l.length);
-    let sy = y + 14; const sstep = 26;
-    ctx.fillStyle = '#aeb6c8'; ctx.font = '400 18px "DM Sans"';
-    subLines.forEach(line=>{ ctx.fillText(line, 38, sy); sy += sstep; });
-
-    // ---- footer (fixed at bottom) ----
-    ctx.strokeStyle = 'rgba(201,168,76,0.4)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(36,512); ctx.lineTo(364,512); ctx.stroke();
-
-    ctx.fillStyle = '#f8f4ea'; ctx.font = '700 25px "Playfair Display"';
-    ctx.fillText($('name').value||'', 36, 550);
-    ctx.fillStyle = '#9aa3b8'; ctx.font = '400 14px "DM Sans"';
-    ctx.fillText($('role').value||'', 38, 573);
-    ctx.fillStyle = '#d3b25a'; ctx.font = '500 17px "DM Sans"';
-    ctx.fillText($('url').value||'', 38, 598);
-  }
-
-  function roundRect(x,y,w,h,r){
-    ctx.beginPath();
-    ctx.moveTo(x+r,y);
-    ctx.arcTo(x+w,y,x+w,y+h,r);
-    ctx.arcTo(x+w,y+h,x,y+h,r);
-    ctx.arcTo(x,y+h,x,y,r);
-    ctx.arcTo(x,y,x+w,y,r);
-    ctx.closePath();
-  }
-
-  // ---------- image load ----------
-  function loadImageFile(f){
-    if(!f || !f.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(f);
-    const im = new Image();
-    im.onload = ()=>{
-      img = im; zoom = 1; panX = 0; panY = 0;
-      $('zoom').disabled = false; $('zoom').value = 1; $('zoomVal').textContent = '1.0×';
-      $('recenter').disabled = false; $('download').disabled = false; $('publish').disabled = false;
-      draw(); URL.revokeObjectURL(url);
-    };
-    im.src = url;
-  }
-
-  // ---------- drag to pan ----------
-  let dragging = false, lastX = 0, lastY = 0;
-  function canvasScale(){ return W / canvas.getBoundingClientRect().width; }
-  canvas.addEventListener('pointerdown', e=>{
-    if(!img) return;
-    dragging = true; canvas.classList.add('dragging');
-    canvas.setPointerCapture(e.pointerId);
-    lastX = e.clientX; lastY = e.clientY;
-  });
-  canvas.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const sc = canvasScale();
-    panX += (e.clientX - lastX) * sc;
-    panY += (e.clientY - lastY) * sc;
-    lastX = e.clientX; lastY = e.clientY;
-    draw();
-  });
-  function endDrag(){ dragging = false; canvas.classList.remove('dragging'); }
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
-
-  // ---------- zoom on the photo (wheel / trackpad), centred on cursor ----------
-  function applyZoom(newZoom, cx, cy){
-    if(!img) return;
-    const region = getRegion();
-    newZoom = clamp(newZoom, 1, 3);
-    if(newZoom === zoom) return;
-    // keep the point under the cursor stationary while zooming
-    const sc = canvasScale();
-    const px = (cx - canvas.getBoundingClientRect().left) * sc;
-    const py = (cy - canvas.getBoundingClientRect().top) * sc;
-    const base = Math.max(region.w/img.width, region.h/img.height);
-    const before = base*zoom, after = base*newZoom;
-    // current top-left of image
-    const dwB = img.width*before, dhB = img.height*before;
-    let dxB = region.x + (region.w-dwB)/2 + panX;
-    let dyB = region.y + (region.h-dhB)/2 + panY;
-    const ix = (px - dxB)/before, iy = (py - dyB)/before;   // image coords under cursor
-    const dwA = img.width*after, dhA = img.height*after;
-    const dxA = px - ix*after, dyA = py - iy*after;          // new top-left so cursor stays put
-    panX = dxA - (region.x + (region.w-dwA)/2);
-    panY = dyA - (region.y + (region.h-dhA)/2);
-    zoom = newZoom;
-    $('zoom').value = zoom; $('zoomVal').textContent = zoom.toFixed(1)+'×';
-    draw();
-  }
-  canvas.addEventListener('wheel', e=>{
-    if(!img) return;
-    e.preventDefault();
-    applyZoom(zoom * (e.deltaY < 0 ? 1.08 : 0.926), e.clientX, e.clientY);
-  }, { passive:false });
-
-  // pinch-zoom (two fingers) on touch devices
-  let pinchDist = 0, pinchMid = null;
-  canvas.addEventListener('touchstart', e=>{
-    if(e.touches.length === 2){
-      pinchDist = touchDist(e); pinchMid = touchMid(e);
-    }
-  }, { passive:false });
-  canvas.addEventListener('touchmove', e=>{
-    if(e.touches.length === 2 && img){
-      e.preventDefault();
-      const d = touchDist(e), mid = touchMid(e);
-      if(pinchDist) applyZoom(zoom * (d/pinchDist), mid.x, mid.y);
-      pinchDist = d; pinchMid = mid;
-    }
-  }, { passive:false });
-  function touchDist(e){ const a=e.touches[0], b=e.touches[1]; return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
-  function touchMid(e){ const a=e.touches[0], b=e.touches[1]; return { x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2 }; }
-
-  // ---------- controls ----------
-  const drop = $('drop');
-  drop.addEventListener('click', ()=> $('file').click());
-  $('file').addEventListener('change', e=> loadImageFile(e.target.files[0]));
-  ['dragover','dragenter'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.add('over'); }));
-  ['dragleave','drop'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.remove('over'); }));
-  drop.addEventListener('drop', e=> loadImageFile(e.dataTransfer.files[0]));
-
-  $('zoom').addEventListener('input', e=>{
-    zoom = parseFloat(e.target.value);
-    $('zoomVal').textContent = zoom.toFixed(1)+'×';
-    draw();
-  });
-  $('recenter').addEventListener('click', ()=>{
-    zoom = 1; panX = 0; panY = 0;
-    $('zoom').value = 1; $('zoomVal').textContent = '1.0×';
-    draw();
+      draw(); const content=canvas.toDataURL('image/jpeg',0.92).split(',')[1];
+      let sha=null; const head=await fetch(base+'?ref='+encodeURIComponent(branch),{headers}); if(head.ok){const d=await head.json();sha=d.sha;} else if(head.status!==404){throw new Error('Check failed: '+head.status);}
+      const body={message:'Add card '+fname+'.jpg — '+new Date().toLocaleString(),content,branch}; if(sha)body.sha=sha;
+      const put=await fetch(base,{method:'PUT',headers:Object.assign({},headers,{'Content-Type':'application/json'}),body:JSON.stringify(body)});
+      if(!put.ok){const d=await put.json().catch(()=>({}));throw new Error(d.message||('API error '+put.status));}
+      toast('Published ✓  Post:  imgs.peterluo.workers.dev/?img='+fname);
+    }catch(err){ toast('Publish failed: '+err.message,true); } finally{ btn.disabled=false; btn.textContent=label; }
   });
 
-  $('fullbleed').addEventListener('change', e=>{
-    fullBleed = e.target.checked;
-    panX = 0; panY = 0;                 // region width changes → recenter
-    document.querySelector('.controls').classList.toggle('panel-off', fullBleed);
-    draw();
-  });
-
-  fields.forEach(id=> $(id).addEventListener('input', draw));
-
-  // filename echo
-  const fn = $('filename'), fnEcho = $('fnEcho');
-  function cleanFn(){
-    let v = fn.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
-    fnEcho.textContent = v || 'hayfield';
-    return v;
-  }
-  fn.addEventListener('input', cleanFn);
-
-  // ---------- export ----------
-  $('download').addEventListener('click', ()=>{
-    if(!img) return;
-    draw();
-    const name = (cleanFn() || 'sold') + '.jpg';
-    canvas.toBlob(blob=>{
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = name;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
-    }, 'image/jpeg', 0.92);
-  });
-
-  // ---------- toast ----------
-  let toastTimer = null;
-  function toast(msg, isErr){
-    const t = $('toast');
-    t.textContent = msg;
-    t.classList.toggle('error', !!isErr);
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=> t.classList.remove('show'), isErr ? 5000 : 3000);
-  }
-
-  // ---------- repo settings (saved on this device; token is NOT saved) ----------
-  const repoFields = { owner:'gh-owner', repo:'gh-repo', branch:'gh-branch', dir:'gh-dir' };
-  const repoDefaults = { owner:'peterluohomes', repo:'peterluohomes.github.io', branch:'main', dir:'imgs' };
-  function loadRepoSettings(){
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem('scm_repo_v4') || '{}'); } catch(e){}
-    Object.keys(repoFields).forEach(k=>{
-      $(repoFields[k]).value = (saved[k] != null && saved[k] !== '') ? saved[k] : repoDefaults[k];
-    });
-  }
-  function saveRepoSettings(){
-    const s = {};
-    Object.keys(repoFields).forEach(k=> s[k] = $(repoFields[k]).value.trim());
-    try { localStorage.setItem('scm_repo_v4', JSON.stringify(s)); } catch(e){}
-  }
-  Object.values(repoFields).forEach(id=> $(id).addEventListener('input', saveRepoSettings));
-
-  function getToken(){
-    const t = $('gh-token').value.trim();
-    if(!t){ toast('Enter your GitHub token first', true); return null; }
-    return t;
-  }
-
-  // ---------- publish to GitHub (mirrors the open-house commit) ----------
-  $('publish').addEventListener('click', async ()=>{
-    if(!img){ toast('Upload a photo first', true); return; }
-    const token = getToken(); if(!token) return;
-    const owner = $('gh-owner').value.trim(), repo = $('gh-repo').value.trim();
-    const branch = $('gh-branch').value.trim() || 'main', dir = $('gh-dir').value.trim() || 'imgs';
-    const fname = cleanFn();
-    if(!owner || !repo){ toast('Set the repo owner and name', true); return; }
-    if(!fname){ toast('Enter a filename', true); return; }
-
-    const cleanDir = dir.replace(/^\/+|\/+$/g,'');
-    const path = (cleanDir ? cleanDir + '/' : '') + fname + '.jpg';
-    const base = 'https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;
-    const headers = { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github.v3+json' };
-
-    const btn = $('publish');
-    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Publishing…';
-    try {
-      draw();
-      // base64 of the JPEG bytes (strip the data-URL prefix)
-      const content = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
-
-      // does the file already exist? need its sha to overwrite
-      let sha = null;
-      const head = await fetch(base + '?ref=' + encodeURIComponent(branch), { headers });
-      if(head.ok){ const d = await head.json(); sha = d.sha; }
-      else if(head.status !== 404){ throw new Error('Check failed: ' + head.status); }
-
-      const body = {
-        message: 'Add sold card ' + fname + '.jpg — ' + new Date().toLocaleString(),
-        content: content,
-        branch: branch
-      };
-      if(sha) body.sha = sha;
-
-      const put = await fetch(base, {
-        method:'PUT',
-        headers: Object.assign({}, headers, { 'Content-Type':'application/json' }),
-        body: JSON.stringify(body)
-      });
-      if(!put.ok){ const d = await put.json().catch(()=>({})); throw new Error(d.message || ('API error ' + put.status)); }
-
-      toast('Published ✓  Post:  imgs.peterluo.workers.dev/?img=' + fname);
-    } catch(err){
-      toast('Publish failed: ' + err.message, true);
-    } finally {
-      btn.disabled = false; btn.textContent = label;
-    }
-  });
-
-  // init
-  loadRepoSettings();
-  loadFonts();
-  draw();
+  loadRepo(); loadFonts(); draw();
 })();
 </script>
 </body>
