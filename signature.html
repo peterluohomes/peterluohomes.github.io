@@ -35,7 +35,13 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            border: 3px solid #e60000;
+            border: 3px solid #000000;
+        }
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
         .info { flex: 1; }
         .name {
@@ -43,11 +49,6 @@
             font-size: 32px;
             font-weight: bold;
             margin: 0 0 4px 0;
-        }
-        .title {
-            color: #cccccc;
-            font-size: 17px;
-            margin: 0 0 18px 0;
         }
         .company {
             color: #00aaff;
@@ -72,35 +73,52 @@
             color: #aaaaaa;
         }
         .remax-logo {
-            margin-top: 20px;
             height: 55px;
+            width: auto;
         }
     </style>
 </head>
 <body>
     <div class="signature">
-        <img src="logo.png" alt="Peter Luo" class="headshot" onerror="this.src='https://via.placeholder.com/160?text=Peter+Luo';">
+        <!-- Logo container: headshot + realtron logo below it, centered -->
+        <div class="logo-container">
+            <img src="logo.png" alt="Peter Luo" class="headshot" 
+                 onerror="this.src='https://via.placeholder.com/160?text=Peter+Luo';">
+            
+            <img src="realtron.jpg" alt="RE/MAX Realtron" class="remax-logo" 
+                 onerror="this.style.display='none';">
+        </div>
         
         <div class="info">
             <h1 class="name">
-    <span style="color: #e60000;">Peter</span> 
-    <span style="color: #00aaff;">Luo</span>
-</h1>
+                <span style="color: #DC1C2E;">Peter</span> 
+                <span style="color: #003DA5;">Luo</span>
+            </h1>
 
-<p class="company">
-    <span style="color: #e60000;">RE/MAX</span>
-    <span style="color: #00aaff;"> Realtron Realty Inc., Brokerage</span>
-</p>
+            <p class="company">
+                <span style="color: #DC1C2E;">RE</span>
+                <span style="color: #003DA5;">/</span>
+                <span style="color: #DC1C2E;">MAX</span>
+                <span style="color: #003DA5;"> Realtron Realty Inc., Brokerage</span>
+            </p>
             
-            <div class="contact">📞 <a href="tel:+16478243718">(647) 824-3718</a></div>
-            <div class="contact">✉️ <a href="mailto:peterluo@peterluo.com">peterluo@peterluo.com</a></div>
-            <div class="contact">🌐 
+            <div class="contact">
+                <span style="color: #000000; font-size: 18px;">✆</span> 
+                <a href="tel:+16478243718">(647) 824-3718</a>
+            </div>
+            <div class="contact">
+                <span style="color: #000000; font-size: 18px;">✉️</span> 
+                <a href="mailto:peterluo@peterluo.com">peterluo@peterluo.com</a>
+            </div>
+            <div class="contact">
+                <span style="color: #000000; font-size: 18px;">🌐</span> 
                 <a href="https://peterluo.com" target="_blank">peterluo.com</a> • 
                 <a href="https://peterluo.homes" target="_blank">peterluo.homes</a>
             </div>
-            <div class="contact">📍 505 Hwy 7 E, PH01, Thornhill, ON L3T 7T1</div>
-            
-            <img src="realtron.png" alt="RE/MAX Realtron" class="remax-logo" onerror="this.style.display='none';">
+            <div class="contact">
+                <span style="color: #000000; font-size: 18px;">📍</span> 
+                505 Hwy 7 E, PH01, Thornhill, ON L3T 7T1
+            </div>
         </div>
     </div>
 </body>
