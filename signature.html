@@ -31,11 +31,11 @@
         }
         .headshot {
             width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            object-fit: cover;
+            height: auto;
+            max-height: 200px;
+            object-fit: contain;
             flex-shrink: 0;
-            border: 3px solid #000000;
+            border-radius: 8px; /* Soft corners instead of circle */
         }
         .logo-container {
             display: flex;
@@ -103,7 +103,7 @@
             </p>
             
             <div class="contact">
-                <span style="color: #000000; font-size: 18px;">✆</span> 
+                <span style="color: #000000; font-size: 18px;">📞</span> 
                 <a href="tel:+16478243718">(647) 824-3718</a>
             </div>
             <div class="contact">
