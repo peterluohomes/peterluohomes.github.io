@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual Queue · Pinnacle Listing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#16243f;--navy-soft:#22324f;--gold:#bb9b46;--gold-deep:#9a7e33;--cream:#f6f2e8;--cream-2:#fbf9f3;--ink:#1d2433;--muted:#6b7385;--line:#e3dccb;--assist:#a6792a;--ok:#2f7d57;--shadow:0 1px 2px rgba(22,36,63,.06),0 8px 24px rgba(22,36,63,.09)}
+  *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.5;font-size:16px}
+  header.bar{background:var(--navy);color:var(--cream);padding:15px 18px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:10}
+  header .top{display:flex;align-items:baseline;gap:12px}
+  header .eyebrow{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  header h1{font-family:"Playfair Display",serif;font-weight:600;font-size:1.2rem;margin:0}
+  header .meta{margin-left:auto;display:flex;gap:6px;align-items:center}
+  header .gear{background:none;border:none;color:var(--cream);font-size:1.1rem;cursor:pointer;padding:4px}
+  header .sub{font-size:.74rem;color:#bcc6d8;margin-top:3px}
+  .wrap{max-width:640px;margin:0 auto;padding:16px 14px 60px}
+  .refresh{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;padding:9px 14px;font-size:.86rem;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn:hover{border-color:var(--gold)}.btn.ghost{color:var(--muted)}
+  .count{font-size:.82rem;color:var(--muted);margin-left:auto}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:90px}
+  .card.flash{animation:flash 2s ease}
+  @keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--gold),var(--shadow)}100%{box-shadow:var(--shadow)}}
+  .card.done{opacity:.55}
+  .chead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
+  .ctitle{font-weight:700;color:var(--navy);font-size:1.02rem}
+  .cwhen{font-size:.78rem;color:var(--muted);font-weight:600}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .badge{font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:999px;background:rgba(166,121,42,.13);color:var(--assist);border:1px solid rgba(166,121,42,.3)}
+
+  .blk{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:11px;background:var(--cream-2)}
+  .blk .bl{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
+  .blk .bt{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--gold-deep)}
+  .blk .copy{border:1px solid var(--gold);background:#fffdf8;color:var(--gold-deep);border-radius:8px;padding:6px 13px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+  .blk .copy:active,.blk .copy.done{background:var(--gold);color:var(--navy)}
+  .blk .txt{font-size:.92rem;color:#2c3447;white-space:pre-wrap;line-height:1.45}
+  .blk.link .txt{font-size:.84rem;color:var(--navy);word-break:break-all}
+
+  .media{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .mitem{width:96px;display:flex;flex-direction:column;gap:5px;align-items:center}
+  .mitem img{width:96px;height:96px;object-fit:cover;border-radius:9px;border:1px solid var(--line);background:var(--cream-2)}
+  .mitem .vid{width:96px;height:96px;border-radius:9px;border:1px solid var(--line);background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+  .mitem .dl{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--navy);cursor:pointer;width:100%;font-family:inherit}
+  .mitem .dl:hover{border-color:var(--gold)}
+
+  .mark{width:100%;background:var(--ok);color:#fff;border:none;border-radius:11px;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
+  .mark:hover{background:#276a49}
+  .card.done .mark{background:#fff;color:var(--ok);border:1px solid var(--ok)}
+
+  .empty{text-align:center;color:var(--muted);padding:48px 16px}
+  .empty .big{font-family:"Playfair Display",serif;font-size:1.3rem;color:var(--navy);margin-bottom:6px}
+  .err{background:#fff;border:1px solid #e6b8b0;border-left:4px solid #c4574a;border-radius:11px;padding:14px 16px;color:#8a3a30;font-size:.88rem;margin-bottom:14px}
+
+  dialog{border:none;border-radius:14px;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:520px;width:92%}
+  dialog .dh{background:var(--navy);color:var(--cream);padding:14px 18px;font-family:"Playfair Display",serif}
+  dialog .db{padding:16px 18px}
+  dialog .f{margin-bottom:12px}
+  dialog .f label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold-deep);margin-bottom:5px}
+  dialog .f input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:.84rem}
+  dialog .da{display:flex;gap:8px;justify-content:flex-end;padding:0 18px 16px}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:var(--cream);padding:11px 18px;border-radius:10px;font-size:.86rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;z-index:50;border:1px solid var(--gold)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="top">
+    <span class="eyebrow">Pinnacle</span><h1>Manual Queue</h1>
+    <div class="meta"><button class="gear" id="gearBtn" title="Settings">⚙</button></div>
+  </div>
+  <div class="sub" id="sub">Posts waiting for you to publish by hand</div>
+</header>
+
+<div class="wrap">
+  <div class="refresh">
+    <button class="btn" id="refreshBtn">↻ Refresh</button>
+    <button class="btn ghost" id="toggleDone">Show completed</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="list"></div>
+</div>
+
+<dialog id="setDlg">
+  <div class="dh">Sources</div>
+  <div class="db">
+    <div class="f"><label>queue.json URL</label><input id="qUrl" placeholder="https://raw.githubusercontent.com/.../queue.json"></div>
+    <div class="f"><label>status.json URL</label><input id="sUrl" placeholder="https://raw.githubusercontent.com/.../status.json"></div>
+    <p style="font-size:.76rem;color:var(--muted);margin:0">Read-only. The repo (or these two files) must be publicly readable. "Mark posted" is saved on this device only.</p>
+  </div>
+  <div class="da"><button class="btn" id="setSave">Save</button><button class="btn ghost" id="setClose">Close</button></div>
+</dialog>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const DEF_Q='https://raw.githubusercontent.com/peterluohomes/scheduler/main/queue.json';
+  const DEF_S='https://raw.githubusercontent.com/peterluohomes/scheduler/main/status.json';
+
+  // local storage guarded (works on Pages; falls back to memory in restricted sandboxes)
+  const mem={};
+  function lsGet(k){try{return localStorage.getItem(k);}catch(e){return mem[k]||null;}}
+  function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){mem[k]=v;}}
+
+  let cfg={q:lsGet('mq_q')||DEF_Q,s:lsGet('mq_s')||DEF_S};
+  let queue={posts:[]}, statuses={}, showDone=false;
+  let doneSet=new Set(JSON.parse(lsGet('mq_done')||'[]'));
+
+  const ASSIST=new Set(['wechat','red','whatsapp','nextdoor']);
+  const ASSIST_LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor'};
+
+  function toast(m){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=m;t.className='show';clearTimeout(t._t);t._t=setTimeout(()=>t.className='',1800);}
+  function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+  function fmtWhen(iso){try{return new Date(iso).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return iso||'';}}
+
+  async function load(){
+    $('list').innerHTML='';
+    let err='';
+    try{
+      const r=await fetch(cfg.q+(cfg.q.includes('?')?'&':'?')+'t='+Date.now());
+      if(!r.ok)throw new Error('queue.json '+r.status);
+      const d=await r.json();queue=d&&d.posts?d:{posts:(Array.isArray(d)?d:[])};
+    }catch(e){err='Could not load queue.json — '+e.message+'. Tap ⚙ to set the URL.';queue={posts:[]};}
+    try{
+      const r=await fetch(cfg.s+(cfg.s.includes('?')?'&':'?')+'t='+Date.now());
+      if(r.ok){const d=await r.json();statuses=d.statuses||{};}
+    }catch(e){statuses={};}
+    render(err);
+  }
+
+  function assistTargets(p){return (p.targets||[]).filter(t=>ASSIST.has(t.platform));}
+  function isWaiting(p){
+    const at=assistTargets(p);if(!at.length)return false;
+    const st=statuses[p.id]&&statuses[p.id].targets||{};
+    // waiting if any assisted target is 'nudged', or (no status yet and it's past due)
+    const due=new Date(p.scheduledFor||0).getTime()<=Date.now();
+    return at.some(t=>{const s=st[t.platform]&&st[t.platform].status;return s==='nudged'||(!s&&due);});
+  }
+
+  function render(err){
+    const list=$('list');list.innerHTML='';
+    if(err){const e=document.createElement('div');e.className='err';e.textContent=err;list.appendChild(e);}
+    let posts=(queue.posts||[]).filter(isWaiting);
+    posts.sort((a,b)=>new Date(a.scheduledFor||0)-new Date(b.scheduledFor||0));
+    const visible=posts.filter(p=>showDone?true:!doneSet.has(p.id));
+    const waiting=posts.filter(p=>!doneSet.has(p.id)).length;
+    $('count').textContent=waiting+' waiting';
+    $('toggleDone').textContent=showDone?'Hide completed':'Show completed';
+
+    if(!visible.length){
+      if(!err){const e=document.createElement('div');e.className='empty';e.innerHTML='<div class="big">All caught up</div>Nothing waiting to post by hand right now.';list.appendChild(e);}
+      return;
+    }
+    const hash=(location.hash||'').replace('#','');
+    visible.forEach(p=>list.appendChild(card(p,p.id===hash)));
+    if(hash){const el=document.getElementById('post-'+hash);if(el){el.classList.add('flash');el.scrollIntoView({behavior:'smooth',block:'start'});}}
+  }
+
+  function card(p,flash){
+    const el=document.createElement('div');el.className='card'+(doneSet.has(p.id)?' done':'')+(flash?' flash':'');el.id='post-'+p.id;
+    const at=assistTargets(p);
+    const langs=new Set(at.map(t=>t.lang));
+    const caps=p.captions||{}, links=p.commentLinks||{};
+
+    let html='<div class="chead"><span class="ctitle">'+esc(p.title||'(untitled)')+'</span><span class="cwhen">'+fmtWhen(p.scheduledFor)+'</span></div>';
+    html+='<div class="badges">'+at.map(t=>'<span class="badge">'+esc(ASSIST_LABEL[t.platform]||t.label||t.platform)+'</span>').join('')+'</div>';
+
+    // captions per language present among assisted targets
+    [['zh','中文'],['en','English']].forEach(([L,name])=>{
+      if(langs.has(L) && (caps[L]||'').trim()){
+        html+='<div class="blk"><div class="bl"><span class="bt">Caption · '+name+'</span><button class="copy" data-copy="cap-'+L+'-'+p.id+'">Copy</button></div><div class="txt" id="cap-'+L+'-'+p.id+'">'+esc(caps[L])+'</div></div>';
+      }
+      if(langs.has(L) && (links[L]||'').trim()){
+        html+='<div class="blk link"><div class="bl"><span class="bt">First-comment link · '+name+'</span><button class="copy" data-copy="lnk-'+L+'-'+p.id+'">Copy</button></div><div class="txt" id="lnk-'+L+'-'+p.id+'">'+esc(links[L])+'</div></div>';
+      }
+    });
+
+    // media
+    const media=p.media||[];
+    if(media.length){
+      html+='<div class="media">'+media.map((m,i)=>{
+        const thumb=m.type==='video'?'<div class="vid">🎬</div>':'<img src="'+esc(m.url)+'" onerror="this.style.opacity=.3">';
+        return '<div class="mitem">'+thumb+'<button class="dl" data-dl="'+i+'" data-pid="'+p.id+'">Download</button></div>';
+      }).join('')+'</div>';
+    }
+
+    html+='<button class="mark" data-mark="'+p.id+'">'+(doneSet.has(p.id)?'✓ Posted — tap to undo':'Mark posted')+'</button>';
+    el.innerHTML=html;
+
+    el.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{
+      const t=document.getElementById(b.dataset.copy);if(!t)return;
+      navigator.clipboard.writeText(t.textContent).then(()=>{b.textContent='Copied ✓';b.classList.add('done');setTimeout(()=>{b.textContent='Copy';b.classList.remove('done');},1400);}).catch(()=>toast('Copy failed — select manually'));
+    });
+    el.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>downloadMedia(p.media[+b.dataset.dl]));
+    el.querySelector('[data-mark]').onclick=()=>toggleDone(p.id);
+    return el;
+  }
+
+  async function downloadMedia(m){
+    if(!m)return;
+    try{
+      const r=await fetch(m.url);if(!r.ok)throw 0;
+      const blob=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=m.filename||'media';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+    }catch(e){window.open(m.url,'_blank');} // cross-origin fallback: open it, long-press to save
+  }
+
+  function toggleDone(id){
+    if(doneSet.has(id))doneSet.delete(id);else doneSet.add(id);
+    lsSet('mq_done',JSON.stringify([...doneSet]));
+    render();
+  }
+
+  // settings
+  $('gearBtn').onclick=()=>{$('qUrl').value=cfg.q;$('sUrl').value=cfg.s;$('setDlg').showModal();};
+  $('setClose').onclick=()=>$('setDlg').close();
+  $('setSave').onclick=()=>{cfg.q=$('qUrl').value.trim()||DEF_Q;cfg.s=$('sUrl').value.trim()||DEF_S;lsSet('mq_q',cfg.q);lsSet('mq_s',cfg.s);$('setDlg').close();load();};
+  $('refreshBtn').onclick=load;
+  $('toggleDone').onclick=()=>{showDone=!showDone;render();};
+
+  load();
+})();
+</script>
+</body>
+</html>
