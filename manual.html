@@ -111,8 +111,8 @@
   let queue={posts:[]}, statuses={}, showDone=false;
   let doneSet=new Set(JSON.parse(lsGet('mq_done')||'[]'));
 
-  const ASSIST=new Set(['wechat','red','whatsapp','nextdoor']);
-  const ASSIST_LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor'};
+  const ASSIST=new Set(['wechat','red','whatsapp','nextdoor','facebook_en','facebook_zh','instagram_en','instagram_zh','linkedin']);
+  const ASSIST_LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor',facebook_en:'Facebook',facebook_zh:'Facebook',instagram_en:'Instagram',instagram_zh:'Instagram',linkedin:'LinkedIn'};
 
   function toast(m){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=m;t.className='show';clearTimeout(t._t);t._t=setTimeout(()=>t.className='',1800);}
   function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
@@ -133,7 +133,7 @@
     render(err);
   }
 
-  function assistTargets(p){return (p.targets||[]).filter(t=>ASSIST.has(t.platform));}
+  function assistTargets(p){return (p.targets||[]).filter(t=>t.tier==='assist'||ASSIST.has(t.platform));}
   function isWaiting(p){
     const at=assistTargets(p);if(!at.length)return false;
     const st=statuses[p.id]&&statuses[p.id].targets||{};
@@ -168,7 +168,7 @@
     const caps=p.captions||{}, links=p.commentLinks||{};
 
     let html='<div class="chead"><span class="ctitle">'+esc(p.title||'(untitled)')+'</span><span class="cwhen">'+fmtWhen(p.scheduledFor)+'</span></div>';
-    html+='<div class="badges">'+at.map(t=>'<span class="badge">'+esc(ASSIST_LABEL[t.platform]||t.label||t.platform)+'</span>').join('')+'</div>';
+    html+='<div class="badges">'+at.map(t=>'<span class="badge">'+esc(ASSIST_LABEL[t.platform]||t.label||t.platform)+' '+(t.lang==='en'?'EN':'中文')+'</span>').join('')+'</div>';
 
     // captions per language present among assisted targets
     [['zh','中文'],['en','English']].forEach(([L,name])=>{
