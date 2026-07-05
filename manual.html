@@ -92,11 +92,11 @@
     <span class="eyebrow">Pinnacle</span><h1>Post Sweep</h1>
     <div class="meta"><button class="gear" id="gearBtn" title="Settings">&#9881;</button></div>
   </div>
-  <div class="sub" id="sub">Make one asset &middot; sweep it across every surface</div>
+  <div class="sub" id="sub">Today &amp; yesterday's posts &middot; sweep across every surface</div>
 </header>
 
 <div class="wrap">
-  <div class="hintbar">Each card is one piece of content. <b>Copy the caption once per language</b>, then tap <b>Open</b> down the list and paste into each app. 中文 covers WeChat &amp; RED; English covers IG, FB &amp; LinkedIn.</div>
+  <div class="hintbar">Showing only <b>today's and yesterday's</b> scheduled posts. Each card is one piece of content. <b>Copy the caption once per language</b>, then follow the small instructions under each surface and tap <b>Open</b> to jump to the app. 中文 covers WeChat &amp; RED; English covers IG, FB &amp; LinkedIn.</div>
   <div class="toolbar">
     <button class="btn" id="refreshBtn">&#8635; Refresh</button>
     <button class="btn ghost" id="toggleDone">Show completed</button>
@@ -145,6 +145,20 @@
   const ASSIST=new Set(['wechat','red','whatsapp','nextdoor','facebook_en','facebook_zh','instagram_en','instagram_zh','linkedin','email','pinterest','threads']);
   const LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor',facebook_en:'Facebook',facebook_zh:'Facebook',instagram_en:'Instagram',instagram_zh:'Instagram',linkedin:'LinkedIn',email:'Email',pinterest:'Pinterest',threads:'Threads'};
   const MT={image:{e:'📷',l:'Picture'},video:{e:'🎬',l:'Video'},text:{e:'📝',l:'Text'}};
+  const HOWTO={
+    wechat:'Discover → Moments → camera icon → add photo/video → paste caption → Post',
+    red:'Tap + → Post → upload photo/video → paste caption → add tags → Publish',
+    instagram:'Tap + → Post (or Reel for video) → select media → paste caption → Share',
+    facebook:'What\u2019s on your mind → upload photo/video → paste caption → Post',
+    linkedin:'Start a post → upload media → paste caption → Post',
+    whatsapp:'Status or broadcast list → attach media → paste caption → Send',
+    telegram:'Posted automatically by the scheduler \u2014 no action needed',
+    nextdoor:'Tap Post → choose Neighborhood/For Sale → upload media → paste caption → Post',
+    pinterest:'Tap + → Create Pin → upload media → paste caption/link → Publish',
+    youtube:'Upload video in Studio → paste caption as title/description → Publish',
+    threads:'Tap + → attach media → paste caption → Post',
+    email:'Paste caption into new campaign → attach media/link → Send or schedule'
+  };
 
   const baseApp=p=>p.replace(/_(en|zh)$/,'');
   const isMobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(('ontouchstart'in window)&&(navigator.maxTouchPoints||0)>1);
@@ -169,6 +183,15 @@
   }
   const surfDone=(pid,plat)=>doneSet.has(pid+'::'+plat);
   function allDone(p){return assistTargets(p).every(t=>surfDone(p.id,t.platform));}
+  function inWindow(p){
+    if(!p.scheduledFor)return false;
+    const d=new Date(p.scheduledFor);
+    if(isNaN(d))return false;
+    const now=new Date();
+    const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);
+    const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+    return d>=start&&d<end;
+  }
 
   async function load(){
     let err='';
@@ -181,7 +204,7 @@
   function render(err){
     const list=$('list');list.innerHTML='';
     if(err){const e=document.createElement('div');e.className='err';e.textContent=err;list.appendChild(e);}
-    let posts=(queue.posts||[]).filter(isWaiting);
+    let posts=(queue.posts||[]).filter(isWaiting).filter(inWindow);
     posts.sort((a,b)=>new Date(a.scheduledFor||0)-new Date(b.scheduledFor||0));
     const waiting=posts.filter(p=>!allDone(p)).length;
     const visible=posts.filter(p=>showDone?true:!allDone(p));
@@ -241,7 +264,8 @@
         const dn=surfDone(p.id,t.platform);
         const app=APPS[baseApp(t.platform)];
         const openBtn=app?'<button class="openapp" data-open="'+t.platform+'">Open '+esc(app.name)+'</button>':'';
-        h+='<div class="srow'+(dn?' sdone':'')+'" data-srow="'+t.platform+'"><span class="sname">'+esc(LABEL[t.platform]||t.label||t.platform)+'</span>'+openBtn+'<button class="schk" data-chk="'+t.platform+'">'+(dn?'✓':'')+'</button></div>';
+        const how=HOWTO[baseApp(t.platform)]||'';
+        h+='<div class="srow'+(dn?' sdone':'')+'" data-srow="'+t.platform+'"><span class="sname">'+esc(LABEL[t.platform]||t.label||t.platform)+(how?'<span class="st">'+esc(how)+'</span>':'')+'</span>'+openBtn+'<button class="schk" data-chk="'+t.platform+'">'+(dn?'✓':'')+'</button></div>';
       });
       h+='</div></div>';
     });
