@@ -40,7 +40,9 @@
   .mitem .vid{width:92px;height:92px;border-radius:9px;border:1px solid var(--line);background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.7rem}
   .mitem .dl{border:1px solid var(--gold);background:#fffdf8;border-radius:7px;padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--gold-deep);cursor:pointer;width:100%;font-family:inherit}
   .nomedia{font-size:.84rem;color:var(--muted);font-style:italic;padding:2px 0}
-  .autoline{font-size:.76rem;font-weight:700;color:var(--ok);background:#f1f7f3;border-bottom:1px solid #d8ebe0;padding:8px 16px;display:flex;align-items:center;gap:6px}
+  .autoline{font-size:.76rem;font-weight:700;color:var(--ok);background:#f1f7f3;border-bottom:1px solid #d8ebe0;padding:8px 16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .autoline a{color:var(--ok);text-decoration:underline}
+  .autoline .sep{color:var(--muted);font-weight:400}
 
   .lang{padding:13px 16px;border-bottom:1px solid var(--line)}
   .lang:last-of-type{border-bottom:none}
@@ -244,7 +246,16 @@
 
     // auto-posted surfaces (handled by the scheduler — shown for a complete picture)
     const auto=autoTargets(p);
-    if(auto.length){h+='<div class="autoline">⚡ Auto-posted: '+auto.map(t=>esc(labelFor(t))).join(', ')+'</div>';}
+    if(auto.length){
+      const st=(statuses[p.id]&&statuses[p.id].targets)||{};
+      const items=auto.map(t=>{
+        const s=st[t.platform]||{};
+        const url=s.url||s.link||'';
+        const label=esc(labelFor(t));
+        return (s.status==='posted'&&url)?'<a href="'+esc(url)+'" target="_blank" rel="noopener">'+label+' ↗</a>':label;
+      }).join('<span class="sep">, </span>');
+      h+='<div class="autoline">⚡ Auto-posted: '+items+'</div>';
+    }
 
     // group targets by language
     const groups={};
