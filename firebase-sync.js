@@ -66,10 +66,11 @@ async function writeCloud(data){
 }
 
 // Apply remote data WITHOUT letting it trigger a save-back (echo).
+// Returns whatever cfg.apply() reports: 'applied' | 'pending' | 'noop' | null (on error).
 async function applyRemote(data){
   applyingRemote = true;
-  try { await cfg.apply(data); }
-  catch(e){ console.warn('[sync] apply failed', e); }
+  try { return await cfg.apply(data); }
+  catch(e){ console.warn('[sync] apply failed', e); return null; }
   finally { applyingRemote = false; }
 }
 // Timestamp of whatever the tool currently has in memory RIGHT NOW.
@@ -82,9 +83,10 @@ async function reconcile(){
   const local = cfg.getData ? await cfg.getData() : null;   // getData may be async
   const cloud = await readCloud();
   const lt = tsOf(local), ct = tsOf(cloud);
+  let outcome = null;
   if (cloud && ct > lt){
     lastAppliedAt = ct;
-    await applyRemote(cloud);
+    outcome = await applyRemote(cloud);
   } else if (!cloud && local){
     // Cloud is empty -> seed it from this device. We DELIBERATELY do not push
     // local over an EXISTING cloud doc here: a device whose clock runs ahead
@@ -98,7 +100,10 @@ async function reconcile(){
     // cloud exists and is not newer (older or equal) -> leave it alone
     lastAppliedAt = Math.max(lastAppliedAt, ct);
   }
-  setStatus('Synced \u2713');
+  // Only claim "Synced" when the pulled data was actually written locally.
+  // outcome === 'pending' means apply() left it in _pending and already set
+  // its own "New data -- tap to refresh" status -- don't stomp on that.
+  if (outcome !== 'pending') setStatus('Synced \u2713');
   if (unsub) unsub();
   unsub = onSnapshot(docRef(), async (snap) => {
     if (!snap.exists()) return;
@@ -115,8 +120,8 @@ async function reconcile(){
     if (at <= here)          return;   // not newer than my live data -> ignore
     if (at <= lastAppliedAt) return;   // already applied something this fresh
     lastAppliedAt = at;
-    await applyRemote(data);
-    setStatus('Updated from another device \u2713');
+    const outcome = await applyRemote(data);
+    if (outcome !== 'pending') setStatus('Updated from another device \u2713');
   }, (err) => console.warn('[sync] snapshot error', err));
 }
 
@@ -150,6 +155,15 @@ const Sync = {
   notifyChanged: async function(){
     if (!uid || !cfg || !cfg.getData) return;
     if (applyingRemote) return;                 // don't save data we're mid-applying from the cloud
+    if (cfg._pending){
+      // There's remote data waiting on the "tap to refresh" button that this
+      // device hasn't adopted yet. Pushing now would overwrite it in the cloud
+      // with a local snapshot that doesn't contain those changes -- refuse,
+      // and make sure the person notices there's something to resolve.
+      setStatus('New data waiting \u2014 tap refresh to merge');
+      __syncShowRefreshIfAvailable();
+      return;
+    }
     const data = await cfg.getData();          // getData may be async
     if (!data) return;
     const at = tsOf(data);
@@ -159,6 +173,10 @@ const Sync = {
     setStatus('Synced \u2713');
   }
 };
+function __syncShowRefreshIfAvailable(){
+  const b = $('sync-refresh');
+  if (b) b.style.display = '';
+}
 window.PinnacleSync = Sync;
 
 // Keep the session across reloads, and surface any redirect-flow errors.
