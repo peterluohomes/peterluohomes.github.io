@@ -57,6 +57,15 @@
   .clink .copyl:active{background:var(--gold);color:var(--navy)}
 
   .surf{display:flex;flex-direction:column;gap:7px}
+
+  .rblock{border-top:1px dashed var(--line);padding-top:11px;margin-top:11px}
+  .rblock:first-child{border-top:none;padding-top:0;margin-top:0}
+  .rname{font-weight:800;color:#b33f0e;font-size:.86rem;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .rname::before{content:'';width:8px;height:8px;border-radius:50%;background:#ff4500;display:inline-block}
+  .rfield{margin-bottom:9px}
+  .rlabel{font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:4px}
+  .rwarn{font-size:.76rem;color:#8a5a20;background:#fff8ec;border:1px solid #f0dfb8;border-radius:8px;padding:8px 10px;margin:2px 0 10px;line-height:1.45}
+  .rwarn a{color:#8a5a20;font-weight:700}
   .srow{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
   .srow.sdone{background:#f1f7f3;border-color:#bfe0cd}
   .sname{font-weight:700;color:var(--navy);font-size:.88rem;flex:1;min-width:0}
@@ -98,7 +107,7 @@
 </header>
 
 <div class="wrap">
-  <div class="hintbar">Showing only <b>today's and yesterday's</b> scheduled posts. Each card is one piece of content. <b>Copy the caption once per language</b>, then follow the small instructions under each surface and tap <b>Open</b> to jump to the app. 中文 covers WeChat &amp; RED; English covers IG, FB &amp; LinkedIn.</div>
+  <div class="hintbar">Showing only <b>today's and yesterday's</b> scheduled posts. Each card is one piece of content. <b>Copy the caption once per language</b>, then follow the small instructions under each surface and tap <b>Open</b> to jump to the app. 中文 covers WeChat &amp; RED; English covers IG, FB &amp; LinkedIn. <b>Reddit</b> posts show separately per subreddit &mdash; copy the title and body individually, always check the flair and current rules before posting.</div>
   <div class="toolbar">
     <button class="btn" id="refreshBtn">&#8635; Refresh</button>
     <button class="btn ghost" id="toggleDone">Show completed</button>
@@ -144,8 +153,23 @@
     youtube:{app:'youtube://',web:'https://studio.youtube.com',name:'YouTube'},
     threads:{app:'barcelona://',web:'https://www.threads.net',name:'Threads'}
   };
-  const ASSIST=new Set(['wechat','red','whatsapp','nextdoor','facebook_en','facebook_zh','instagram_en','instagram_zh','linkedin','email','pinterest','threads']);
-  const LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor',facebook_en:'Facebook',facebook_zh:'Facebook',instagram_en:'Instagram',instagram_zh:'Instagram',linkedin:'LinkedIn',email:'Email',pinterest:'Pinterest',threads:'Threads'};
+  const ASSIST=new Set(['wechat','red','whatsapp','nextdoor','facebook_en','facebook_zh','instagram_en','instagram_zh','linkedin','email','pinterest','threads','reddit_richmondhill','reddit_torontorealestate']);
+  const LABEL={wechat:'WeChat 朋友圈',red:'小红书 RED',whatsapp:'WhatsApp',nextdoor:'Nextdoor',facebook_en:'Facebook',facebook_zh:'Facebook',instagram_en:'Instagram',instagram_zh:'Instagram',linkedin:'LinkedIn',email:'Email',pinterest:'Pinterest',threads:'Threads',reddit_richmondhill:'Reddit · r/RichmondHill',reddit_torontorealestate:'Reddit · r/torontorealestate'};
+
+  // Reddit is assisted-only, on purpose — see the note where read_marketwatch.py's
+  // sibling automation was discussed: auto-posting is the fastest way to get a
+  // realtor account banned on subreddits with strict self-promotion rules. One
+  // entry per subreddit, title+body copied separately (Reddit's own compose form
+  // wants them in separate fields), plus a live link to that sub's rules page
+  // instead of a static flair note, since flair requirements change over time.
+  const REDDIT_SUBS={
+    richmondhill:{platform:'reddit_richmondhill',name:'r/RichmondHill',
+      submit:'https://www.reddit.com/r/RichmondHill/submit',
+      rules:'https://www.reddit.com/r/RichmondHill/about/rules/'},
+    torontorealestate:{platform:'reddit_torontorealestate',name:'r/torontorealestate',
+      submit:'https://www.reddit.com/r/torontorealestate/submit',
+      rules:'https://www.reddit.com/r/torontorealestate/about/rules/'}
+  };
   const MT={image:{e:'📷',l:'Picture'},video:{e:'🎬',l:'Video'},text:{e:'📝',l:'Text'}};
   const HOWTO={
     wechat:'Discover → Moments → camera icon → add photo/video → paste caption → Post',
@@ -257,9 +281,12 @@
       h+='<div class="autoline">⚡ Auto-posted: '+items+'</div>';
     }
 
-    // group targets by language
+    // group targets by language (Reddit platforms are excluded here since they
+    // get their own dedicated block below, with title+body instead of a shared
+    // per-language caption)
+    const redditPlatforms=new Set(Object.values(REDDIT_SUBS).map(s=>s.platform));
     const groups={};
-    at.forEach(t=>{(groups[t.lang]=groups[t.lang]||[]).push(t);});
+    at.forEach(t=>{if(redditPlatforms.has(t.platform))return;(groups[t.lang]=groups[t.lang]||[]).push(t);});
     const order=['zh','en'];
     order.forEach(L=>{
       if(!groups[L])return;
@@ -281,6 +308,28 @@
       h+='</div></div>';
     });
 
+    // Reddit: separate from the language groups above, since it needs a
+    // distinct title+body per subreddit rather than one shared social caption.
+    // Expects p.reddit = { richmondhill:{title,body}, torontorealestate:{title,body} }
+    const redditData=p.reddit||{};
+    const redditKeys=Object.keys(REDDIT_SUBS).filter(k=>redditData[k]&&((redditData[k].title||'').trim()||(redditData[k].body||'').trim()));
+    if(redditKeys.length){
+      h+='<div class="lang">';
+      h+='<div class="lhead"><span class="lflag" style="background:rgba(255,69,0,.13);border-color:rgba(255,69,0,.35);color:#b33f0e">Reddit</span></div>';
+      redditKeys.forEach(k=>{
+        const sub=REDDIT_SUBS[k], rd=redditData[k], dn=surfDone(p.id,sub.platform);
+        const title=(rd.title||'').trim(), body=(rd.body||'').trim();
+        const submitUrl=sub.submit+'?title='+encodeURIComponent(title)+'&selftext=true&text='+encodeURIComponent(body);
+        h+='<div class="rblock"><div class="rname">'+esc(sub.name)+'</div>';
+        if(title)h+='<div class="rfield"><div class="rlabel">Title</div><div class="captxt" id="rtitle-'+k+'-'+p.id+'">'+esc(title)+'</div><button class="copycap" data-rtitle="'+k+'">Copy title</button></div>';
+        if(body)h+='<div class="rfield"><div class="rlabel">Body</div><div class="captxt" id="rbody-'+k+'-'+p.id+'">'+esc(body)+'</div><button class="copycap" data-rbody="'+k+'">Copy body</button></div>';
+        h+='<div class="rwarn">⚠️ Set the correct flair before posting, and check <a href="'+esc(sub.rules)+'" target="_blank" rel="noopener">'+esc(sub.name)+' rules</a> first — requirements change, and flairless posts get auto-removed.</div>';
+        h+='<div class="surf"><div class="srow'+(dn?' sdone':'')+'" data-srow="'+sub.platform+'"><span class="sname">'+esc(sub.name)+'<span class="st">Paste title + body, set flair, then Post</span></span><button class="openapp" data-openurl="'+esc(submitUrl)+'">Open Reddit</button><button class="schk" data-chk="'+sub.platform+'">'+(dn?'✓':'')+'</button></div></div>';
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+
     h+='<div class="cfoot"><button class="markall" data-markall="1">'+(allDone(p)?'✓ All posted — tap to reset':'Mark all posted')+'</button></div>';
     el.innerHTML=h;
 
@@ -295,6 +344,15 @@
     });
     el.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>downloadMedia(p.media[+b.dataset.dl]));
     el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openApp(b.dataset.open));
+    el.querySelectorAll('[data-openurl]').forEach(b=>b.onclick=()=>window.open(b.dataset.openurl,'_blank'));
+    el.querySelectorAll('[data-rtitle]').forEach(b=>b.onclick=()=>{
+      const t=document.getElementById('rtitle-'+b.dataset.rtitle+'-'+p.id);if(!t)return;
+      navigator.clipboard.writeText(t.textContent).then(()=>{b.textContent='Copied ✓';b.classList.add('done');setTimeout(()=>{b.textContent='Copy title';b.classList.remove('done');},1500);}).catch(()=>toast('Copy failed — select manually'));
+    });
+    el.querySelectorAll('[data-rbody]').forEach(b=>b.onclick=()=>{
+      const t=document.getElementById('rbody-'+b.dataset.rbody+'-'+p.id);if(!t)return;
+      navigator.clipboard.writeText(t.textContent).then(()=>{b.textContent='Copied ✓';b.classList.add('done');setTimeout(()=>{b.textContent='Copy body';b.classList.remove('done');},1500);}).catch(()=>toast('Copy failed — select manually'));
+    });
     el.querySelectorAll('[data-chk]').forEach(b=>b.onclick=()=>toggleSurf(p.id,b.dataset.chk));
     el.querySelector('[data-markall]').onclick=()=>toggleAll(p);
     return el;
