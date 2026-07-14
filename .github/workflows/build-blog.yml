@@ -1,1 +1,27 @@
-
+name: Build blog
+on:
+  schedule:
+    - cron: '15 * * * *'      # hourly, 15 min past — adjust as you like
+  workflow_dispatch:           # lets you run it manually from the Actions tab
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # allows committing /blog back with the built-in token
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+      - name: Fetch queue.json from the scheduler repo
+        # If the scheduler repo is PUBLIC this works as-is. If PRIVATE, replace with an
+        # authenticated fetch using a PAT secret (see notes).
+        run: curl -sSL -o queue.json https://raw.githubusercontent.com/peterluohomes/scheduler/main/queue.json
+      - name: Rebuild /blog
+        run: python build_blog_from_queue.py
+      - name: Commit if changed
+        run: |
+          git config user.name "blog-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add blog
+          git diff --cached --quiet || (git commit -m "Rebuild blog $(date -u +%FT%TZ)" && git push)
