@@ -16,10 +16,10 @@ import os, re, html, json, datetime as dt
 SITE = "https://peterluo.homes"
 BRAND = "Peter Luo Homes"
 UI = {
-    "en": {"tagline": "Richmond Hill & York Region real estate",
+    "en": {"tagline": "Toronto & York Region real estate",
            "all": "All posts", "home": "Home", "other": "中文", "read": "Read more",
            "empty": "No posts yet."},
-    "zh": {"tagline": "列治文山及约克区房地产",
+    "zh": {"tagline": "多伦多及约克区房地产",
            "all": "全部文章", "home": "首页", "other": "English", "read": "阅读全文",
            "empty": "暂无文章。"},
 }
