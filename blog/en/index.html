@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peter Luo Homes — All posts</title>
-<meta name="description" content="Richmond Hill & York Region real estate">
+<meta name="description" content="Toronto & York Region real estate">
 <link rel="stylesheet" href="/blog/assets/style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
   <nav><a class="on" href="/blog/en/">All posts</a><a href="/blog/zh/">中文</a></nav>
 </header>
 <main class="index">
-  <p class="tagline">Richmond Hill & York Region real estate</p>
+  <p class="tagline">Toronto & York Region real estate</p>
   <ul class="cards" id="cards"><li class="empty">No posts yet.</li></ul>
 </main>
 <footer class="site"><span>© 2026 Peter Luo Homes</span></footer>
@@ -24,7 +24,10 @@ fetch('posts.json?t='+Date.now()).then(function(r){return r.json();}).then(funct
   var el=document.getElementById('cards');
   if(!posts.length){el.innerHTML='<li class="empty">No posts yet.</li>';return;}
   el.innerHTML=posts.map(function(p){
-    var thumb=p.thumb?'<img loading="lazy" src="'+esc(p.thumb)+'" alt="">':'';
+    var u=p.mediaUrl||p.thumb||'';
+    var t=p.mediaType||(p.thumb?'image':'');
+    var thumb= (t==='video'&&u) ? '<video muted playsinline preload="metadata" src="'+esc(u)+'#t=0.5"></video>'
+             : (u ? '<img loading="lazy" src="'+esc(u)+'" alt="">' : '');
     return '<li class="card"><a href="'+esc(p.url)+'">'+
       '<div class="thumb">'+thumb+'</div>'+
       '<div class="c"><span class="d">'+esc(p.dateLabel||p.date)+'</span>'+
