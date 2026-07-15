@@ -14,8 +14,24 @@
 </header>
 <main class="index">
   <p class="tagline">Richmond Hill & York Region real estate</p>
-  <ul class="cards"><li class="empty">No posts yet.</li></ul>
+  <ul class="cards" id="cards"><li class="empty">No posts yet.</li></ul>
 </main>
 <footer class="site"><span>© 2026 Peter Luo Homes</span></footer>
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+fetch('posts.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+  var posts=(d.posts||d||[]).slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  var el=document.getElementById('cards');
+  if(!posts.length){el.innerHTML='<li class="empty">No posts yet.</li>';return;}
+  el.innerHTML=posts.map(function(p){
+    var thumb=p.thumb?'<img loading="lazy" src="'+esc(p.thumb)+'" alt="">':'';
+    return '<li class="card"><a href="'+esc(p.url)+'">'+
+      '<div class="thumb">'+thumb+'</div>'+
+      '<div class="c"><span class="d">'+esc(p.dateLabel||p.date)+'</span>'+
+      '<h2>'+esc(p.title)+'</h2><p>'+esc(p.excerpt||'')+'</p>'+
+      '<span class="more">Read more →</span></div></a></li>';
+  }).join('');
+}).catch(function(){document.getElementById('cards').innerHTML='<li class="empty">No posts yet.</li>';});
+</script>
 </body>
 </html>
