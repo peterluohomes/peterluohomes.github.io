@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-15T18:05:47.695845+00:00",
+  "updated": "2026-07-15T18:10:36.700428+00:00",
   "posts": [
     {
       "slug": "2026-07-15-test-3-market-intelligence-minute-reading-the-trend-184030",
@@ -120,6 +120,17 @@
       "excerpt": "本月数据，对买卖双方到底意味着什么。",
       "thumb": "",
       "mediaUrl": "https://media.peterluo.homes/evergreen/MKT/snapshot/newsroom.mp4",
+      "mediaType": "video"
+    },
+    {
+      "slug": "2026-07-15-test-9-market-intelligence-minute-reading-the-trend-df0e91",
+      "url": "/blog/zh/2026-07-15-test-9-market-intelligence-minute-reading-the-trend-df0e91.html",
+      "title": "Test-9-Market Intelligence Minute: Reading the Trend",
+      "date": "2026-07-15",
+      "dateLabel": "2026年7月15日",
+      "excerpt": "本月数据，对买卖双方到底意味着什么。",
+      "thumb": "",
+      "mediaUrl": "https://media.peterluo.homes/evergreen/MKT/snapshot/keynote.mp4",
       "mediaType": "video"
     }
   ]
