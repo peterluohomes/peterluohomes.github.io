@@ -174,7 +174,7 @@ main{max-width:820px;margin:0 auto;padding:28px 20px 60px}
 .cards{list-style:none;padding:0;margin:0;display:grid;gap:18px}
 .card a{display:grid;grid-template-columns:150px 1fr;gap:16px;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:.15s}
 .card a:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(22,36,63,.08)}
-.card .thumb{background:var(--cream)}.card .thumb img{width:100%;height:100%;object-fit:cover;display:block;min-height:110px}
+.card .thumb{background:var(--cream)}.card .thumb img,.card .thumb video{width:100%;height:100%;object-fit:cover;display:block;min-height:110px}
 .card .c{padding:14px 16px}.card .d{font-size:12px;color:var(--gold);font-weight:600}
 .card h2{font-size:18px;margin:4px 0 6px;color:var(--navy)}.card p{margin:0 0 8px;color:var(--muted);font-size:14px}
 .card .more{font-size:13px;color:var(--gold);font-weight:600}
@@ -204,8 +204,9 @@ def _load_manifest(path):
 def _manifest_entry(post, lang):
     d = post_date(post)
     body = cap(post, lang).strip()
-    first_img = next((m.get("url") for m in (post.get("media") or [])
-                      if m.get("type") != "video" and m.get("url")), "")
+    media = [m for m in (post.get("media") or []) if m.get("url")]
+    first_img = next((m.get("url") for m in media if m.get("type") != "video"), "")
+    first = media[0] if media else {}
     return {
         "slug": slug_for(post),
         "url": f"/blog/{lang}/{slug_for(post)}.html",
@@ -214,6 +215,8 @@ def _manifest_entry(post, lang):
         "dateLabel": fmt_date(d, lang),
         "excerpt": (body.split("\n")[0] if body else "")[:160],
         "thumb": first_img,
+        "mediaUrl": first.get("url", ""),
+        "mediaType": first.get("type", "image") if first else "",
     }
 
 
@@ -243,7 +246,10 @@ fetch('posts.json?t='+Date.now()).then(function(r){return r.json();}).then(funct
   var el=document.getElementById('cards');
   if(!posts.length){el.innerHTML='<li class="empty">__EMPTY__</li>';return;}
   el.innerHTML=posts.map(function(p){
-    var thumb=p.thumb?'<img loading="lazy" src="'+esc(p.thumb)+'" alt="">':'';
+    var u=p.mediaUrl||p.thumb||'';
+    var t=p.mediaType||(p.thumb?'image':'');
+    var thumb= (t==='video'&&u) ? '<video muted playsinline preload="metadata" src="'+esc(u)+'#t=0.5"></video>'
+             : (u ? '<img loading="lazy" src="'+esc(u)+'" alt="">' : '');
     return '<li class="card"><a href="'+esc(p.url)+'">'+
       '<div class="thumb">'+thumb+'</div>'+
       '<div class="c"><span class="d">'+esc(p.dateLabel||p.date)+'</span>'+
