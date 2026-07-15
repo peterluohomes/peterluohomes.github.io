@@ -51,7 +51,9 @@ def fmt_date(d, lang):
 
 def slug_for(post):
     d = post_date(post)
-    return f"{d:%Y-%m-%d}-{slugify(post.get('title',''))}"
+    base = f"{d:%Y-%m-%d}-{slugify(post.get('title',''))}"
+    pid = str(post.get('id') or '').replace('-', '')[:6]
+    return f"{base}-{pid}" if pid else base
 
 def media_html(post):
     out = []
