@@ -11,7 +11,7 @@ a non-empty caption for. Posts with both are cross-linked with <link hreflang>.
 
 Reusable from post.py:  build_blog(posts, out_root)   # out_root = repo checkout dir
 """
-import os, re, html, datetime as dt
+import os, re, html, json, datetime as dt
 
 SITE = "https://peterluo.homes"
 BRAND = "Peter Luo Homes"
@@ -187,13 +187,97 @@ main{max-width:820px;margin:0 auto;padding:28px 20px 60px}
 footer.site{border-top:3px solid var(--gold);border-bottom:none;font-size:13px;color:#cdd5e4;justify-content:center}
 """
 
+def _load_manifest(path):
+    """Load an existing per-language posts.json into {slug: entry}. Missing/bad
+    file -> empty dict (we never lose existing entries as long as the file reads)."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        items = data.get("posts", data) if isinstance(data, dict) else data
+        return {e["slug"]: e for e in items if isinstance(e, dict) and e.get("slug")}
+    except Exception:
+        return {}
+
+
+def _manifest_entry(post, lang):
+    d = post_date(post)
+    body = cap(post, lang).strip()
+    first_img = next((m.get("url") for m in (post.get("media") or [])
+                      if m.get("type") != "video" and m.get("url")), "")
+    return {
+        "slug": slug_for(post),
+        "url": f"/blog/{lang}/{slug_for(post)}.html",
+        "title": post.get("title", "Untitled"),
+        "date": d.strftime("%Y-%m-%d"),
+        "dateLabel": fmt_date(d, lang),
+        "excerpt": (body.split("\n")[0] if body else "")[:160],
+        "thumb": first_img,
+    }
+
+
+_INDEX_SHELL = """<!DOCTYPE html>
+<html lang="__LANG__">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__BRAND__ — __ALL__</title>
+<meta name="description" content="__TAGLINE__">
+<link rel="stylesheet" href="/blog/assets/style.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="/blog/__LANG__/">__BRAND__</a>
+  <nav><a class="on" href="/blog/__LANG__/">__ALL__</a><a href="/blog/__OTHER_LANG__/">__OTHER__</a></nav>
+</header>
+<main class="index">
+  <p class="tagline">__TAGLINE__</p>
+  <ul class="cards" id="cards"><li class="empty">__EMPTY__</li></ul>
+</main>
+<footer class="site"><span>© __YEAR__ __BRAND__</span></footer>
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+fetch('posts.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+  var posts=(d.posts||d||[]).slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  var el=document.getElementById('cards');
+  if(!posts.length){el.innerHTML='<li class="empty">__EMPTY__</li>';return;}
+  el.innerHTML=posts.map(function(p){
+    var thumb=p.thumb?'<img loading="lazy" src="'+esc(p.thumb)+'" alt="">':'';
+    return '<li class="card"><a href="'+esc(p.url)+'">'+
+      '<div class="thumb">'+thumb+'</div>'+
+      '<div class="c"><span class="d">'+esc(p.dateLabel||p.date)+'</span>'+
+      '<h2>'+esc(p.title)+'</h2><p>'+esc(p.excerpt||'')+'</p>'+
+      '<span class="more">__READ__ →</span></div></a></li>';
+  }).join('');
+}).catch(function(){document.getElementById('cards').innerHTML='<li class="empty">__EMPTY__</li>';});
+</script>
+</body>
+</html>
+"""
+
+
+def _index_shell(lang):
+    repl = {
+        "__LANG__": lang, "__OTHER_LANG__": ("zh" if lang == "en" else "en"),
+        "__BRAND__": BRAND, "__ALL__": UI[lang]["all"], "__OTHER__": UI[lang]["other"],
+        "__TAGLINE__": UI[lang]["tagline"], "__EMPTY__": UI[lang]["empty"],
+        "__READ__": UI[lang]["read"], "__YEAR__": str(dt.datetime.now().year),
+    }
+    out = _INDEX_SHELL
+    for k, v in repl.items():
+        out = out.replace(k, v)
+    return out
+
+
 def build_blog(posts, out_root):
-    """Write the whole /blog tree under out_root (a repo checkout)."""
+    """Write /blog under out_root. Post pages are (re)rendered from `posts`, but the
+    listing is driven by a PERSISTENT per-language manifest (posts.json) that
+    ACCUMULATES across runs — the archive grows and is never wiped when the
+    transient queue no longer holds an older post. index.html is a static shell
+    that reads posts.json client-side, so an empty/failed build can't blank it."""
     blog = os.path.join(out_root, "blog")
     os.makedirs(os.path.join(blog, "assets"), exist_ok=True)
     with open(os.path.join(blog, "assets", "style.css"), "w", encoding="utf-8") as f:
         f.write(CSS)
-    # landing redirect -> English index
     with open(os.path.join(blog, "index.html"), "w", encoding="utf-8") as f:
         f.write('<!DOCTYPE html><meta charset="utf-8">'
                 '<meta http-equiv="refresh" content="0; url=/blog/en/">'
@@ -201,15 +285,25 @@ def build_blog(posts, out_root):
     for lang in ("en", "zh"):
         d = os.path.join(blog, lang)
         os.makedirs(d, exist_ok=True)
-        with open(os.path.join(d, "index.html"), "w", encoding="utf-8") as f:
-            f.write(render_index(posts, lang))
+        manifest = _load_manifest(os.path.join(d, "posts.json"))
         for p in posts:
             if not cap(p, lang).strip():
                 continue
-            other = f"{SITE}/blog/{'zh' if lang=='en' else 'en'}/{slug_for(p)}.html" if cap(p, 'zh' if lang=='en' else 'en').strip() else ""
+            other_lang = "zh" if lang == "en" else "en"
+            other = (f"{SITE}/blog/{other_lang}/{slug_for(p)}.html"
+                     if cap(p, other_lang).strip() else "")
             with open(os.path.join(d, slug_for(p) + ".html"), "w", encoding="utf-8") as f:
                 f.write(render_page(p, lang, other))
+            e = _manifest_entry(p, lang)
+            manifest[e["slug"]] = e            # upsert: add or refresh, never drop
+        ordered = sorted(manifest.values(), key=lambda e: e.get("date", ""), reverse=True)
+        with open(os.path.join(d, "posts.json"), "w", encoding="utf-8") as f:
+            json.dump({"updated": dt.datetime.now(dt.timezone.utc).isoformat(),
+                       "posts": ordered}, f, ensure_ascii=False, indent=2)
+        with open(os.path.join(d, "index.html"), "w", encoding="utf-8") as f:
+            f.write(_index_shell(lang))
     return blog
+
 
 # ---- demo scaffold when run directly ----
 if __name__ == "__main__":
