@@ -1,444 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%2315273f'/%3E%3Ctext x='96' y='132' font-size='104' text-anchor='middle' fill='%23c7a45a'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root{
   --navy:#15273f; --navy2:#1d3458; --gold:#c7a45a; --gold-d:#a8843a;
-  --cream:#f8f3e8; --card:#fffdf7; --ink:#202833; --muted:#5d6675; --line:#e7dec9; --good:#2f7d5b;
+  --cream:#f8f3e8; --card:#fffdf7; --ink:#202833; --muted:#5d6675; --line:#e7dec9;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);
-  line-height:1.5;padding-bottom:calc(2rem + env(safe-area-inset-bottom))}
-h1,h2{font-family:'Playfair Display',Georgia,serif}
-.wrap{max-width:760px;margin:0 auto}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream);min-height:100vh;}
+h1{font-family:'Playfair Display',Georgia,serif;}
+header{background:var(--navy);color:#fff;padding:1.4rem 1rem 1.2rem;border-bottom:3px solid var(--gold);text-align:center;}
+header .eyebrow{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:700;}
+header h1{font-size:1.7rem;font-weight:800;margin-top:.25rem;letter-spacing:.01em;}
+header .sub{font-size:.8rem;color:#c9d2e0;margin-top:.3rem;}
+main{max-width:720px;margin:0 auto;padding:1.3rem 1rem 3rem;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr);}}
+.tile{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:1.1rem .8rem 1rem;text-decoration:none;color:inherit;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:.55rem;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+.tile:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 8px 20px rgba(21,39,63,.1);}
+.tile:active{background:#f5efe0;}
+.tile .ic{
+  width:54px;height:54px;border-radius:14px;background:#f3ecda;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+}
+.tile .nm{font-weight:700;font-size:.95rem;color:var(--navy);line-height:1.2;}
+.tile .url{font-size:.66rem;color:var(--muted);font-variant-numeric:tabular-nums;word-break:break-all;}
+footer{text-align:center;color:var(--muted);font-size:.72rem;padding:1.5rem 1rem 2rem;}
+footer a{color:var(--gold-d);text-decoration:none;font-weight:700;}
 
-header{background:var(--navy);color:#fff;padding:1.1rem 1rem .9rem;border-bottom:3px solid var(--gold)}
-header .eyebrow{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:700}
-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:nowrap}
-header h1{font-size:1.25rem;font-weight:800;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
-header p{font-size:.8rem;color:#c8cfdb;margin-top:.15rem}
-
-.datenav{display:flex;align-items:center;gap:.3rem;flex:0 0 auto}
-.datenav .lbl{font-weight:700;font-size:.85rem;color:#fff;white-space:nowrap}
-.navbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;
-  width:1.7rem;height:1.7rem;border-radius:8px;font-size:.95rem;cursor:pointer;line-height:1}
-.navbtn:hover{background:rgba(255,255,255,.22)}
-.today-btn{background:var(--gold);border:none;color:var(--navy);font-weight:700;font-size:.68rem;
-  padding:.35rem .5rem;border-radius:8px;cursor:pointer;letter-spacing:.03em}
-
-main{max-width:760px;margin:0 auto;padding:1rem .8rem 3rem}
-
-.summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1rem;
-  margin-bottom:1rem;display:flex;gap:1rem;align-items:center;box-shadow:0 1px 3px rgba(20,30,50,.05)}
-.ring{flex:0 0 auto;position:relative;width:84px;height:84px}
-.ring svg{transform:rotate(-90deg)}
-.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring .pct b{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--navy);line-height:1}
-.ring .pct span{font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.sumright{flex:1 1 auto;min-width:0}
-.sumright .big{font-family:'Playfair Display',serif;font-size:1.02rem;color:var(--navy);font-weight:700}
-.sumright .sub{font-size:.78rem;color:var(--gold-d);font-weight:700;margin-top:.1rem}
-.sumright .sub.none{color:var(--muted);font-weight:500}
-.strip{display:flex;gap:.35rem;margin-top:.6rem}
-.dot{flex:1;text-align:center;cursor:pointer;border:none;background:none;padding:0}
-.dot .c{width:100%;max-width:2rem;aspect-ratio:1;margin:0 auto;border-radius:50%;border:1.5px solid var(--line);
-  background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff}
-.dot.today .c{box-shadow:0 0 0 2px var(--navy)}
-.dot .d{font-size:.55rem;color:var(--muted);margin-top:.2rem}
-
-.tools{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
-.btn{font-family:inherit;font-weight:700;font-size:.78rem;border-radius:9px;padding:.45rem .8rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--navy)}
-.btn:hover{border-color:var(--gold)}
-
-.cat{margin-bottom:1.1rem}
-.cathead{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;
-  padding:0 .2rem .35rem;border-bottom:2px solid var(--gold);margin-bottom:.5rem}
-.cathead .ct{font-family:'Playfair Display',serif;font-size:1.12rem;font-weight:800;color:var(--navy)}
-.cathead .ct small{font-family:'DM Sans';font-weight:500;font-size:.72rem;color:var(--muted);letter-spacing:.02em;margin-left:.4rem}
-.cathead .cnt{font-size:.78rem;font-weight:700;color:var(--gold-d);font-variant-numeric:tabular-nums;white-space:nowrap}
-
-.item{display:flex;align-items:center;gap:.7rem;background:var(--card);border:1px solid var(--line);
-  border-left:3px solid var(--line);border-radius:11px;padding:.55rem .7rem;margin-bottom:.4rem;
-  text-decoration:none;color:inherit;transition:background .15s,border-color .15s}
-.item.opened{background:#f5efe0;border-left-color:var(--gold)}
-.item:hover{border-color:var(--gold)}
-.badge{flex:0 0 auto;min-width:2rem;height:1.7rem;padding:0 .45rem;border-radius:999px;
-  display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;
-  background:var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
-.badge.on{background:var(--gold);color:#fff}
-.badge .x{font-size:.62rem;font-weight:700;opacity:.85;margin-left:.05rem}
-.nm{flex:1 1 auto;min-width:0;font-weight:600;font-size:.95rem;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.item:hover .nm{color:var(--gold-d)}
-.meta{flex:0 0 auto;display:flex;align-items:center;gap:.55rem}
-.tm{font-size:.74rem;font-weight:700;color:var(--gold-d);font-variant-numeric:tabular-nums}
-.go{display:flex;align-items:center;gap:.25rem;color:var(--muted);font-size:.68rem;font-weight:700}
-.go .arrow{font-size:1rem;line-height:1}
-
-#toast{position:fixed;left:50%;bottom:1.3rem;transform:translateX(-50%) translateY(2rem);background:var(--navy);color:#fff;
-  padding:.6rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.25);
-  opacity:0;transition:.3s;pointer-events:none;z-index:50;border-left:3px solid var(--gold)}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.5}
-.mind-quote{background:var(--navy2);padding:.55rem 1rem .7rem;text-align:center}
-.mind-quote .wrap{max-width:760px;margin:0 auto}
-.mind-quote p{font-family:'Playfair Display',serif;font-style:italic;font-size:.78rem;line-height:1.6;color:#c8cfdb}
-.mind-quote p.gold{color:var(--gold);font-weight:700;font-style:normal}
-
-/* ── Search (toolbox-style) ── */
-.search-wrap{padding:.9rem 1rem .3rem;position:sticky;top:0;z-index:40;background:var(--cream)}
+/* Search */
+.search-wrap{margin:0 0 1rem}
 .search-box{display:flex;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:28px;padding:0 .9rem;transition:border-color .2s,box-shadow .2s}
 .search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,164,90,.18)}
 .search-icon{width:18px;height:18px;color:var(--muted);flex-shrink:0}
 .search-box input{flex:1;border:none;outline:none;padding:.7rem .6rem;font-family:'DM Sans',sans-serif;font-size:.95rem;background:transparent;color:var(--ink)}
-.search-box input::placeholder{color:#b0ada6}
+.search-box input::placeholder{color:#9aa2ae}
 .search-clear{display:none;background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;font-size:18px;line-height:1}
 .search-clear.visible{display:block}
 </style>
 </head>
 <body>
-<div id="sync-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:calc(6px + env(safe-area-inset-top)) 16px 8px;background:var(--navy2);color:var(--cream);font-family:'DM Sans',sans-serif;">
-  <button id="sync-signin" onclick="window.PinnacleSync && PinnacleSync.signIn()" style="background:var(--gold);color:var(--navy);border:none;padding:6px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Sign in to sync</button>
-  <button id="sync-refresh" onclick="window.PinnacleSync_refresh()" style="display:none;background:transparent;color:var(--gold);border:1px solid var(--gold);padding:6px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Load synced data</button>
-  <span id="sync-status" style="font-size:12px;opacity:.85;"></span>
-</div>
+
 <header>
-  <div class="wrap">
-    <h1>Command Center</h1>
-    <div class="datenav">
-      <button class="navbtn" id="prevDay" aria-label="Previous day">&#8249;</button>
-      <span class="lbl" id="dateLbl"></span>
-      <button class="navbtn" id="nextDay" aria-label="Next day">&#8250;</button>
-      <button class="today-btn" id="todayBtn">Today</button>
-    </div>
-  </div>
+  <div class="eyebrow">Pinnacle Listing System</div>
+  <h1>Command Center</h1>
+  <div class="sub">Peter Luo — RE/MAX Realtron</div>
 </header>
 
-<div class="mind-quote">
-  <div class="wrap">
-    <p class="gold">Ignore the thought. Check the plan.</p>
-    <p>The mind negotiates. The schedule doesn't.</p>
-  </div>
-</div>
-
 <main>
-  <div class="summary">
-    <div class="ring">
-      <svg width="84" height="84" viewBox="0 0 84 84">
-        <circle cx="42" cy="42" r="34" fill="none" stroke="#e7dec9" stroke-width="8"></circle>
-        <circle id="ringFg" cx="42" cy="42" r="34" fill="none" stroke="#c7a45a" stroke-width="8"
-          stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"></circle>
-      </svg>
-      <div class="pct"><b id="ringPct">0%</b><span>opened</span></div>
-    </div>
-    <div class="sumright">
-      <div class="big" id="sumText">0 of 0 opened today</div>
-      <div class="sub none" id="streakText">No streak yet</div>
-      <div class="strip" id="strip"></div>
-    </div>
-  </div>
-
   <div class="search-wrap">
-  <div class="search-box">
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input type="text" id="searchInput" placeholder="Search…" autocomplete="off">
-    <button class="search-clear" id="searchClear" aria-label="Clear search">&times;</button>
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search…" autocomplete="off">
+      <button class="search-clear" id="searchClear" aria-label="Clear search">&times;</button>
+    </div>
   </div>
-</div>
 
-  <div id="cats"></div>
+  <div class="grid">
 
-  <p class="note">Links open in a new tab so this board stays put. Time per item is estimated from when you open a tool until you return here. Saved on this device only.</p>
+    <a class="tile" href="https://leads.peterluo.homes">
+      <div class="ic">🎯</div>
+      <div class="nm">Leads</div>
+      <div class="url">leads.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://lpen.peterluo.homes">
+      <div class="ic">🎙️</div>
+      <div class="nm">Listing Presentation · EN</div>
+      <div class="url">lpen.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://lpzh.peterluo.homes">
+      <div class="ic">🀄</div>
+      <div class="nm">Listing Presentation · 中文</div>
+      <div class="url">lpzh.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://misc.peterluo.homes">
+      <div class="ic">🧰</div>
+      <div class="nm">Misc</div>
+      <div class="url">misc.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://offer.peterluo.homes">
+      <div class="ic">🤝</div>
+      <div class="nm">Offer</div>
+      <div class="url">offer.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://self.peterluo.homes">
+      <div class="ic">🧠</div>
+      <div class="nm">Self</div>
+      <div class="url">self.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://sop.peterluo.homes">
+      <div class="ic">📋</div>
+      <div class="nm">Scripts &amp; SOP</div>
+      <div class="url">sop.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://service.peterluo.homes">
+      <div class="ic">📘</div>
+      <div class="nm">Seller Service</div>
+      <div class="url">service.peterluo.homes</div>
+    </a>
+
+    <a class="tile" href="https://wellness.peterluo.homes">
+      <div class="ic">🌿</div>
+      <div class="nm">Wellness</div>
+      <div class="url">wellness.peterluo.homes</div>
+    </a>
+
+  </div>
 </main>
 
-<div id="toast"></div>
+<footer>Peter Luo · RE/MAX Realtron · <a href="https://peterluo.homes">peterluo.homes</a></footer>
 
 <script>
-"use strict";
-
-/* ---------------- activity directory ---------------- */
-const CONFIG = [
-  {cat:"Wellness", items:[
-    {id:"wellness", name:"Wellness Tracker", path:"./pd/wellness"},
-    {id:"relax",    name:"Relaxing",         path:"./pd/relax"},
-    {id:"fasting",  name:"Fasting Journal",  path:"./pd/fasting"},
-    {id:"sleep",    name:"Sleep Journal",    path:"./pd/sleep"}
-  ]},
-  {cat:"Dev", items:[
-    {id:"routines",    name:"Routines",             path:"./pd/routines"},
-    {id:"precepts",    name:"Precepts",             path:"./pd/precepts"},
-    {id:"mental",      name:"Mental",               path:"./pd/mentalimprov"},
-    {id:"yuanyuan",    name:"Yuanyuan",             path:"./pd/yuanyuan"},
-    {id:"articulation",name:"Articulation Practice",path:"./pd/articulation"}
-  ]},
-  {cat:"Listing", items:[
-    {id:"clientcomm",   name:"Client Communication",            path:"./tools/tracker"},
-    {id:"sellercomm",   name:"Seller Communication",            path:"./seller/scomms"},
-    {id:"sellerupdate", name:"Seller Update",                   path:"./seller/supdate"},
-    {id:"clientservice",name:"Client Service",                  path:"./seller/sservice"},
-    {id:"delivery",     name:"System-based Delivery",           path:"./seller/sdelivery"},
-    {id:"checkfreehold",name:"Sold to Closing Checklist \u2014 Freehold", path:"./seller/checklist_freehold"},
-    {id:"checkcondo",   name:"Sold to Closing Checklist \u2014 Condo",    path:"./seller/checklist_potlcondo"},
-    {id:"commpaths",    name:"Five Communication Paths",        path:"./tools/communicationpaths"},
-    {id:"feedback",     name:"Feedback Collection",             path:"./tools/feedback"}
-  ]},
-  {cat:"Practicing", sub:"Listing Presentation (EN)", items:[
-    {id:"prac_voice",    name:"Voice",    path:"./lpen/flp5"},
-    {id:"prac_anchor",   name:"Anchor",   path:"./lpen/lpanchor"},
-    {id:"prac_random",   name:"Random",   path:"./lpen/drill"},
-    {id:"prac_memorize", name:"Memorize", path:"./lpen/memorize"},
-    {id:"prac_script",   name:"Script",   path:"./lpen/lpscript2"}
-  ]}
-];
-const ALL_IDS = CONFIG.flatMap(c=>c.items.map(i=>i.id));
-const TOTAL = ALL_IDS.length;
-const RING_C = 213.6;
-
-/* ---------------- helpers ---------------- */
-const $ = id => document.getElementById(id);
-const pad = n => String(n).padStart(2,"0");
-const todayISO = () => { const d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
-function shiftDate(iso,days){ const [y,m,d]=iso.split("-").map(Number); const dt=new Date(y,m-1,d); dt.setDate(dt.getDate()+days); return dt.getFullYear()+"-"+pad(dt.getMonth()+1)+"-"+pad(dt.getDate()); }
-function toDate(iso){ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d); }
-const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-function prettyDate(iso){ const d=toDate(iso); const t=todayISO(); if(iso===t)return "Today, "+MON[d.getMonth()]+" "+d.getDate(); if(iso===shiftDate(t,-1))return "Yesterday"; return WD[d.getDay()]+", "+MON[d.getMonth()]+" "+d.getDate(); }
-function fmtDur(secs){ if(!secs||secs<1)return ""; const m=Math.round(secs/60); if(m<1)return "<1m"; if(m<60)return m+"m"; return Math.floor(m/60)+"h "+(m%60)+"m"; }
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600); }
-
-/* ---------------- IndexedDB ---------------- */
-let db;
-function openDB(){ return new Promise((res,rej)=>{
-  const r=indexedDB.open("dailyDirectoryDB",2);
-  r.onupgradeneeded=e=>{ const d=e.target.result; if(!d.objectStoreNames.contains("days")) d.createObjectStore("days",{keyPath:"date"}); };
-  r.onsuccess=e=>{db=e.target.result;res();}; r.onerror=e=>rej(e.target.error);
-}); }
-function tx(m){ return db.transaction("days",m).objectStore("days"); }
-function dbGet(date){ return new Promise((res,rej)=>{const r=tx("readonly").get(date);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}); }
-function dbAll(){ return new Promise((res,rej)=>{const r=tx("readonly").getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);}); }
-function dbPut(v){ return new Promise((res,rej)=>{const r=tx("readwrite").put(v);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);}); }
-function dbDel(k){ return new Promise((res,rej)=>{const r=tx("readwrite").delete(k);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);}); }
-
-/* ---------------- state ---------------- */
-let curDate, curData={}, allDays=[], active=null;
-const itemsOf = rec => (rec && rec.items) ? rec.items : {};
-const openedCount = items => Object.values(items).filter(v=>v&&v.opens>0).length;
-
-/* ---------------- build list (once) ---------------- */
-function buildList(){
-  const root=$("cats");
-  CONFIG.forEach((c,ci)=>{
-    const sec=document.createElement("div"); sec.className="cat";
-    const sub=c.sub?'<small>'+c.sub+'</small>':'';
-    sec.innerHTML='<div class="cathead"><div class="ct">'+c.cat+sub+'</div><div class="cnt" data-cat="'+ci+'">0/'+c.items.length+'</div></div>';
-    c.items.forEach(it=>{
-      const a=document.createElement("a"); a.className="item"; a.id="item_"+it.id;
-      a.href=it.path; a.target="_blank"; a.rel="noopener";
-      a.innerHTML=
-        '<span class="badge" id="b_'+it.id+'">0</span>'+
-        '<span class="nm">'+it.name+'</span>'+
-        '<span class="meta"><span class="tm" id="t_'+it.id+'"></span><span class="go">open <span class="arrow">&#8599;</span></span></span>';
-      a.addEventListener("click",()=>trackOpen(it.id));
-      sec.appendChild(a);
-    });
-    root.appendChild(sec);
-  });
-}
-
-/* ---------------- tracking ---------------- */
-function commitActive(){
-  if(!active) return;
-  const a=active; active=null;
-  const secs=Math.round((Date.now()-a.since)/1000);
-  if(secs>0 && secs < 6*3600) addSecs(a.date,a.id,secs);
-}
-function trackOpen(id){
-  commitActive();                                  // close out any prior session
-  bumpOpen(curDate,id);                            // count this open
-  active={id:id, date:curDate, since:Date.now()};  // start timing
-}
-async function bumpOpen(date,id){
-  let rec=await dbGet(date); if(!rec)rec={date:date,items:{}}; if(!rec.items)rec.items={};
-  const it=rec.items[id]||{opens:0,secs:0}; it.opens++; rec.items[id]=it;
-  await dbPut(rec); applyRec(date,rec);
-}
-async function addSecs(date,id,secs){
-  let rec=await dbGet(date); if(!rec)rec={date:date,items:{}}; if(!rec.items)rec.items={};
-  const it=rec.items[id]||{opens:0,secs:0}; it.secs+=secs; rec.items[id]=it;
-  await dbPut(rec); applyRec(date,rec);
-}
-function applyRec(date,rec){
-  allDays=allDays.filter(d=>d.date!==date); allDays.push(rec);
-  if(date===curDate) curData=rec.items||{};
-  refresh();
-}
-
-/* commit running session when user returns to this board / leaves the page */
-document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") commitActive(); });
-window.addEventListener("pagehide",commitActive);
-
-/* ---------------- rendering ---------------- */
-function refresh(){
-  ALL_IDS.forEach(id=>{
-    const d=curData[id]||{opens:0,secs:0};
-    const b=$("b_"+id);
-    b.innerHTML = (d.opens>0) ? (d.opens+'<span class="x">\u00d7</span>') : "0";
-    b.classList.toggle("on",d.opens>0);
-    $("t_"+id).textContent=fmtDur(d.secs);
-    $("item_"+id).classList.toggle("opened",d.opens>0);
-  });
-  CONFIG.forEach((c,ci)=>{
-    const op=c.items.filter(i=>(curData[i.id]||{}).opens>0).length;
-    document.querySelector('.cnt[data-cat="'+ci+'"]').textContent=op+"/"+c.items.length;
-  });
-  const opened=openedCount(curData);
-  const pct=TOTAL?Math.round(opened/TOTAL*100):0;
-  $("ringFg").style.strokeDashoffset=RING_C*(1-opened/TOTAL);
-  $("ringFg").setAttribute("stroke", pct===100?"#2f7d5b":"#c7a45a");
-  $("ringPct").textContent=pct+"%";
-  const totalSecs=ALL_IDS.reduce((s,id)=>s+((curData[id]||{}).secs||0),0);
-  let txt=opened+" of "+TOTAL+" opened "+(curDate===todayISO()?"today":"this day");
-  if(totalSecs>0) txt+=" \u00b7 "+fmtDur(totalSecs);
-  $("sumText").textContent=txt;
-  renderStrip(); renderStreak();
-}
-function dayMap(){ const m={}; allDays.forEach(d=>{ m[d.date]=openedCount(itemsOf(d)); }); return m; }
-function renderStreak(){
-  const m=dayMap(); let streak=0, cur=todayISO();
-  if(!(m[cur]>0)) cur=shiftDate(cur,-1);
-  while(m[cur]>0){ streak++; cur=shiftDate(cur,-1); }
-  const el=$("streakText");
-  if(streak>=1){ el.textContent=streak+"-day streak"; el.classList.remove("none"); }
-  else { el.textContent="No streak yet \u2014 open one to start"; el.classList.add("none"); }
-}
-function renderStrip(){
-  const m=dayMap(); const strip=$("strip"); strip.innerHTML="";
-  for(let i=6;i>=0;i--){
-    const iso=shiftDate(todayISO(),-i); const cnt=m[iso]||0; const pct=cnt/TOTAL;
-    const b=document.createElement("button"); b.className="dot"+(iso===curDate?" today":"");
-    const fill=cnt===0?"var(--cream)":(pct>=1?"var(--good)":"var(--gold)");
-    const op=cnt===0?1:Math.max(.35,pct);
-    b.innerHTML='<div class="c" style="background:'+fill+';opacity:'+op+'">'+(cnt||"")+'</div><div class="d">'+WD[toDate(iso).getDay()][0]+'</div>';
-    b.addEventListener("click",()=>loadDate(iso));
-    strip.appendChild(b);
-  }
-}
-
-async function loadDate(iso){
-  commitActive();
-  curDate=iso; $("dateLbl").textContent=prettyDate(iso);
-  const rec=await dbGet(iso); curData=rec&&rec.items?rec.items:{};
-  refresh();
-}
-
-/* ---------------- controls ---------------- */
-$("prevDay").addEventListener("click",()=>loadDate(shiftDate(curDate,-1)));
-$("nextDay").addEventListener("click",()=>loadDate(shiftDate(curDate,1)));
-$("todayBtn").addEventListener("click",()=>loadDate(todayISO()));
-
-/* ---------------- init ---------------- */
-(async function(){
-  try{ await openDB(); }
-  catch(e){ alert("Storage couldn't start. If you're in private browsing, switch to a normal window so your tracking can be saved."); return; }
-  buildList();
-  allDays=await dbAll();
-  await loadDate(todayISO());
-})();
-</script>
-
-<!-- ===== Pinnacle cross-device sync ===== -->
-<script>
-(function(){
-  var TOOL='directory', MARK='directory_syncSavedAt';
-  var mirror={};
-  function markerGet(){ try{return localStorage.getItem(MARK)||'';}catch(e){return '';} }
-  function markerSet(v){ try{localStorage.setItem(MARK,v);}catch(e){} }
-  function daysArr(){ return Object.keys(mirror).map(function(k){return mirror[k];}).filter(Boolean); }
-
-  /* Seed the in-memory mirror once IndexedDB is ready (dbAll throws until then). */
-  function seed(n){
-    try{
-      window.dbAll().then(function(recs){
-        (recs||[]).forEach(function(r){ if(r&&r.date) mirror[r.date]=r; });
-      }).catch(function(){ if(n>0) setTimeout(function(){seed(n-1);},200); });
-    }catch(e){ if(n>0) setTimeout(function(){seed(n-1);},200); }
-  }
-  seed(60);
-
-  function stamp(){
-    if(window.__SYNC && __SYNC._syncBooted && !__SYNC._applyingRemote){
-      markerSet(new Date().toISOString());
-      if(window.PinnacleSync && PinnacleSync.notifyChanged) PinnacleSync.notifyChanged();
-    }
-  }
-  /* Wrap real writes so the mirror stays fresh and the cloud gets notified. */
-  var origPut=window.dbPut;
-  window.dbPut=function(v){ return origPut(v).then(function(r){ if(v&&v.date) mirror[v.date]=v; stamp(); return r; }); };
-  if(window.dbDel){
-    var origDel=window.dbDel;
-    window.dbDel=function(k){ return origDel(k).then(function(r){ delete mirror[k]; stamp(); return r; }); };
-  }
-
-  function clearDays(){ return new Promise(function(res,rej){ try{ var r=window.tx("readwrite").clear(); r.onsuccess=function(){res();}; r.onerror=function(){rej(r.error);}; }catch(e){ rej(e); } }); }
-  async function adopt(records,savedAt){
-    __SYNC._applyingRemote=true;
-    try{
-      await clearDays();
-      mirror={};
-      for(var i=0;i<records.length;i++){ var rec=records[i]; if(rec&&rec.date){ await origPut(rec); mirror[rec.date]=rec; } }
-    } finally { __SYNC._applyingRemote=false; }
-    markerSet(savedAt||new Date().toISOString());
-  }
-  function showRefresh(on){ var b=document.getElementById('sync-refresh'); if(b) b.style.display=on?'':'none'; }
-
-  window.__SYNC={
-    toolName:TOOL, _pending:null, _syncBooted:true, _applyingRemote:false,
-    /* null when this device has no tracking yet -> never wipes the cloud */
-    getData:function(){
-      var d=daysArr(); if(d.length===0) return null;
-      var sa=markerGet(); if(!sa){ sa=new Date().toISOString(); markerSet(sa); }
-      return { payload:{days:d}, savedAt:sa };
-    },
-    /* empty device adopts cloud + reloads; a device with data shows the refresh button */
-    apply:function(data){
-      if(!data||!data.payload) return;
-      var incoming=data.payload.days||[];
-      if(daysArr().length===0){ adopt(incoming,data.savedAt).then(function(){ location.reload(); }); }
-      else { __SYNC._pending=data; showRefresh(true); }
-    }
-  };
-  window.PinnacleSync_refresh=function(){
-    var data=__SYNC._pending;
-    if(!data){ location.reload(); return; }
-    var incoming=(data.payload&&data.payload.days)||[];
-    adopt(incoming,data.savedAt).then(function(){ location.reload(); });
-  };
-})();
-</script>
-<script type="module" src="/firebase-sync.js">
-/* ---------------- search filter ---------------- */
 (function(){
   var si=document.getElementById('searchInput'), sc=document.getElementById('searchClear');
   if(!si) return;
   function run(){
     var q=si.value.trim().toLowerCase();
     sc.classList.toggle('visible', q.length>0);
-    document.querySelectorAll('#cats .cat').forEach(function(sec){
-      var vis=0;
-      sec.querySelectorAll('.item').forEach(function(item){
-        var nm=item.querySelector('.nm');
-        var name=(nm?nm.textContent:item.textContent).toLowerCase();
-        var show=!q||name.indexOf(q)>-1;
-        item.style.display=show?'':'none';
-        if(show)vis++;
-      });
-      sec.style.display=vis?'':'none';
+    document.querySelectorAll('.grid .tile').forEach(function(t){
+      var txt=t.textContent.toLowerCase();
+      t.style.display=(!q||txt.indexOf(q)>-1)?'':'none';
     });
   }
   si.addEventListener('input',run);
