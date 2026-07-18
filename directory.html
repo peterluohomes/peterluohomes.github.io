@@ -49,6 +49,14 @@ footer a{color:var(--gold-d);text-decoration:none;font-weight:700;}
 .search-box input::placeholder{color:#9aa2ae}
 .search-clear{display:none;background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;font-size:18px;line-height:1}
 .search-clear.visible{display:block}
+/* Results */
+#results{display:none;flex-direction:column;gap:.5rem}
+.result{display:flex;flex-direction:column;gap:.15rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem .9rem;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.result:hover{border-color:var(--gold);box-shadow:0 4px 12px rgba(21,39,63,.08)}
+.result .r-hub{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gold-d)}
+.result .r-name{font-size:.98rem;font-weight:600;color:var(--navy)}
+.result mark{background:rgba(199,164,90,.35);color:inherit;border-radius:3px;padding:0 1px}
+.noresult{color:var(--muted);text-align:center;padding:1.5rem .5rem;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -63,10 +71,12 @@ footer a{color:var(--gold-d);text-decoration:none;font-weight:700;}
   <div class="search-wrap">
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="Search…" autocomplete="off">
+      <input type="text" id="searchInput" placeholder="Search any tool… (e.g. roadmap)" autocomplete="off">
       <button class="search-clear" id="searchClear" aria-label="Clear search">&times;</button>
     </div>
   </div>
+
+  <div id="results"></div>
 
   <div class="grid">
 
@@ -130,16 +140,90 @@ footer a{color:var(--gold-d);text-decoration:none;font-weight:700;}
 <footer>Peter Luo · RE/MAX Realtron · <a href="https://peterluo.homes">peterluo.homes</a></footer>
 
 <script>
+/* ===== Master page index — edit / extend freely ===== */
+const APPS = [
+  // Scripts & SOP  (sop.peterluo.homes, .html)
+  ["Scripts & SOP","Inbound Calls","https://sop.peterluo.homes/inbound.html"],
+  ["Scripts & SOP","Inbound Call Objection Handling","https://sop.peterluo.homes/inbound_oh.html"],
+  ["Scripts & SOP","Door Knocking","https://sop.peterluo.homes/doorknocking.html"],
+  ["Scripts & SOP","Door Knocking Objection Handling","https://sop.peterluo.homes/doorknocking_oh.html"],
+  ["Scripts & SOP","Open House","https://sop.peterluo.homes/openhouse.html"],
+  ["Scripts & SOP","Open House Objection Handling","https://sop.peterluo.homes/openhouse_oh.html"],
+  ["Scripts & SOP","Expired Listing (English)","https://sop.peterluo.homes/expired_en.html"],
+  ["Scripts & SOP","Expired Listing (中文)","https://sop.peterluo.homes/expired_ch.html"],
+  ["Scripts & SOP","Pre-Call Checklist","https://sop.peterluo.homes/call.html"],
+  ["Scripts & SOP","Appointment Preparing Procedure","https://sop.peterluo.homes/apptprep.html"],
+  ["Scripts & SOP","Home Feature Check Lists","https://sop.peterluo.homes/feature.html"],
+  ["Scripts & SOP","Five Ways to Build More Communication with Each Client","https://sop.peterluo.homes/communicationpaths.html"],
+  ["Scripts & SOP","Buyer Showing Conversation","https://sop.peterluo.homes/showconv.html"],
+  ["Scripts & SOP","How Much Is My Home Worth?","https://sop.peterluo.homes/price.html"],
+  ["Scripts & SOP","What Is Your Commission?","https://sop.peterluo.homes/commission.html"],
+  // Seller Service  (service.peterluo.homes, .html)
+  ["Seller Service","Exceptional Seller Service Playbook","https://service.peterluo.homes/sservice.html"],
+  ["Seller Service","System-Based Delivery","https://service.peterluo.homes/sdelivery.html"],
+  ["Seller Service","Seller's Roadmap — Freehold","https://service.peterluo.homes/checklist_freehold.html"],
+  ["Seller Service","Seller's Roadmap — Condo / POTL","https://service.peterluo.homes/checklist_potlcondo.html"],
+  ["Seller Service","Weekly Seller Communication","https://service.peterluo.homes/scomms.html"],
+  ["Seller Service","Weekly Seller Update","https://service.peterluo.homes/supdate.html"],
+  ["Seller Service","Client Communication Tracker","https://service.peterluo.homes/tracker.html"],
+  ["Seller Service","Feedback Collection","https://service.peterluo.homes/feedback.html"],
+  // Offer  (offer.peterluo.homes, extensionless)
+  ["Offer","Single Offer Review","https://offer.peterluo.homes/soffer"],
+  ["Offer","Multiple Offers Review","https://offer.peterluo.homes/moffer"],
+  ["Offer","Negotiation Playbook","https://offer.peterluo.homes/negotiation"],
+  ["Offer","Offer Check, Seller Communication & Negotiation","https://offer.peterluo.homes/snegotiation"],
+  ["Offer","Clauses Tighten 1","https://offer.peterluo.homes/clauses_tighten1"],
+  ["Offer","Clauses Tighten 2","https://offer.peterluo.homes/clauses_tighten2"],
+  ["Offer","Clauses Tighten 3","https://offer.peterluo.homes/clauses_tighten3"],
+  ["Offer","Clauses Tighten 4","https://offer.peterluo.homes/clauses_tighten4"],
+  // Leads  (leads.peterluo.homes, extensionless)
+  ["Leads","Door Knocking","https://leads.peterluo.homes/doorknock"],
+  ["Leads","Lead Follow-up","https://leads.peterluo.homes/followup"],
+  ["Leads","Expired Listing","https://leads.peterluo.homes/expired"],
+  ["Leads","Solds","https://leads.peterluo.homes/sold"],
+  // Listing Presentation EN  (lpen.peterluo.homes)
+  ["Listing Presentation · EN","Presenting (Voice)","https://lpen.peterluo.homes/lpen"],
+  ["Listing Presentation · EN","Fast Voice","https://lpen.peterluo.homes/flp"],
+  ["Listing Presentation · EN","Walkthrough Trainer","https://lpen.peterluo.homes/wt"],
+  ["Listing Presentation · EN","Discovery Trainer","https://lpen.peterluo.homes/dc"],
+  ["Listing Presentation · EN","POA Trainer","https://lpen.peterluo.homes/poa"],
+  ["Listing Presentation · EN","Price Presentation Trainer","https://lpen.peterluo.homes/pp"],
+  ["Listing Presentation · EN","Script","https://lpen.peterluo.homes/lpscript.html"],
+  ["Listing Presentation · EN","Fork","https://lpen.peterluo.homes/lpfork.html"],
+  ["Listing Presentation · EN","Anchor","https://lpen.peterluo.homes/lpanchor.html"],
+  ["Listing Presentation · EN","Drill","https://lpen.peterluo.homes/drill.html"],
+  ["Listing Presentation · EN","DC Sheet","https://lpen.peterluo.homes/dcsheet.html"],
+  // Misc  (misc.peterluo.homes, .html)
+  ["Misc","eSigning — PDF markup & signing","https://misc.peterluo.homes/esigning.html"],
+  ["Misc","Trip Planner","https://misc.peterluo.homes/trip.html"],
+  // TODO: add Self, Wellness, Listing Presentation 中文 pages here
+];
+
 (function(){
   var si=document.getElementById('searchInput'), sc=document.getElementById('searchClear');
+  var grid=document.querySelector('.grid'), res=document.getElementById('results');
   if(!si) return;
+  function esc(s){return s.replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function hl(text,q){
+    var t=esc(text); if(!q) return t;
+    var i=text.toLowerCase().indexOf(q);
+    if(i<0) return t;
+    return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length));
+  }
   function run(){
     var q=si.value.trim().toLowerCase();
     sc.classList.toggle('visible', q.length>0);
-    document.querySelectorAll('.grid .tile').forEach(function(t){
-      var txt=t.textContent.toLowerCase();
-      t.style.display=(!q||txt.indexOf(q)>-1)?'':'none';
+    if(!q){ res.style.display='none'; res.innerHTML=''; grid.style.display=''; return; }
+    grid.style.display='none'; res.style.display='flex';
+    var hits=APPS.filter(function(a){
+      return a[1].toLowerCase().indexOf(q)>-1 || a[0].toLowerCase().indexOf(q)>-1;
     });
+    if(!hits.length){ res.innerHTML='<div class="noresult">No tools match “'+esc(si.value.trim())+'”</div>'; return; }
+    res.innerHTML=hits.map(function(a){
+      return '<a class="result" href="'+a[2]+'">'+
+        '<span class="r-hub">'+esc(a[0])+' ›</span>'+
+        '<span class="r-name">'+hl(a[1],q)+'</span></a>';
+    }).join('');
   }
   si.addEventListener('input',run);
   sc.addEventListener('click',function(){si.value='';run();si.focus();});
